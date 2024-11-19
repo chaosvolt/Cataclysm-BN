@@ -699,7 +699,7 @@
       { "id": "DISTILL", "level": 1 }
     ],
     "tools": [ [ [ "crucible", -1 ], [ "crucible_clay", -1 ] ] ],
-    "components": [ [ [ "lead", 25 ] ], [ [ "tin", 25 ] ], [ [ "pitch_wood", 1 ] ] ]
+    "components": [ [ [ "lead", 25 ], [ "tin", 25 ] ], [ [ "pitch_wood", 1 ] ] ]
   },
   {
     "type": "recipe",
