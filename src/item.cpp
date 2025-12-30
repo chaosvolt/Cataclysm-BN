@@ -152,6 +152,7 @@ static const itype_id itype_rad_badge( "rad_badge" );
 static const itype_id itype_tuned_mechanism( "tuned_mechanism" );
 static const itype_id itype_stock_small( "stock_small" );
 static const itype_id itype_UPS( "UPS" );
+static const itype_id itype_genome_drive( "genome_drive" );
 static const itype_id itype_bio_armor( "bio_armor" );
 static const itype_id itype_waterproof_gunmod( "waterproof_gunmod" );
 static const itype_id itype_water( "water" );
@@ -5026,6 +5027,22 @@ std::string item::tname( unsigned int quantity, bool with_prefix, unsigned int t
     }
     if( is_tool() && has_flag( flag_HEATS_FOOD ) ) {
         tagtext += _( " (heats)" );
+    }
+
+
+    if( has_var( "specimen_sample" ) ) {
+        const std::string specimen_name = get_var( "specimen_name" );
+        const int progress = get_var( "specimen_sample_progress", 0 );
+        const int size = get_var( "specimen_size", 0 );
+        if( typeId() == itype_genome_drive && size > 0 && progress < size ) {
+            tagtext += string_format( " (%s [%d/%d])", specimen_name, progress, size );
+        } else {
+            tagtext += string_format( " (%s)", specimen_name );
+        }
+    }
+
+    if( has_var( "place_monster_override" ) ) {
+        tagtext += string_format( " (%s)", get_var( "place_monster_override_name" ) );
     }
 
     if( has_var( "NANOFAB_GROUP_ID" ) ) {
@@ -9937,6 +9954,26 @@ detached_ptr<item> item::process_fake_mill( detached_ptr<item> &&self, player * 
     return std::move( self );
 }
 
+detached_ptr<item> item::process_fake_cloning_vat( detached_ptr<item> &&self, player * /*carrier*/,
+        const tripoint &pos )
+{
+    if( !self ) {
+        return std::move( self );
+    }
+    map &here = get_map();
+    if( here.furn( pos ) != furn_str_id( "f_cloning_vat_active" ) ) {
+        self->item_counter = 0;
+        return detached_ptr<item>(); //destroy fake smoke
+    }
+
+    if( self->item_counter == 0 ) {
+        iexamine::cloning_vat_finalize( pos, self->birthday() ); //activate effects when timers goes to zero
+        return detached_ptr<item>(); //destroy fake smoke when it 'burns out'
+    }
+
+    return std::move( self );
+}
+
 detached_ptr<item> item::process_fake_smoke( detached_ptr<item> &&self, player * /*carrier*/,
         const tripoint &pos )
 {
@@ -10540,6 +10577,12 @@ detached_ptr<item> item::process_internal( detached_ptr<item> &&self, player *ca
 
     if( self->has_flag( flag_FAKE_SMOKE ) ) {
         self = process_fake_smoke( std::move( self ), carrier, pos );
+        if( !self ) {
+            return std::move( self );
+        }
+    }
+    if( self->has_flag( flag_FAKE_CLONING_VAT ) ) {
+        self = process_fake_cloning_vat( std::move( self ), carrier, pos );
         if( !self ) {
             return std::move( self );
         }
