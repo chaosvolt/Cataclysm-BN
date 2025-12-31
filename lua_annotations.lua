@@ -328,6 +328,7 @@ function BookRecipe.new() end
 ---@field get_item_with_id fun(self: Character, arg2: ItypeId, arg3: boolean): Item @Gets the first occurrence of an item with the given id
 ---@field get_kcal_percent fun(self: Character): number
 ---@field get_lowest_hp fun(self: Character): integer
+---@field get_magic fun(self: Character): KnownMagic @Access the character's spellbook and mana pool.
 ---@field get_max_power_level fun(self: Character): Energy
 ---@field get_melee_stamina_cost fun(self: Character, arg2: Item): integer
 ---@field get_morale fun(self: Character, arg2: MoraleTypeDataId): integer
@@ -1529,6 +1530,27 @@ JsonTraitFlagId = {}
 ---@overload fun(self: JsonTraitFlagId): JsonTraitFlagId
 ---@overload fun(arg1: string): JsonTraitFlagId
 function JsonTraitFlagId.new() end
+
+--- Represents a character's spellbook and mana pool. Manages all spells known by a character, their mana, and spell learning/forgetting.
+---@class KnownMagic
+---@field casting_ignore boolean @Whether casting ignores all distractions. Can be read and written.
+---@field available_mana fun(self: KnownMagic): integer @Get the current available mana.
+---@field can_learn_spell fun(self: KnownMagic, arg2: Character, arg3: SpellTypeId): boolean @Check if the character can learn a specific spell, considering traits and other restrictions.
+---@field forget_spell fun(self: KnownMagic, arg2: SpellTypeId) @Forget a known spell by spell_id.
+---@field get_spell fun(self: KnownMagic, arg2: SpellTypeId): Spell @Get a reference to a known spell for editing. Returns the spell associated with the given spell_id.
+---@field get_spells fun(self: KnownMagic): Spell[] @Get all known spells as a vector of spell pointers.
+---@field has_enough_energy fun(self: KnownMagic, arg2: Character, arg3: Spell): boolean @Check if the character has enough energy (of the appropriate type) to cast the given spell.
+---@field knows_spell fun(self: KnownMagic, arg2: SpellTypeId): boolean | fun(self: KnownMagic): boolean @Check if the character knows a specific spell by spell_id.
+---@field learn_spell fun(self: KnownMagic, arg2: SpellTypeId, arg3: Character, arg4: boolean?) @Learn a new spell. Requires a Character reference and spell_id. Optional force(boolean) parameter bypasses restrictions.
+---@field mana_regen_rate fun(self: KnownMagic, arg2: Character): number @Get the mana regeneration rate in units per turn for the given character.
+---@field max_mana fun(self: KnownMagic, arg2: Character): integer @Get the maximum mana for the given character.
+---@field mod_mana fun(self: KnownMagic, arg2: Character, arg3: integer) @Modify the current mana by adding or subtracting an amount.
+---@field set_mana fun(self: KnownMagic, arg2: integer) @Set the current mana to a specific value.
+---@field spells fun(self: KnownMagic): SpellTypeId[] @Get a vector of all known spell IDs.
+---@field time_to_learn_spell fun(self: KnownMagic, arg2: Character, arg3: SpellTypeId): integer @Calculate the time in moves required for the character to memorize/learn a spell.
+KnownMagic = {}
+---@return KnownMagic
+function KnownMagic.new() end
 
 ---@class Map
 ---@field add_field_at fun(self: Map, arg2: Tripoint, arg3: FieldTypeIntId, arg4: integer, arg5: TimeDuration): boolean
@@ -3308,9 +3330,10 @@ MonsterFlag = {
 	PROJECTILE_RESISTANT_3 = 124,
 	PROJECTILE_RESISTANT_4 = 125,
 	VOLATILE = 126,
-	MOUNTABLE_STAIRS = 127,
-	MOUNTABLE_OBSTACLES = 128,
-	FACTION_MEMORY = 129
+	CANT_CLONE = 127,
+	MOUNTABLE_STAIRS = 128,
+	MOUNTABLE_OBSTACLES = 129,
+	FACTION_MEMORY = 130
 }
 
 ---@enum MonsterSize
