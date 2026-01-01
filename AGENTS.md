@@ -13,7 +13,7 @@
 2. **Develop**: Follow [Code Style](./docs/en/dev/explanation/code_style.md). Use `_( "text" )` for L10n.
 3. **Test**: Build and verify. Create/update `tests/` (Catch2).
 4. **Commit**: Run astyle. Follow Atomic Commit and [Conventional Commits](./docs/en/contribute/changelog_guidelines.md). **No body/footer unless critical.**
-5. **PR**: Use [Template](./.github/pull_request_template.md). **Zero fluff**.
+5. **PR**: **MUST** follow [Template](./.github/pull_request_template.md) structure exactly. **MUST** be terse.
 
 ## Build & Verify
 
@@ -27,6 +27,9 @@ cmake --build --preset linux-full --target cataclysm-bn-tiles cata_test-tiles
 
 # Validate JSON
 ./build-scripts/lint-json.sh
+
+# Check Mods (validates mod JSON files)
+./out/build/linux-full/cataclysm-bn-tiles --check-mods
 
 # Generate Lua Documentation (if conflicts with lua_annotations.lua or docs/en/mod/lua/reference/lua.md)
 deno task docs:gen
