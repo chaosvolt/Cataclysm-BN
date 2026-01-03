@@ -2269,7 +2269,7 @@ function RecipeId.new() end
 ---@field ident fun(self: RecipeRaw): RecipeId @DEPRECATED: use recipe_id instead
 ---@field recipe_id fun(self: RecipeRaw): RecipeId
 ---@field result fun(self: RecipeRaw): ItypeId
----@field result_name fun(self: RecipeRaw): string
+---@field result_name fun(self: RecipeRaw, arg2: boolean): string
 RecipeRaw = {}
 ---@return RecipeRaw
 function RecipeRaw.new() end
@@ -2778,6 +2778,7 @@ gdebug = {}
 ---@field on_character_death fun(params: table) @Called when a character is dead.  <br />The hook receives a table with keys:  <br />* `char` (Character)  <br />* `killer` (Creature)  
 ---@field on_character_effect fun(params: table) @Called when character is on the effect which has `EFFECT_LUA_ON_TICK` flag.  <br />The hook receives a table with keys:  <br />* `character` (Character)  <br />* `effect` (Effect)  
 ---@field on_character_effect_added fun(params: table) @Called when character gets the effect which has `EFFECT_LUA_ON_ADDED` flag.  <br />The hook receives a table with keys:  <br />* `char` (Character)  <br />* `effect` (Effect)  
+---@field on_character_effect_removed fun(params: table) @Called when character loses the effect which has `EFFECT_LUA_ON_REMOVED` flag.  <br />The hook receives a table with keys:  <br />* `character` (Character)  <br />* `effect` (Effect)  
 ---@field on_character_reset_stats fun(params: table) @Called when character stat gets reset.  <br />The hook receives a table with keys:  <br />* `character` (Character)  
 ---@field on_creature_blocked fun(params: table) @Called when a character successfully blocks.  <br />The hook receives a table with keys:  <br />* `char` (Character)  <br />* `source` (Creature)  <br />* `bodypart_id` (BodyPartTypeId)  <br />* `damage_instance` (DamageInstance)  <br />* `damage_blocked` (float)  
 ---@field on_creature_dodged fun(params: table) @Called when a character or monster successfully dodges.  <br />The hook receives a table with keys:  <br />* `char` (Character)  <br />* `source` (Creature)  <br />* `difficulty` (integer)  
@@ -2791,6 +2792,7 @@ gdebug = {}
 ---@field on_mon_death fun(params: table) @Called when a monster is dead.  <br />The hook receives a table with keys:  <br />* `mon` (Monster)  <br />* `killer` (Creature)  
 ---@field on_mon_effect fun(params: table) @Called when character is on the effect which has `EFFECT_LUA_ON_TICK` flag.  <br />The hook receives a table with keys:  <br />* `mon` (Monster)  <br />* `effect` (Effect)  
 ---@field on_mon_effect_added fun(params: table) @Called when monster gets the effect which has `EFFECT_LUA_ON_ADDED` flag.  <br />The hook receives a table with keys:  <br />* `mon` (Monster)  <br />* `effect` (Effect)  
+---@field on_mon_effect_removed fun(params: table) @Called when monster loses the effect which has `EFFECT_LUA_ON_REMOVED` flag.  <br />The hook receives a table with keys:  <br />* `mon` (Monster)  <br />* `effect` (Effect)  
 ---@field on_shoot fun(params: table) @Called when shot(s) is fired from a gun.  <br />The hook receives a table with keys:  <br />* `shooter` (Character)  <br />* `target_pos` (Tripoint)  <br />* `shots` (int)  <br />* `gun` (item)  <br />* `ammo` (item): For `RELOAD_AND_SHOOT` guns like a bow. On the others, it returns `nil` value.  
 ---@field on_throw fun(params: table) @Called when an item is thrown.  <br />The hook receives a table with keys:  <br />* `thrower` (Character)  <br />* `target_pos` (Tripoint)  <br />* `throw_from_pos` (Tripoint)  <br />* `thrown` (item)  
 ---@field on_weather_changed fun(params: table) @Called when the weather has changed.  <br />The hook receives a table with keys:  <br />* `weather_id` (string): Current weather ID  <br />* `old_weather_id` (string): Previous weather ID  <br />* `temperature` (float): Current temperature in Celsius  <br />* `temperature_f` (float): Current temperature in Fahrenheit  <br />* `windspeed` (float): Wind speed  <br />* `winddirection` (integer): Wind direction in degrees  <br />* `humidity` (float): Humidity percentage  <br />* `pressure` (float): Atmospheric pressure  <br />* `is_sheltered` (boolean): Whether player is sheltered  
