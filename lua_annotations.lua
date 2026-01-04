@@ -632,6 +632,9 @@ function CharacterId.new() end
 ---@field sees fun(self: Creature, arg2: Creature): boolean
 ---@field set_all_parts_hp_cur fun(self: Creature, arg2: integer)
 ---@field set_all_parts_hp_to_max fun(self: Creature)
+---@field set_armor_bash_bonus fun(self: Creature, arg2: integer)
+---@field set_armor_bullet_bonus fun(self: Creature, arg2: integer)
+---@field set_armor_cut_bonus fun(self: Creature, arg2: integer)
 ---@field set_moves fun(self: Creature, arg2: integer)
 ---@field set_pain fun(self: Creature, arg2: integer)
 ---@field set_part_hp_cur fun(self: Creature, arg2: BodyPartTypeIntId, arg3: integer)
