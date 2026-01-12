@@ -5497,41 +5497,65 @@ No constructors.
 
 > Convert local ms -> absolute ms
 
-#### get_field_int_at {#sol::Map::get_field_int_at}
+#### mod_field_age_at {#sol::Map::mod_field_age_at}
 
-🇲 Method --> <code>( [Tripoint](#sol::Tripoint), [FieldTypeIntId](#sol::FieldTypeIntId) ) -> integer</code>
+🇲 Method --> <code>( [Tripoint](#sol::Tripoint), [FieldTypeIntId](#sol::FieldTypeIntId), [TimeDuration](#sol::TimeDuration) ) -> [TimeDuration](#sol::TimeDuration)</code>
 
-#### get_field_age_at {#sol::Map::get_field_age_at}
+#### set_field_int_at {#sol::Map::set_field_int_at}
 
-🇲 Method --> <code>( [Tripoint](#sol::Tripoint), [FieldTypeIntId](#sol::FieldTypeIntId) ) -> [TimeDuration](#sol::TimeDuration)</code>
+🇲 Method --> <code>( [Tripoint](#sol::Tripoint), [FieldTypeIntId](#sol::FieldTypeIntId), integer, boolean ) -> integer</code>
+
+#### set_field_age_at {#sol::Map::set_field_age_at}
+
+🇲 Method --> <code>( [Tripoint](#sol::Tripoint), [FieldTypeIntId](#sol::FieldTypeIntId), [TimeDuration](#sol::TimeDuration), boolean ) -> [TimeDuration](#sol::TimeDuration)</code>
 
 #### mod_field_int_at {#sol::Map::mod_field_int_at}
 
 🇲 Method --> <code>( [Tripoint](#sol::Tripoint), [FieldTypeIntId](#sol::FieldTypeIntId), integer ) -> integer</code>
 
-#### has_field_at {#sol::Map::has_field_at}
-
-🇲 Method --> <code>( [Tripoint](#sol::Tripoint), [FieldTypeIntId](#sol::FieldTypeIntId) ) -> boolean</code>
-
 #### get_furn_at {#sol::Map::get_furn_at}
 
 🇲 Method --> <code>( [Tripoint](#sol::Tripoint) ) -> [FurnIntId](#sol::FurnIntId)</code>
 
-#### set_furn_at {#sol::Map::set_furn_at}
+#### get_field_age_at {#sol::Map::get_field_age_at}
 
-🇲 Method --> <code>( [Tripoint](#sol::Tripoint), [FurnIntId](#sol::FurnIntId) )</code>
+🇲 Method --> <code>( [Tripoint](#sol::Tripoint), [FieldTypeIntId](#sol::FieldTypeIntId) ) -> [TimeDuration](#sol::TimeDuration)</code>
 
 #### set_ter_at {#sol::Map::set_ter_at}
 
 🇲 Method --> <code>( [Tripoint](#sol::Tripoint), [TerIntId](#sol::TerIntId) ) -> boolean</code>
 
-#### mod_field_age_at {#sol::Map::mod_field_age_at}
+#### set_furn_at {#sol::Map::set_furn_at}
 
-🇲 Method --> <code>( [Tripoint](#sol::Tripoint), [FieldTypeIntId](#sol::FieldTypeIntId), [TimeDuration](#sol::TimeDuration) ) -> [TimeDuration](#sol::TimeDuration)</code>
+🇲 Method --> <code>( [Tripoint](#sol::Tripoint), [FurnIntId](#sol::FurnIntId) )</code>
 
-#### set_field_age_at {#sol::Map::set_field_age_at}
+#### get_trap_at {#sol::Map::get_trap_at}
 
-🇲 Method --> <code>( [Tripoint](#sol::Tripoint), [FieldTypeIntId](#sol::FieldTypeIntId), [TimeDuration](#sol::TimeDuration), boolean ) -> [TimeDuration](#sol::TimeDuration)</code>
+🇲 Method --> <code>( [Tripoint](#sol::Tripoint) ) -> [TrapIntId](#sol::TrapIntId)</code>
+
+#### get_field_name_at {#sol::Map::get_field_name_at}
+
+🇲 Method --> <code>( [Tripoint](#sol::Tripoint), [FieldTypeIntId](#sol::FieldTypeIntId) ) -> string</code>
+
+#### remove_trap_at {#sol::Map::remove_trap_at}
+
+🇲 Method --> <code>( [Tripoint](#sol::Tripoint) )</code>
+
+> Simpler version of `set_trap_at` with `trap_null`.
+
+#### is_outside {#sol::Map::is_outside}
+
+🇲 Method --> <code>( [Tripoint](#sol::Tripoint) ) -> boolean</code>
+
+#### add_field_at {#sol::Map::add_field_at}
+
+🇲 Method --> <code>( [Tripoint](#sol::Tripoint), [FieldTypeIntId](#sol::FieldTypeIntId), integer, [TimeDuration](#sol::TimeDuration) ) -> boolean</code>
+
+#### disarm_trap_at {#sol::Map::disarm_trap_at}
+
+🇲 Method --> <code>( [Tripoint](#sol::Tripoint) )</code>
+
+> Disarms a trap using your skills and stats, with consequences depending on success or failure.
 
 #### get_trap_at {#sol::Map::get_trap_at}
 
@@ -5543,41 +5567,17 @@ No constructors.
 
 > Set a trap at a position on the map. It can also replace existing trap, even with `trap_null`.
 
-#### set_field_int_at {#sol::Map::set_field_int_at}
+#### is_sheltered {#sol::Map::is_sheltered}
 
-🇲 Method --> <code>( [Tripoint](#sol::Tripoint), [FieldTypeIntId](#sol::FieldTypeIntId), integer, boolean ) -> integer</code>
+🇲 Method --> <code>( [Tripoint](#sol::Tripoint) ) -> boolean</code>
 
-#### get_field_name_at {#sol::Map::get_field_name_at}
+#### get_furn_at {#sol::Map::get_furn_at}
 
-🇲 Method --> <code>( [Tripoint](#sol::Tripoint), [FieldTypeIntId](#sol::FieldTypeIntId) ) -> string</code>
-
-#### add_field_at {#sol::Map::add_field_at}
-
-🇲 Method --> <code>( [Tripoint](#sol::Tripoint), [FieldTypeIntId](#sol::FieldTypeIntId), integer, [TimeDuration](#sol::TimeDuration) ) -> boolean</code>
-
-#### remove_field_at {#sol::Map::remove_field_at}
-
-🇲 Method --> <code>( [Tripoint](#sol::Tripoint), [FieldTypeIntId](#sol::FieldTypeIntId) )</code>
-
-#### disarm_trap_at {#sol::Map::disarm_trap_at}
-
-🇲 Method --> <code>( [Tripoint](#sol::Tripoint) )</code>
-
-> Disarms a trap using your skills and stats, with consequences depending on success or failure.
+🇲 Method --> <code>( [Tripoint](#sol::Tripoint) ) -> [FurnIntId](#sol::FurnIntId)</code>
 
 #### get_ter_at {#sol::Map::get_ter_at}
 
 🇲 Method --> <code>( [Tripoint](#sol::Tripoint) ) -> [TerIntId](#sol::TerIntId)</code>
-
-#### points_in_radius {#sol::Map::points_in_radius}
-
-🇲 Method --> <code>( [Tripoint](#sol::Tripoint), integer, integer? ) -> [Tripoint](#sol::Tripoint)[]</code>
-
-> Returns all points within a radius from the center point. `radiusz` defaults to 0.
-
-#### ambient_light_at {#sol::Map::ambient_light_at}
-
-🇲 Method --> <code>( [Tripoint](#sol::Tripoint) ) -> number</code>
 
 #### create_item_at {#sol::Map::create_item_at}
 
@@ -5607,7 +5607,17 @@ No constructors.
 
 🇲 Method --> <code>( ) -> integer</code>
 
-#### move_item_to {#sol::Map::move_item_to}
+#### set_ter_at {#sol::Map::set_ter_at}
+
+🇲 Method --> <code>( [Tripoint](#sol::Tripoint), [TerIntId](#sol::TerIntId) ) -> boolean</code>
+
+#### remove_item_at {#sol::Map::remove_item_at}
+
+🇲 Method --> <code>( [Tripoint](#sol::Tripoint), [Item](#sol::Item) )</code>
+
+#### add_item {#sol::Map::add_item}
+
+🇲 Method --> <code>( [Tripoint](#sol::Tripoint), Detached<[Item](#sol::Item)> ) -> Detached<[Item](#sol::Item)></code>
 
 🇲 Method --> <code>( [Tripoint](#sol::Tripoint), [Item](#sol::Item), [Tripoint](#sol::Tripoint) )</code>
 
@@ -5616,6 +5626,12 @@ No constructors.
 #### has_items_at {#sol::Map::has_items_at}
 
 🇲 Method --> <code>( [Tripoint](#sol::Tripoint) ) -> boolean</code>
+
+#### move_item_to {#sol::Map::move_item_to}
+
+🇲 Method --> <code>( [Tripoint](#sol::Tripoint), [Item](#sol::Item), [Tripoint](#sol::Tripoint) )</code>
+
+> Moves an item from one position to another, preserving all item state including contents.
 
 #### detach_item_at {#sol::Map::detach_item_at}
 
@@ -5635,21 +5651,9 @@ No constructors.
 
 🇲 Method --> <code>( [Tripoint](#sol::Tripoint) ) -> [MapStack](#sol::MapStack)</code>
 
-#### add_item {#sol::Map::add_item}
+#### is_in_sunlight {#sol::Map::is_in_sunlight}
 
-🇲 Method --> <code>( [Tripoint](#sol::Tripoint), Detached<[Item](#sol::Item)> ) -> Detached<[Item](#sol::Item)></code>
-
-> Places a detached item onto the map. Returns nil on success (item now owned by map), or returns the item back if placement failed.
-
-#### clear_items_at {#sol::Map::clear_items_at}
-
-🇲 Method --> <code>( [Tripoint](#sol::Tripoint) )</code>
-
-#### remove_trap_at {#sol::Map::remove_trap_at}
-
-🇲 Method --> <code>( [Tripoint](#sol::Tripoint) )</code>
-
-> Simpler version of `set_trap_at` with `trap_null`.
+🇲 Method --> <code>( [Tripoint](#sol::Tripoint) ) -> boolean</code>
 
 ## MapStack {#sol::MapStack}
 
@@ -8744,9 +8748,13 @@ No base classes.
 
 🇫 Function --> <code>( integer ) -> [TimePoint](#sol::TimePoint)</code>
 
-#### second_of_minute {#sol::TimePoint::second_of_minute}
+#### season {#sol::TimePoint::season}
 
-🇲 Method --> <code>( ) -> integer</code>
+🇲 Method --> <code>( ) -> string</code>
+
+#### moon_phase {#sol::TimePoint::moon_phase}
+
+🇲 Method --> <code>( ) -> [MoonPhase](#sol::MoonPhase)</code>
 
 #### minute_of_hour {#sol::TimePoint::minute_of_hour}
 
@@ -8756,11 +8764,27 @@ No base classes.
 
 🇲 Method --> <code>( ) -> string</code>
 
+#### hour_of_day {#sol::TimePoint::hour_of_day}
+
+🇲 Method --> <code>( ) -> integer</code>
+
+#### sunset {#sol::TimePoint::sunset}
+
+🇲 Method --> <code>( ) -> [TimePoint](#sol::TimePoint)</code>
+
+#### second_of_minute {#sol::TimePoint::second_of_minute}
+
+🇲 Method --> <code>( ) -> integer</code>
+
 #### is_dawn {#sol::TimePoint::is_dawn}
 
 🇲 Method --> <code>( ) -> boolean</code>
 
-#### hour_of_day {#sol::TimePoint::hour_of_day}
+#### is_night {#sol::TimePoint::is_night}
+
+🇲 Method --> <code>( ) -> boolean</code>
+
+#### to_turn {#sol::TimePoint::to_turn}
 
 🇲 Method --> <code>( ) -> integer</code>
 
@@ -8772,13 +8796,9 @@ No base classes.
 
 🇲 Method --> <code>( ) -> boolean</code>
 
-#### to_turn {#sol::TimePoint::to_turn}
+#### sunrise {#sol::TimePoint::sunrise}
 
-🇲 Method --> <code>( ) -> integer</code>
-
-#### is_night {#sol::TimePoint::is_night}
-
-🇲 Method --> <code>( ) -> boolean</code>
+🇲 Method --> <code>( ) -> [TimePoint](#sol::TimePoint)</code>
 
 ## Tinymap {#sol::Tinymap}
 
@@ -9735,6 +9755,19 @@ No base classes.
 - `MEDIUM` = `2`
 - `LARGE` = `3`
 - `HUGE` = `4`
+
+## MoonPhase {#sol::MoonPhase}
+
+### Entries
+
+- `MOON_NEW` = `0`
+- `MOON_WAXING_CRESCENT` = `1`
+- `MOON_HALF_MOON_WAXING` = `2`
+- `MOON_WAXING_GIBBOUS` = `3`
+- `MOON_FULL` = `4`
+- `MOON_WANING_GIBBOUS` = `5`
+- `MOON_HALF_MOON_WANING` = `6`
+- `MOON_WANING_CRESCENT` = `7`
 
 ## MsgType {#sol::MsgType}
 
