@@ -27,6 +27,7 @@
 #include "monfaction.h"
 #include "monster.h"
 #include "mtype.h"
+#include "name.h"
 #include "npc.h"
 #include "player.h"
 #include "rng.h"
@@ -484,6 +485,54 @@ void cata::detail::reg_enums( sol::state &lua )
     reg_enum<moon_phase>( lua );
 }
 
+static const auto lowercase = []( std::string t )
+{
+    if( !t.empty() ) {
+        t.front() = std::tolower( t.front() );
+    }
+    return t;
+};
+
+namespace Name
+{
+std::string string_search( sol::variadic_args va )
+{
+    nameFlags flags = static_cast<nameFlags>( 0 );
+    // Only 9 flags exist, so cap
+    for( int i = 0; i < std::min( static_cast<int>( va.size() ), 10 ); i++ ) {
+        if( !va[i].is<std::string>() ) { continue; }
+        auto in = lowercase( va.get<std::string>( i ) );
+        flags = flags | usage_flag( in ) | gender_flag( in );
+    }
+    return get( flags );
+}
+}
+void cata::detail::reg_names( sol::state &lua )
+{
+    luna::userlib lib = luna::begin_lib( lua, "ch_names" );
+    DOC( "Generates a random full name with an optional boolean for gender." );
+    DOC( "The loaded name is one of usage with optional gender." );
+    DOC( "The combinations used in names files are as follows:" );
+    DOC( "" );
+    DOC( "Backer | (Female|Male|Unisex)" );
+    DOC( "Given  | (Female|Male)        // unisex names are duplicated in each group" );
+    DOC( "Family | Unisex" );
+    DOC( "Nick" );
+    DOC( "City" );
+    DOC( "World" );
+    luna::set_fx( lib, "generate", []( const sol::optional<bool> male ) -> std::string {
+        if( male.has_value() ) { return Name::generate( male.value() ); }
+        return Name::generate( one_in( 2 ) );
+    } );
+    DOC( "Generates a single name using any combination of search flags." );
+    luna::set_fx( lib, "pick", []( sol::variadic_args va ) -> std::string {
+        if( va.size() < 1 || !va[0].is<std::string>() ) { return std::string(); };
+        return Name::string_search( va );
+    } );
+
+    luna::finalize_lib( lib );
+}
+
 void cata::detail::reg_hooks_examples( sol::state &lua )
 {
     DOC( "Documentation for hooks" );
@@ -807,6 +856,7 @@ void cata::reg_all_bindings( sol::state &lua )
     reg_game_ids( lua );
     mod_mutation_branch( lua );
     reg_magic( lua );
+    reg_names( lua );
     reg_mission( lua );
     reg_mission_type( lua );
     reg_recipe( lua );
