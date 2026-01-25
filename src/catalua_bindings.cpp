@@ -1,5 +1,7 @@
-#include "catalua_bindings.h"
+#include <ctime>
+#include <chrono>
 
+#include "catalua_bindings.h"
 #include "catalua_bindings_utils.h"
 #include "catalua.h"
 #include "catalua_log.h"
@@ -333,6 +335,50 @@ void cata::detail::reg_debug_api( sol::state &lua )
     luna::set_fx( lib, "set_log_capacity", []( int v ) { cata::get_lua_log_instance().set_log_capacity( v ); } );
     luna::set_fx( lib, "reload_lua_code", &cata::reload_lua_code );
     luna::set_fx( lib, "save_game", []() -> bool { return g->save( false ); } );
+
+    luna::finalize_lib( lib );
+}
+
+static tm *local_time_impl()
+{
+    const time_t timestamp = time( nullptr );
+    return localtime( &timestamp );
+}
+
+// This is from weather.cpp, but requires calandar.h.
+// I don't want to include that here since that's fairly awkward.
+static const std::array<std::string, 7> weekday_names = { {
+        translate_marker( "Sunday" ), translate_marker( "Monday" ),
+        translate_marker( "Tuesday" ), translate_marker( "Wednesday" ),
+        translate_marker( "Thursday" ), translate_marker( "Friday" ),
+        translate_marker( "Saturday" )
+    }
+};
+
+void cata::detail::reg_date_time_api( sol::state &lua )
+{
+    DOC( "System date and time API." );
+    luna::userlib lib = luna::begin_lib( lua, "date_time" ) ;
+
+    const time_t timestamp = time( nullptr );
+    const tm *loc = localtime( &timestamp );
+
+    luna::set_fx( lib, "year", []() { return local_time_impl()->tm_year + 1900; } );
+    // It makes sense to start month at 1, not 0
+    luna::set_fx( lib, "month", []() { return local_time_impl()->tm_mon + 1; } );
+    DOC( "Days since Saturday." );
+    luna::set_fx( lib, "weekday", []() { return local_time_impl()->tm_wday; } );
+    luna::set_fx( lib, "weekday_str", []() { return weekday_names[local_time_impl()->tm_wday]; } );
+    luna::set_fx( lib, "day", []() { return local_time_impl()->tm_mday; } );
+    // Hour is different, since digital clocks wrap around at 24
+    DOC( "0 -> 23" );
+    luna::set_fx( lib, "hour", []() { return local_time_impl()->tm_hour; } );
+    luna::set_fx( lib, "minute", []() { return local_time_impl()->tm_min; } );
+    luna::set_fx( lib, "second", []() { return local_time_impl()->tm_sec; } );
+    luna::set_fx( lib, "millisecond", []() -> int {
+        auto now = std::chrono::system_clock::now().time_since_epoch();
+        return std::chrono::duration_cast<std::chrono::milliseconds>( now ).count() % 1000;
+    } );
 
     luna::finalize_lib( lib );
 }
@@ -746,6 +792,7 @@ void cata::reg_all_bindings( sol::state &lua )
     reg_debug_api( lua );
     reg_game_api( lua );
     reg_locale_api( lua );
+    reg_date_time_api( lua );
     reg_units( lua );
     reg_skill_level_map( lua );
     reg_damage_instance( lua );
