@@ -39,6 +39,9 @@ auto json_part_write( JsonOut &json, const vehicle_part *p ) -> void
     const auto &id  = p->info().get_id();
     const auto &ammo_type = p->ammo_current();
 
+    if( id == vpart_id( "door_lock" ) ) {
+        return;
+    }
     json.member( "part", id );
     if( p->is_tank() ) {
         json.member( "fuel", ammo_type );
