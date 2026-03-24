@@ -1227,6 +1227,11 @@ class npc : public player
         npc_attitude get_previous_attitude();
         npc_mission get_previous_mission();
         void revert_after_activity();
+        void set_suppress_activity_complete_message( bool value );
+        bool consume_suppress_activity_complete_message();
+        void set_activity_failure_message( const std::string &msg );
+        std::string consume_activity_failure_message();
+        std::string peek_activity_failure_message() const;
 
         // #############   VALUES   ################
         activity_id current_activity_id = activity_id::NULL_ID();
@@ -1255,6 +1260,8 @@ class npc : public player
         npc_short_term_cache ai_cache;
 
         std::map<npc_need, npc_need_goal_cache> goal_cache;
+        bool suppress_activity_complete_message = false;
+        std::string activity_failure_message;
     public:
         /**
          * Global position, expressed in map square coordinate system
@@ -1459,5 +1466,3 @@ static constexpr int density_search_radius = 120;
 /** Chance that a random NPC spawns somewhere on overmap. */
 double spawn_chance_in_hour( int current_npc_count, double density );
 } // namespace npc_overmap
-
-
