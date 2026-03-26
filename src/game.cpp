@@ -4830,19 +4830,22 @@ void game::world_tick()
         }
 
         mb.for_each_submap( [&]( auto & entry ) {
-            ZoneScopedN( "wtd_submap_body" );
             auto &[raw_pos, sm_ptr] = entry;
             if( !sm_ptr ) {
                 return;
             }
-            const tripoint_abs_sm pos_sm( raw_pos );
 
             // Only simulate submaps that are actively requested (reality bubble,
             // fire spread, player base, script).  Skip lazy-border and streamer
             // pre-loaded submaps that are merely resident in memory.
-            if( !submap_loader.is_simulated( dim, pos_sm ) ) {
+            // Use the precomputed O(1) set rather than is_simulated() which does
+            // an O(log N) mapbuffer lookup + O(R) request scan per submap.
+            if( !submap_loader.is_in_simulated_set( dim, raw_pos ) ) {
                 return;
             }
+
+            ZoneScopedN( "wtd_submap_body" );
+            const tripoint_abs_sm pos_sm( raw_pos );
 
             total_field_count += sm_ptr->field_count;
 
@@ -4851,11 +4854,13 @@ void game::world_tick()
 
             // Furniture field emitters — covers all loaded submaps, not just the bubble.
             // Primary dimension only: m.emit_field() operates in primary-map coordinates.
-            if( do_emits && dim.empty() ) {
+            // emitter_cache skips the 144-tile scan for submaps with no EMITTER furniture.
+            if( do_emits && dim.empty() && sm_ptr->emitter_cache != 0 ) {
                 ZoneScopedN( "field_emits" );
                 const tripoint local_sm_origin( ( raw_pos.x - abs_sub.x ) * SEEX,
                                                 ( raw_pos.y - abs_sub.y ) * SEEY,
                                                 raw_pos.z );
+                bool found_emitter = false;
                 std::ranges::for_each(
                     cata::views::cartesian_product( std::views::iota( 0, SEEX ),
                                                     std::views::iota( 0, SEEY ) ),
@@ -4863,6 +4868,7 @@ void game::world_tick()
                     auto [lx, ly] = xy;
                     const furn_t &fd = sm_ptr->get_furn( point( lx, ly ) ).obj();
                     if( fd.has_flag( "EMITTER" ) ) {
+                        found_emitter = true;
                         const tripoint local_pos( local_sm_origin.x + lx,
                                                   local_sm_origin.y + ly,
                                                   raw_pos.z );
@@ -4871,6 +4877,7 @@ void game::world_tick()
                         } );
                     }
                 } );
+                sm_ptr->emitter_cache = found_emitter ? 1 : 0;
             }
 
             if( fire_spread && has_fire ) {
@@ -7309,6 +7316,11 @@ void game::peek( const tripoint &p )
     u.moves -= 200;
     tripoint prev = u.pos();
     u.setpos( p );
+    // Force a full cache rebuild from the peek position so look_around renders
+    // correct FOV and lighting.  Without this, lightmap_dirty may already be
+    // false (built from the pre-peek player position earlier this turn), causing
+    // look_around to display stale lighting and visibility.
+    m.invalidate_map_cache( p.z );
     tripoint center = p;
     const look_around_result result = look_around( /*show_window=*/true, center, center, false, false,
                                       true );
