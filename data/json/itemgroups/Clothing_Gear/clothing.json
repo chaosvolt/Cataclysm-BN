@@ -3251,7 +3251,12 @@
     "//": "Bathrobes and kimonos in the same itemgroup",
     "type": "item_group",
     "subtype": "distribution",
-    "items": [ { "item": "house_coat", "prob": 80 }, { "item": "kimono", "prob": 20 }, { "item": "robe", "prob": 10 }, { "item": "jacket_leather_red", "prob": 10 } ]
+    "items": [
+      { "item": "house_coat", "prob": 80 },
+      { "item": "kimono", "prob": 20 },
+      { "item": "robe", "prob": 10 },
+      { "item": "jacket_leather_red", "prob": 10 }
+    ]
   },
   {
     "id": "vests",
