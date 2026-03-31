@@ -1986,7 +1986,7 @@ void vehicle::interact_with( const tripoint &pos, int interact_part )
         auto capacity = pseudo.ammo_capacity( true );
         auto qty = capacity - discharge_battery( capacity );
         pseudo.ammo_set( itype_battery, qty );
-        you.invoke_item( &pseudo );
+        you.invoke_item( &pseudo, pos );
         charge_battery( pseudo.ammo_remaining() );
         return true;
     };
