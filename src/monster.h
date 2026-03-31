@@ -33,6 +33,7 @@
 #include "value_ptr.h"
 #include "monster_action.h"
 #include "monster_plan.h"
+#include "mtype.h"
 #include "visitable.h"
 
 class Character;
@@ -731,6 +732,8 @@ class monster : public Creature, public location_visitable<monster>
         // Faction-specific anger tracking
         void add_faction_anger( mfaction_id target_faction, int amount );
         auto get_faction_anger( mfaction_id target_faction ) const -> int;
+
+        std::set<m_flag> monster_flags;
 
     private:
         void process_trigger( mon_trigger trig, int amount );
