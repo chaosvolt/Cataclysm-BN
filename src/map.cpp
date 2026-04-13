@@ -2027,7 +2027,7 @@ void map::furn_set( const tripoint &p, const furn_id &new_furniture,
     set_memory_seen_cache_dirty( p );
 
     // TODO: Limit to changes that affect move cost, traps and stairs
-    set_pathfinding_cache_dirty( p.z );
+    set_pathfinding_cache_dirty( p );
 
     // Make sure the furniture falls if it needs to
     support_dirty( p );
@@ -2399,7 +2399,7 @@ bool map::ter_set( const tripoint &p, const ter_id &new_terrain )
     set_memory_seen_cache_dirty( p );
 
     // TODO: Limit to changes that affect move cost, traps and stairs
-    set_pathfinding_cache_dirty( p.z );
+    set_pathfinding_cache_dirty( p );
 
     tripoint above( p.xy(), p.z + 1 );
     // Make sure that if we supported something and no longer do so, it falls down
@@ -6556,7 +6556,7 @@ bool map::add_field( const tripoint &p, const field_type_id &type_id, int intens
     }
 
     if( fd_type.is_dangerous() ) {
-        set_pathfinding_cache_dirty( p.z );
+        set_pathfinding_cache_dirty( p );
     }
 
     // Ensure blood type fields don't hang in the air
@@ -6584,7 +6584,7 @@ void map::remove_field( const tripoint &p, const field_type_id &field_to_remove 
             set_seen_cache_dirty( p );
         }
         if( fdata.is_dangerous() ) {
-            set_pathfinding_cache_dirty( p.z );
+            set_pathfinding_cache_dirty( p );
         }
     }
 }
@@ -9993,12 +9993,18 @@ void tinymap::drain_to_mapbuffer( mapbuffer &dest )
     ( void )dest;
 }
 
-void tinymap::load_from_mapbuffer( const tripoint &sm_base )
+void tinymap::bind_submaps_for_hook( const tripoint &sm_base )
 {
+    // Directly wire the four 2×2 grid slots to the already-resident submaps.
+    // Does NOT call loadn()/actualize() — freshly generated submaps need no
+    // time-advance, and this tinymap is never rendered, simulated, or saved.
     set_abs_sub( sm_base );
-    for( auto di : std::views::iota( 0, 2 ) ) {
-        for( auto dj : std::views::iota( 0, 2 ) ) {
-            loadn( tripoint( di, dj, sm_base.z ), false );
+    mapbuffer &mb = MAPBUFFER_REGISTRY.get( get_bound_dimension() );
+    for( int di = 0; di < 2; ++di ) {
+        for( int dj = 0; dj < 2; ++dj ) {
+            const tripoint abs( sm_base.x + di, sm_base.y + dj, sm_base.z );
+            setsubmap( get_nonant( { di, dj, sm_base.z } ),
+                       mb.lookup_submap_in_memory( abs ) );
         }
     }
 }
@@ -10505,6 +10511,15 @@ void map::set_pathfinding_cache_dirty( const int zlev )
                 sm->pf_dirty = true;
             }
         }
+    }
+}
+
+void map::set_pathfinding_cache_dirty( const tripoint &p )
+{
+    point l;
+    submap *const sm = get_submap_at( p, l );
+    if( sm ) {
+        sm->pf_dirty = true;
     }
 }
 
