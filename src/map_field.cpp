@@ -1769,9 +1769,33 @@ auto process_fields_in_submap( submap &sm,
         } // end field-entry loop
     } );
 
-    if( sm.field_count == 0 ) {
-        sm.field_cache.clear();
-    }
+    // Compact + deduplicate the field_cache in one O(n) pass.
+    //
+    // Two failure modes fixed here:
+    //   1. Dead entries: a position is pushed when a field is first created, but
+    //      never removed when it dies.  The cache grows each creation/death cycle.
+    //   2. Duplicate live entries: when a bolt or spread effect adds a second field
+    //      type to a tile already in the cache, add_field() returns true (new type),
+    //      so the same position is pushed again.  The shock_vent state machine then
+    //      runs N times per tick instead of once, flooding the room with electricity.
+    //
+    // The bitset tracks which of the 144 submap tiles have already been kept so
+    // duplicates are discarded in the same pass that removes dead entries.
+    std::bitset<SEEX *SEEY> seen;
+    sm.field_cache.erase(
+    std::ranges::remove_if( sm.field_cache, [&]( const point & local ) {
+        if( !sm.get_field( local ).displayed_field_type() ) {
+            return true;
+        }
+        const auto idx = static_cast<std::size_t>( local.x + local.y * SEEX );
+        if( seen.test( idx ) ) {
+            return true;
+        }
+        seen.set( idx );
+        return false;
+    } ).begin(),
+    sm.field_cache.end()
+    );
 
     return has_fire;
 }
