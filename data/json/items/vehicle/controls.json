@@ -152,7 +152,6 @@
     "copy-from": "turret_controls",
     "name": { "str": "vehicle laser designator" },
     "description": "A laser rangefinder with associated targeting software, designed to be installed on a vehicle-mounted turret.  Installing it on a vehicle-mounted weapon will greatly increases accuracy, but only when firing it remotely such as from the vehicle control menu."
-
   },
   {
     "type": "GENERIC",
