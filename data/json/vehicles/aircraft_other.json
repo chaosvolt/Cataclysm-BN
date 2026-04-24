@@ -954,7 +954,8 @@
             "ammo": 80,
             "ammo_types": [ "25mm_apds", "25mm_hei" ],
             "ammo_qty": [ 10, 50 ]
-          }
+          },
+          "laser_designator_part"
         ]
       },
       {
