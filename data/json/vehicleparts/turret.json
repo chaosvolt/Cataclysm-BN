@@ -825,11 +825,10 @@
     "broken_color": "red",
     "damage_modifier": 10,
     "durability": 50,
-    "epower": -250,
     "item": "laser_designator_item",
-    "description": "An advanced laser rangefinder and guidance system.  Installing this on a turret will greatly increase its accuracy when fired remotely from vehicle controls, but will not help if fired by hand.",
+    "description": "An advanced laser rangefinder and guidance system.  Installing this on a turret will greatly increase its accuracy when fired remotely from vehicle controls, but will not help if fired by hand, or if out of power.",
     "folded_volume": "1 L",
-    "flags": [ "ENABLED_DRAINS_EPOWER", "LASER_DESIGNATOR", "UNMOUNT_ON_DAMAGE", "SHOCK_RESISTANT" ],
+    "flags": [ "LASER_DESIGNATOR", "UNMOUNT_ON_DAMAGE", "SHOCK_RESISTANT" ],
     "requirements": {
       "install": {
         "time": "40 m",

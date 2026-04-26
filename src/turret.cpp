@@ -562,7 +562,12 @@ std::unique_ptr<npc> vehicle::get_targeting_npc( const vehicle_part &pt )
     cpu->per_cur = 15;
     cpu->setpos( global_part_pos3( pt ) );
     if( has_part( global_part_pos3( pt ), "LASER_DESIGNATOR" ) ) {
-        cpu->set_mutation( trait_LASER_GUIDED );
+        if( fuel_left( fuel_type_battery, true ) >= 1 ) {
+            cpu->set_mutation( trait_LASER_GUIDED );
+            discharge_battery( 1 );
+        } else {
+            add_msg( m_warning, _( "Insufficient power, laser targeting not engaged." ) );
+        }
     }
     // Assume vehicle turrets are friendly to the player.
     cpu->set_attitude( NPCATT_FOLLOW );
