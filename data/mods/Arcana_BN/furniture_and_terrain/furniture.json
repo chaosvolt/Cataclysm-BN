@@ -68,7 +68,6 @@
     "required_str": -1,
     "crafting_pseudo_item": "boulder_anvil",
     "flags": [
-      "INDOORS",
       "SUN_ROOF_ABOVE",
       "PLACE_ITEM",
       "FIRE_CONTAINER",
@@ -100,7 +99,7 @@
     "floor_bedding_warmth": 200,
     "move_cost_mod": 0,
     "required_str": -1,
-    "flags": [ "FLAMMABLE_HARD", "TRANSPARENT", "INDOORS", "SUN_ROOF_ABOVE", "NOCOLLIDE" ],
+    "flags": [ "FLAMMABLE_HARD", "TRANSPARENT", "SUN_ROOF_ABOVE", "NOCOLLIDE" ],
     "bash": { "str_min": 15, "str_max": 45, "sound": "smash!", "sound_fail": "whump." }
   },
   {
@@ -152,7 +151,7 @@
     "color": "white",
     "move_cost_mod": 0,
     "required_str": -1,
-    "flags": [ "FLAMMABLE_HARD", "TRANSPARENT", "INDOORS", "SUN_ROOF_ABOVE" ],
+    "flags": [ "FLAMMABLE_HARD", "TRANSPARENT", "SUN_ROOF_ABOVE" ],
     "close": "f_door_arcana_c",
     "bash": { "str_min": 15, "str_max": 45, "sound": "smash!", "sound_fail": "whump!" }
   },

@@ -52,7 +52,7 @@
     "move_cost": 2,
     "light_emitted": 5,
     "trap": "tr_arcane_lab_map_regen_2",
-    "flags": [ "TRANSPARENT", "INDOORS", "FLAT" ],
+    "flags": [ "TRANSPARENT", "FLAT" ],
     "deconstruct": {
       "ter_set": "t_strconc_floor",
       "items": [
