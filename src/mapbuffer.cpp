@@ -307,9 +307,9 @@ void mapbuffer::save( bool delete_after_save, bool notify_tracker, bool show_pro
         g != nullptr && dimension_id_ == get_map().get_bound_dimension();
 
     map &here = get_map();
-    const tripoint map_origin = is_current_dimension
-                                ? sm_to_omt_copy( here.get_abs_sub() )
-                                : tripoint_zero;
+    const tripoint_abs_omt map_origin = is_current_dimension
+                                        ? project_to<coords::omt>( here.get_abs_sub() )
+                                        : tripoint_abs_omt{};
     const bool map_has_zlevels = g != nullptr && here.has_zlevels();
 
     // Serial collection of unique OMT quad addresses with per-quad delete flags.
@@ -356,10 +356,10 @@ void mapbuffer::save( bool delete_after_save, bool notify_tracker, bool show_pro
                 // are deleted from memory after saving.
                 const bool zlev_del = !map_has_zlevels && om_addr.z != g->get_levz();
                 quad_delete = quad_delete || zlev_del ||
-                              om_addr.x < map_origin.x ||
-                              om_addr.y < map_origin.y ||
-                              om_addr.x > map_origin.x + g_half_mapsize ||
-                              om_addr.y > map_origin.y + g_half_mapsize;
+                              om_addr.x < map_origin.x() ||
+                              om_addr.y < map_origin.y() ||
+                              om_addr.x > map_origin.x() + g_half_mapsize ||
+                              om_addr.y > map_origin.y() + g_half_mapsize;
             }
 
             quads_to_process.push_back( { om_addr, quad_delete } );
@@ -532,7 +532,7 @@ void mapbuffer::deserialize_into_vec(
                 if( skip_if && skip_if( loc ) ) {
                     skip = true;
                 } else {
-                    sm = std::make_unique<submap>( sm_to_ms_copy( submap_coordinates ) );
+                    sm = std::make_unique<submap>( project_to<coords::ms>( tripoint_abs_sm( submap_coordinates ) ) );
                 }
             } else if( skip ) {
                 jsin.skip_value();
@@ -610,12 +610,12 @@ bool mapbuffer::preload_quad( const tripoint &om_addr )
 bool mapbuffer::generate_quad( const tripoint &om_addr )
 {
     ZoneScoped;
-    const tripoint base = omt_to_sm_copy( om_addr );
+    const auto base = project_to<coords::sm>( tripoint_abs_om( om_addr ) );
     const bool all_loaded =
-        lookup_submap_in_memory( base )
-        && lookup_submap_in_memory( { base.x + 1, base.y,     base.z } )
-        &&lookup_submap_in_memory( { base.x,     base.y + 1, base.z } )
-        &&lookup_submap_in_memory( { base.x + 1, base.y + 1, base.z } );
+        lookup_submap_in_memory( base.raw() )
+        && lookup_submap_in_memory( ( base + tripoint_rel_sm::east() ).raw() )
+        && lookup_submap_in_memory( ( base + tripoint_rel_sm::south() ).raw() )
+        && lookup_submap_in_memory( ( base + tripoint_rel_sm::south_east() ).raw() );
     if( all_loaded ) {
         return false;
     }

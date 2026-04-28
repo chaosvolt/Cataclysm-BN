@@ -316,7 +316,7 @@ int turret_data::fire( Character &who, const tripoint &target )
 
     prepare_fire( who );
     shots = ranged::fire_gun( who, target, mode.qty, *mode, nullptr,
-                              veh->mount_to_tripoint( part->mount ) );
+                              veh->mount_to_bubble( part->mount ).raw() );
     post_fire( who, shots );
     return shots;
 }
