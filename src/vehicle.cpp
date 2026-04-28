@@ -1755,8 +1755,8 @@ bool vehicle::can_mount( point dp, const vpart_id &id ) const
         }
     }
 
-    //Don't allow turret controls on manual-only turrets.
-    if( part.has_flag( "TURRET_CONTROLS" ) ) {
+    //Don't allow turret controls or laser designators on manual-only turrets.
+    if( part.has_flag( "TURRET_CONTROLS" ) || part.has_flag( "LASER_DESIGNATOR" ) ) {
         for( const auto &elem : parts_in_square ) {
             if( part_info( elem ).has_flag( "MANUAL" ) ) {
                 return false;
