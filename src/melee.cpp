@@ -583,9 +583,6 @@ void Character::melee_attack( Creature &t, bool allow_special, const matec_id *f
         if( critical_hit ) {
             melee::melee_stats.actual_crit_count += 1;
         }
-        damage_instance d;
-        melee::roll_all_damage( *this, critical_hit, d, false, cur_weapon, attack );
-
         const bool has_force_technique = force_technique;
 
         // Pick one or more special attacks
@@ -597,6 +594,14 @@ void Character::melee_attack( Creature &t, bool allow_special, const matec_id *f
         } else {
             technique_id = tec_none;
         }
+
+        const ma_technique &technique = technique_id.obj();
+        if( tec.force_unarmed ) {
+            cur_weapon = null_item_reference();
+        }
+
+        damage_instance d;
+        melee::roll_all_damage( *this, critical_hit, d, false, cur_weapon, attack );
 
         // if you have two broken arms you aren't doing any martial arts
         // and your hits are not going to hurt very much
@@ -614,8 +619,6 @@ void Character::melee_attack( Creature &t, bool allow_special, const matec_id *f
             d.mult_damage( 0.5 + ( static_cast<float>( get_stamina() ) / static_cast<float>
                                    ( get_stamina_max() ) * 2.0f ) );
         }
-
-        const ma_technique &technique = technique_id.obj();
 
         // Handles effects as well; not done in melee_affect_*
         if( technique.id != tec_none ) {
@@ -1340,15 +1343,16 @@ matec_id Character::pick_technique( Creature &t, const item &weap,
             continue;
         }
 
+        const auto m = dynamic_cast<const monster *>( &t );
         // don't apply disarming techniques to someone without a weapon
         // TODO: these are the stat requirements for tec_disarm
         // dice(   dex_cur +    get_skill_level("unarmed"),  8) >
         // dice(p->dex_cur + p->get_skill_level("melee"),   10))
-        if( tec.disarms && !t.has_weapon() ) {
+        if( tec.disarms && ( !t.has_weapon() || ( m != nullptr && m.type->monster_weapon.is_empty() ) || t.has_effect( effect_monster_disarmed ) ) ) {
             continue;
         }
 
-        if( ( tec.take_weapon && ( has_weapon() || !t.has_weapon() ) ) ) {
+        if( ( tec.take_weapon && ( has_weapon() || ( !t.has_weapon() || ( m != nullptr && m.type->monster_weapon.is_empty() ) || t.has_effect( effect_monster_disarmed ) ) ) ) ) {
             continue;
         }
 
@@ -1626,6 +1630,7 @@ void Character::perform_technique( const ma_technique &technique, Creature &t, d
     }
 
     player *p = dynamic_cast<player *>( &t );
+    const auto m = dynamic_cast<const monster *>( &t );
 
     if( technique.take_weapon && !has_weapon() && p != nullptr && p->is_armed() ) {
         if( p->is_player() ) {
@@ -1637,10 +1642,15 @@ void Character::perform_technique( const ma_technique &technique, Creature &t, d
         }
 
         wield( p->remove_primary_weapon() );
+    } else if( m != nullptr && !m.type->monster_weapon.is_empty() ) && !m.has_effect( effect_monster_disarmed ) ) {
+            add_msg_player_or_npc( _( "You disarm %s and take their weapon!" ),
+                                   _( "<npcname> disarms %s and takes their weapon!" ),
+                                   m->name );
+            wield( item::spawn( m.type->monster_weapon ) );
+            m.add_effect( effect_monster_disarmed, 1_turns );
     }
 
     if( technique.disarms && p != nullptr && p->is_armed() ) {
-        g->m.add_item_or_charges( p->pos(), p->remove_primary_weapon() );
         if( p->is_player() ) {
             add_msg_if_npc( _( "<npcname> disarms you!" ) );
         } else {
@@ -1648,6 +1658,12 @@ void Character::perform_technique( const ma_technique &technique, Creature &t, d
                                    _( "<npcname> disarms %s!" ),
                                    p->name );
         }
+    } else if( m != nullptr && !m.type->monster_weapon.is_empty() ) && !m.has_effect( effect_monster_disarmed ) ) {
+            g->m.add_item_or_charges( m->pos(), item::spawn( z.type->monster_weapon ) );
+            add_msg_player_or_npc( _( "You disarm %s!" ),
+                                   _( "<npcname> disarms %s!" ),
+                                   m->name );
+            m.add_effect( effect_monster_disarmed, 1_turns );
     }
 
     //AOE attacks, feel free to skip over this lump

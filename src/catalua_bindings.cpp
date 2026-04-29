@@ -272,6 +272,7 @@ void cata::detail::reg_technique( sol::state &lua )
         luna::set( ut,  "block_counter", &ma_technique::block_counter );
         luna::set( ut,  "miss_recovery", &ma_technique::miss_recovery );
         luna::set( ut,  "grab_break", &ma_technique::grab_break );
+        luna::set( ut,  "force_unarmed", &ma_technique::force_unarmed );
 
     }
 }

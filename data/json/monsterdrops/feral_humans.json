@@ -5,7 +5,7 @@
     "id": "feral_humans_death_drops_axe",
     "entries": [
       {
-        "distribution": [ { "item": "fire_ax", "prob": 75, "damage": [ 2, 4 ] }, { "item": "ax", "prob": 25, "damage": [ 2, 4 ] } ]
+        "distribution": [ { "item": "fire_ax", "prob": 25, "damage": [ 2, 4 ] }, { "item": "ax", "prob": 75, "damage": [ 2, 4 ] } ]
       },
       {
         "distribution": [

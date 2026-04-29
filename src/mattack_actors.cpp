@@ -656,6 +656,9 @@ auto find_target_vehicle( monster &z, int range ) -> std::optional<tripoint>
 
 bool gun_actor::call( monster &z ) const
 {
+    if( !z.type->monster_weapon.is_empty() && !m.has_effect( effect_monster_disarmed ) ) {
+            return false;
+    }
     /// common firing logic.
     /// @param target_critter can be nullptr if shooting at a vehicle (untargeted).
     auto attempt_shoot = [&]( const tripoint & aim_pos, Creature * target_critter ) {
