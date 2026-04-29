@@ -115,6 +115,7 @@ static const efftype_id effect_grabbing( "grabbing" );
 static const efftype_id effect_heavysnare( "heavysnare" );
 static const efftype_id effect_hit_by_player( "hit_by_player" );
 static const efftype_id effect_lightsnare( "lightsnare" );
+static const efftype_id effect_monster_disarmed( "monster_disarmed" );
 static const efftype_id effect_narcosis( "narcosis" );
 static const efftype_id effect_poison( "poison" );
 static const efftype_id effect_stunned( "stunned" );
@@ -596,7 +597,7 @@ void Character::melee_attack( Creature &t, bool allow_special, const matec_id *f
         }
 
         const ma_technique &technique = technique_id.obj();
-        if( tec.force_unarmed ) {
+        if( technique.force_unarmed ) {
             cur_weapon = null_item_reference();
         }
 
@@ -1348,13 +1349,13 @@ matec_id Character::pick_technique( Creature &t, const item &weap,
         // TODO: these are the stat requirements for tec_disarm
         // dice(   dex_cur +    get_skill_level("unarmed"),  8) >
         // dice(p->dex_cur + p->get_skill_level("melee"),   10))
-        if( tec.disarms && ( !t.has_weapon() || ( m != nullptr && m.type->monster_weapon.is_empty() ) ||
+        if( tec.disarms && ( !t.has_weapon() || ( m != nullptr && m->type->monster_weapon.is_empty() ) ||
                              t.has_effect( effect_monster_disarmed ) ) ) {
             continue;
         }
 
         if( ( tec.take_weapon && ( has_weapon() || ( !t.has_weapon() || ( m != nullptr &&
-                                   m.type->monster_weapon.is_empty() ) || t.has_effect( effect_monster_disarmed ) ) ) ) ) {
+                                   m->type->monster_weapon.is_empty() ) || t.has_effect( effect_monster_disarmed ) ) ) ) ) {
             continue;
         }
 
@@ -1644,13 +1645,13 @@ void Character::perform_technique( const ma_technique &technique, Creature &t, d
         }
 
         wield( p->remove_primary_weapon() );
-    } else if( m != nullptr && !m.type->monster_weapon.is_empty() ) &&
-        !m.has_effect( effect_monster_disarmed ) ) {
+    } else if( m != nullptr && !m->type->monster_weapon.is_empty() ) &&
+        !t.has_effect( effect_monster_disarmed ) ) {
         add_msg_player_or_npc( _( "You disarm %s and take their weapon!" ),
                                _( "<npcname> disarms %s and takes their weapon!" ),
                                m->name );
-        wield( item::spawn( m.type->monster_weapon ) );
-        m.add_effect( effect_monster_disarmed, 1_turns );
+        wield( item::spawn( m->type->monster_weapon ) );
+        m->add_effect( effect_monster_disarmed, 1_turns );
     }
 
     if( technique.disarms && p != nullptr && p->is_armed() ) {
@@ -1662,12 +1663,12 @@ void Character::perform_technique( const ma_technique &technique, Creature &t, d
                                    p->name );
         }
     } else if( m != nullptr && !m.type->monster_weapon.is_empty() ) &&
-        !m.has_effect( effect_monster_disarmed ) ) {
-        g->m.add_item_or_charges( m->pos(), item::spawn( z.type->monster_weapon ) );
+        !t.has_effect( effect_monster_disarmed ) ) {
+        g->m.add_item_or_charges( m->pos(), item::spawn( m->type->monster_weapon ) );
         add_msg_player_or_npc( _( "You disarm %s!" ),
                                _( "<npcname> disarms %s!" ),
                                m->name );
-        m.add_effect( effect_monster_disarmed, 1_turns );
+        m->add_effect( effect_monster_disarmed, 1_turns );
     }
 
     //AOE attacks, feel free to skip over this lump
