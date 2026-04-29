@@ -95,6 +95,7 @@ static const efftype_id effect_in_pit( "in_pit" );
 static const efftype_id effect_lightsnare( "lightsnare" );
 static const efftype_id effect_migo_atmosphere( "migo_atmosphere" );
 static const efftype_id effect_monster_armor( "monster_armor" );
+static const efftype_id effect_monster_disarmed( "monster_disarmed" );
 static const efftype_id effect_no_sight( "no_sight" );
 static const efftype_id effect_onfire( "onfire" );
 static const efftype_id effect_pacified( "pacified" );
@@ -1971,11 +1972,16 @@ void monster::melee_attack( Creature &target, float accuracy )
     if( !is_hallucination() && type->melee_dice > 0 ) {
         damage.add_damage( DT_BASH, dice( type->melee_dice,
                                           has_effect( effect_monster_disarmed ) ? type->melee_sides / 2 : type->melee_sides ) );
-        if( has_effect( effect_monster_disarmed ) ) {
-            damage.add_damage( DT_CUT, -type->melee_cut );
-        }
         damage.add_damage( DT_BASH, bash_bonus );
         damage.add_damage( DT_CUT, cut_bonus );
+        if( has_effect( effect_monster_disarmed ) ) {
+    for( damage_unit &elem : damage.damage_units ) {
+        if( elem.amount > 0 && ( elem.type == DT_CUT || elem.type == DT_STAB || elem.type == DT_BULLET ) ) {
+            elem.amount = 0;
+            continue;
+        }
+     }
+        }
     }
 
     dealt_damage_instance dealt_dam;

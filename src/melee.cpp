@@ -597,12 +597,10 @@ void Character::melee_attack( Creature &t, bool allow_special, const matec_id *f
         }
 
         const ma_technique &technique = technique_id.obj();
-        if( technique.force_unarmed ) {
-            cur_weapon = null_item_reference();
-        }
+        const bool use_weapon = !technique.force_unarmed && !reach_attacking;
 
         damage_instance d;
-        melee::roll_all_damage( *this, critical_hit, d, false, cur_weapon, attack );
+        melee::roll_all_damage( *this, critical_hit, d, false, use_weapon ? cur_weapon : null_item_reference(), attack );
 
         // if you have two broken arms you aren't doing any martial arts
         // and your hits are not going to hurt very much
@@ -611,7 +609,7 @@ void Character::melee_attack( Creature &t, bool allow_special, const matec_id *f
             d.mult_damage( 0.1 );
         }
         // polearms and pikes (but not spears) do less damage to adjacent targets
-        if( cur_weapon.reach_range( *this ) > 1 && !reach_attacking &&
+        if( use_weapon && cur_weapon.reach_range( *this ) > 1 && !reach_attacking &&
             cur_weapon.has_flag( flag_POLEARM ) ) {
             d.mult_damage( 0.7 );
         }
@@ -1645,16 +1643,17 @@ void Character::perform_technique( const ma_technique &technique, Creature &t, d
         }
 
         wield( p->remove_primary_weapon() );
-    } else if( m != nullptr && !m->type->monster_weapon.is_empty() ) &&
+    } else if( m != nullptr && !m->type->monster_weapon.is_empty() &&
         !t.has_effect( effect_monster_disarmed ) ) {
         add_msg_player_or_npc( _( "You disarm %s and take their weapon!" ),
                                _( "<npcname> disarms %s and takes their weapon!" ),
-                               m->name );
+                               m->disp_name() );
         wield( item::spawn( m->type->monster_weapon ) );
-        m->add_effect( effect_monster_disarmed, 1_turns );
+        t.add_effect( effect_monster_disarmed, 1_turns );
     }
 
     if( technique.disarms && p != nullptr && p->is_armed() ) {
+        g->m.add_item_or_charges( p->pos(), p->remove_primary_weapon() );
         if( p->is_player() ) {
             add_msg_if_npc( _( "<npcname> disarms you!" ) );
         } else {
@@ -1662,13 +1661,13 @@ void Character::perform_technique( const ma_technique &technique, Creature &t, d
                                    _( "<npcname> disarms %s!" ),
                                    p->name );
         }
-    } else if( m != nullptr && !m.type->monster_weapon.is_empty() ) &&
+    } else if( m != nullptr && !m->type->monster_weapon.is_empty() &&
         !t.has_effect( effect_monster_disarmed ) ) {
         g->m.add_item_or_charges( m->pos(), item::spawn( m->type->monster_weapon ) );
         add_msg_player_or_npc( _( "You disarm %s!" ),
                                _( "<npcname> disarms %s!" ),
-                               m->name );
-        m->add_effect( effect_monster_disarmed, 1_turns );
+                               m->disp_name() );
+        t.add_effect( effect_monster_disarmed, 1_turns );
     }
 
     //AOE attacks, feel free to skip over this lump
