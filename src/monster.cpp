@@ -1969,7 +1969,8 @@ void monster::melee_attack( Creature &target, float accuracy )
 
     damage_instance damage = !is_hallucination() ? type->melee_damage : damage_instance();
     if( !is_hallucination() && type->melee_dice > 0 ) {
-        damage.add_damage( DT_BASH, dice( type->melee_dice, has_effect( effect_monster_disarmed ) ? type->melee_sides / 2 : type->melee_sides ) );
+        damage.add_damage( DT_BASH, dice( type->melee_dice,
+                                          has_effect( effect_monster_disarmed ) ? type->melee_sides / 2 : type->melee_sides ) );
         if( has_effect( effect_monster_disarmed ) ) {
             damage.add_damage( DT_CUT, -type->melee_cut );
         }
