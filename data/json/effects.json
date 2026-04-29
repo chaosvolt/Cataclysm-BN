@@ -297,6 +297,15 @@
     "permanent": true
   },
   {
+    "type": "effect_type",
+    "id": "eyebot_depleted",
+    "name": [ "Eyebot Depleted" ],
+    "permanent": true,
+    "desc": [
+      "Marks a non-friendly eyebot as having already summoned reinforcements, preventing it from doing so again.  This is a bug if you have it."
+    ]
+  },
+  {
     "//": "ACTUAL PLAYER EFFECTS START HERE",
     "type": "effect_type",
     "id": "downed",
@@ -2310,6 +2319,12 @@
     "max_intensity": 1000,
     "int_dur_factor": "1 s",
     "rating": "bad"
+  },
+  {
+    "type": "effect_type",
+    "id": "drone_marker",
+    "//": "Used by friendly eyebots to designate targets that become temporarily visible to the player if they have the right items or bionics.",
+    "max_duration": "1 m"
   },
   {
     "type": "effect_type",
