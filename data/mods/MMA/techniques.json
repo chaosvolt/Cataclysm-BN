@@ -198,7 +198,10 @@
     "messages": [ "You jump and somersault kick %s", "<npcname> jump and somersault kick %s" ],
     "melee_allowed": true,
     "unarmed_allowed": true,
-    "mult_bonuses": [ { "stat": "damage", "type": "bash", "scale": 1.2 } ]
+    "force_unarmed": true,
+    "knockback_dist": 1,
+    "powerful_knockback": true,
+    "mult_bonuses": [ { "stat": "damage", "type": "bash", "scale": 1.5 } ]
   },
   {
     "type": "technique",
