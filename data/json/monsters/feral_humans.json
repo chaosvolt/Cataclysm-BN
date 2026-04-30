@@ -239,6 +239,7 @@
     "melee_skill": 6,
     "melee_dice": 6,
     "melee_dice_sides": 3,
+    "melee_damage": [ { "damage_type": "electric", "amount": 5 } ],
     "armor_bash": 8,
     "armor_cut": 16,
     "armor_bullet": 24,

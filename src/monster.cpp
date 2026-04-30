@@ -1976,7 +1976,7 @@ void monster::melee_attack( Creature &target, float accuracy )
         damage.add_damage( DT_CUT, cut_bonus );
         if( has_effect( effect_monster_disarmed ) ) {
             for( damage_unit &elem : damage.damage_units ) {
-                if( elem.amount > 0 && ( elem.type == DT_CUT || elem.type == DT_STAB || elem.type == DT_BULLET ) ) {
+                if( elem.amount > 0 && ( elem.type != DT_BASH ) ) {
                     elem.amount = 0;
                     continue;
                 }
