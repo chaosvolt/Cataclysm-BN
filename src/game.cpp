@@ -6235,7 +6235,7 @@ bool game::revive_corpse( const tripoint &p, item &it )
 
     critter.no_extra_death_drops = true;
     critter.add_effect( effect_downed, 5_turns );
-    if( !critter.type->monster_weapon.is_empty() ) {
+    if( critter.type->monster_weapon ) {
         critter.add_effect( effect_monster_disarmed, 1_turns );
     }
     for( detached_ptr<item> &component : it.remove_components() ) {

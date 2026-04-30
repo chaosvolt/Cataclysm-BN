@@ -657,7 +657,7 @@ auto find_target_vehicle( monster &z, int range ) -> std::optional<tripoint>
 
 bool gun_actor::call( monster &z ) const
 {
-    if( !z.type->monster_weapon.is_empty() && z.has_effect( effect_monster_disarmed ) ) {
+    if( z.type->monster_weapon && z.has_effect( effect_monster_disarmed ) ) {
         return false;
     }
     /// common firing logic.

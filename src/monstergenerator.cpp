@@ -831,7 +831,6 @@ void mtype::load( const JsonObject &jo, const std::string &src )
     optional( jo, was_loaded, "mech_weapon", mech_weapon, itype_id() );
     optional( jo, was_loaded, "mech_str_bonus", mech_str_bonus, 0 );
     optional( jo, was_loaded, "mech_battery", mech_battery, itype_id() );
-    optional( jo, was_loaded, "monster_weapon", monster_weapon, itype_id() );
     optional( jo, was_loaded, "aggro_character", aggro_character, true );
 
     // TODO: make this work with `was_loaded`
@@ -862,6 +861,10 @@ void mtype::load( const JsonObject &jo, const std::string &src )
         melee_damage.add_damage( DT_CUT, bonus_cut );
     }
 
+    if( jo.has_member( "monster_weapon" ) ) {
+        monster_weapon = item_group::load_item_group( jo.get_member( "monster_weapon" ),
+                      "distribution" );
+    }
     if( jo.has_member( "death_drops" ) ) {
         death_drops = item_group::load_item_group( jo.get_member( "death_drops" ),
                       "distribution" );
@@ -1553,8 +1556,8 @@ void MonsterGenerator::check_monster_definitions() const
             debugmsg( "monster %s has unknown mech_battery: %s", mon.id.c_str(),
                       mon.mech_battery.c_str() );
         }
-        if( !mon.monster_weapon.is_empty() && !mon.monster_weapon.is_valid() ) {
-            debugmsg( "monster %s has unknown monster_weapon: %s", mon.id.c_str(),
+        if( mon.monster_weapon && !item_group::group_is_defined( mon.monster_weapon ) ) {
+            debugmsg( "monster %s has unknown monster weapon item group: %s", mon.id.c_str(),
                       mon.monster_weapon.c_str() );
         }
         for( const scenttype_id &s_id : mon.scents_tracked ) {

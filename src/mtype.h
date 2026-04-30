@@ -437,7 +437,7 @@ struct mtype {
         /**
          * If present, disarming techniques will work on this creature
          */
-        itype_id monster_weapon;
+        item_group_id monster_weapon;
 
         /** Emission sources that cycle each turn the monster remains alive */
         std::map<emit_id, time_duration> emit_fields;

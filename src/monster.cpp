@@ -2956,6 +2956,7 @@ void monster::die( Creature *nkiller )
     }
     if( !no_extra_death_drops ) {
         drop_items_on_death();
+        drop_monster_weapon();
     }
     // TODO: should actually be class Character
     player *ch = dynamic_cast<player *>( get_killer() );
@@ -3206,6 +3207,47 @@ void monster::drop_items_on_death()
     }
 
     auto items = item_group::items_from( type->death_drops,
+                                         calendar::start_of_cataclysm );
+
+    // Apply both global and category-specific spawn rates
+    const auto global_spawn_rate = get_option<float>( "ITEM_SPAWNRATE" );
+
+    // Filter items based on combined spawn rates using std::erase_if
+    std::erase_if( items, [global_spawn_rate]( const auto & it ) {
+        // Always keep mission items
+        if( it->has_flag( flag_MISSION_ITEM ) ) {
+            return false; // keep
+        }
+
+        // Calculate combined rate: global × category
+        const auto category_rate = get_item_category_spawn_rate( *it );
+        const auto final_rate = std::min( global_spawn_rate * category_rate, 1.0f );
+
+        // Remove item based on final probability (erase_if removes when predicate is true)
+        return rng_float( 0, 1 ) >= final_rate;
+    } );
+
+    // If there aren't any items left, there's nothing left to do
+    if( items.empty() ) {
+        return;
+    }
+
+    g->m.spawn_items( pos(), std::move( items ) );
+}
+
+void monster::drop_monster_weapon()
+{
+    if( is_hallucination() ) {
+        return;
+    }
+    if( !type->monster_weapon ) {
+        return;
+    }
+    if( has_effect( effect_monster_disarmed ) ) {
+        return;
+    }
+
+    auto items = item_group::items_from( type->monster_weapon,
                                          calendar::start_of_cataclysm );
 
     // Apply both global and category-specific spawn rates

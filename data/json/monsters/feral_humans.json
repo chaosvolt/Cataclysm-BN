@@ -27,7 +27,7 @@
     "vision_night": 3,
     "path_settings": { "allow_open_doors": true, "avoid_traps": true, "avoid_sharp": true },
     "starting_ammo": { "rock": 6 },
-    "monster_weapon": "pipe",
+    "monster_weapon": "feral_humans_monster_weapon_pipe",
     "special_attacks": [
       [ "PARROT_AT_DANGER", 5 ],
       {
@@ -70,7 +70,7 @@
     "description": "Their pupils are dilated and what remains to be seen of the iris and sclera are bloodshot.  This crowbar-wielding maniac still breathes, but the zombies treat them like one of their own.",
     "melee_dice": 2,
     "melee_dice_sides": 6,
-    "monster_weapon": "makeshift_crowbar",
+    "monster_weapon": "feral_humans_monster_weapon_crowbar",
     "death_drops": "feral_humans_death_drops_crowbar"
   },
   {
@@ -82,7 +82,7 @@
     "melee_cut": 12,
     "melee_dice": 3,
     "melee_dice_sides": 7,
-    "monster_weapon": "ax",
+    "monster_weapon": "feral_humans_monster_weapon_axe",
     "death_drops": "feral_humans_death_drops_axe",
     "special_attacks": [ [ "PARROT_AT_DANGER", 5 ] ],
     "flags": [ "SEES", "HEARS", "SMELLS", "WARM", "BASHES", "GROUP_BASH", "HUMAN", "CAN_OPEN_DOORS", "PATH_AVOID_DANGER_1" ]
@@ -98,7 +98,7 @@
     "melee_cut": 25,
     "melee_dice": 2,
     "melee_dice_sides": 3,
-    "monster_weapon": "chainsaw_off",
+    "monster_weapon": "feral_humans_monster_weapon_chainsaw",
     "death_drops": "feral_humans_death_drops_chainsaw",
     "//": "Make noise all the time instead of only when target sighted, to warn the player in advance.",
     "special_attacks": [ [ "PARROT", 2 ] ]
@@ -130,7 +130,7 @@
     "path_settings": { "max_dist": 10 },
     "vision_day": 50,
     "vision_night": 3,
-    "monster_weapon": "scalpel",
+    "monster_weapon": "feral_scientists_monster_weapon_scalpel",
     "death_drops": "feral_scientists_death_drops_scalpel",
     "death_function": [ "NORMAL" ],
     "special_attacks": [ [ "PARROT_AT_DANGER", 5 ] ],
@@ -180,7 +180,7 @@
     "vision_night": 4,
     "path_settings": { "max_dist": 10 },
     "diff": 5,
-    "monster_weapon": "m9",
+    "monster_weapon": "feral_security_monster_weapon_9mm",
     "starting_ammo": { "9mm": 5 },
     "special_attacks": [
       [ "PARROT_AT_DANGER", 5 ],
@@ -249,7 +249,7 @@
     "vision_night": 4,
     "path_settings": { "max_dist": 10 },
     "diff": 5,
-    "monster_weapon": "heavy_flashlight",
+    "monster_weapon": "feral_security_monster_weapon_flashlight",
     "starting_ammo": { "9mm": 5 },
     "special_attacks": [ [ "PARROT_AT_DANGER", 5 ], [ "TAZER", 10 ] ],
     "death_drops": "feral_security_death_drops_flashlight",
@@ -279,7 +279,7 @@
     "copy-from": "mon_feral_human_pipe",
     "melee_dice": 2,
     "melee_dice_sides": 8,
-    "monster_weapon": "makeshift_hammer",
+    "monster_weapon": "feral_humans_monster_weapon_tool",
     "harvest": "human_maybe_tech_bionics",
     "death_drops": "feral_humans_death_drops_tool"
   },
@@ -310,7 +310,7 @@
     "vision_day": 50,
     "vision_night": 3,
     "harvest": "human_maybe_survivalist_bionics",
-    "monster_weapon": "mossberg_500",
+    "monster_weapon": "feral_jackboot_shotgun",
     "starting_ammo": { "shot_00": 5 },
     "special_attacks": [
       [ "PARROT_AT_DANGER", 5 ],
@@ -376,7 +376,7 @@
     "vision_day": 30,
     "vision_night": 3,
     "path_settings": { "max_dist": 30, "allow_open_doors": true, "avoid_traps": true, "avoid_sharp": true },
-    "monster_weapon": "broom",
+    "monster_weapon": "feral_maids_monster_weapon_broom",
     "special_attacks": [ [ "PARROT_AT_DANGER", 5 ] ],
     "death_function": [ "NORMAL" ],
     "death_drops": "feral_maids_death_drops_broom",
@@ -390,7 +390,7 @@
     "copy-from": "mon_feral_maid_broom",
     "name": { "str": "feral servant" },
     "description": "Once a fancy servant of some rich family, this maniac walks around with candlestick in hand, eager to turn off your lights.",
-    "monster_weapon": "candlestick",
+    "monster_weapon": "feral_maids_monster_weapon_candlestick",
     "death_drops": "feral_maids_death_drops_candlestick"
   },
   {
@@ -401,7 +401,7 @@
     "description": "Once a fancy servant of some rich family, this maniac walks around with knife in hand, seeking victims to butcher for the next meal.",
     "melee_skill": 3,
     "melee_cut": 4,
-    "monster_weapon": "knife_chef",
+    "monster_weapon": "feral_maids_monster_weapon_knife",
     "death_drops": "feral_maids_death_drops_knife"
   },
   {
@@ -414,7 +414,7 @@
     "melee_dice": 2,
     "melee_dice_sides": 6,
     "melee_cut": 10,
-    "monster_weapon": "rapier",
+    "monster_weapon": "feral_fancy_monster_weapon_rapier",
     "death_drops": "feral_fancy_death_drops_rapier"
   },
   {
@@ -425,7 +425,7 @@
     "description": "Wearing fancy clothes and with rapier in hand, this maniac was once a socialite.  It smiles with madness and seems like it wants to invite you to dinner.",
     "melee_skill": 3,
     "melee_cut": 1,
-    "monster_weapon": "rapier_fake",
+    "monster_weapon": "feral_fancy_monster_weapon_rapier_fake",
     "death_drops": "feral_fancy_death_drops_rapier_fake"
   },
   {
@@ -434,7 +434,7 @@
     "copy-from": "mon_feral_maid_broom",
     "name": { "str": "well dressed feral" },
     "description": "Wearing fancy clothes and with crossbow in hand, this maniac was once a socialite.  Its hands seem to caress the crossbow as if touching a loved one.",
-    "monster_weapon": "rep_crossbow",
+    "monster_weapon": "feral_fancy_monster_weapon_crossbow",
     "starting_ammo": { "bolt_cf": 6 },
     "special_attacks": [
       [ "PARROT_AT_DANGER", 5 ],
@@ -469,7 +469,7 @@
     "armor_cut": 16,
     "armor_bullet": 14,
     "armor_stab": 13,
-    "monster_weapon": "mace_inferior",
+    "monster_weapon": "feral_armored_monster_weapon_mace",
     "death_drops": "feral_armored_death_drops_mace"
   },
   {
@@ -479,7 +479,7 @@
     "name": { "str": "armored feral" },
     "description": "Clad in ancient armor with battle axe in hand, this maniac walks around in search of prey.  You can see stains of dried blood all around its axe.",
     "melee_cut": 15,
-    "monster_weapon": "battleaxe_inferior",
+    "monster_weapon": "feral_armored_monster_weapon_battleaxe",
     "death_drops": "feral_armored_death_drops_battleaxe"
   },
   {
@@ -513,7 +513,7 @@
     "vision_night": 3,
     "harvest": "human_maybe_survivalist_bionics",
     "starting_ammo": { "9mm": 3 },
-    "monster_weapon": "m9",
+    "monster_weapon": "mon_feral_prepper_monster_weapon",
     "special_attacks": [
       [ "PARROT_AT_DANGER", 5 ],
       {
@@ -583,7 +583,7 @@
     "harvest": "human_maybe_survivalist_bionics",
     "special_attacks": [ [ "PARROT_AT_DANGER", 5 ] ],
     "death_function": [ "NORMAL" ],
-    "monster_weapon": "makeshift_knife",
+    "monster_weapon": "mon_feral_survivalist_monster_weapon",
     "death_drops": "mon_feral_survivalist_death_drops",
     "zombify_into": "mon_zombie_survivor",
     "flags": [
@@ -636,7 +636,7 @@
     "harvest": "human_maybe_survivalist_bionics",
     "luminance": 500,
     "starting_ammo": { "223": 10 },
-    "monster_weapon": "ar15",
+    "monster_weapon": "feral_autogun",
     "special_attacks": [
       [ "PARROT_AT_DANGER", 5 ],
       {
@@ -705,7 +705,7 @@
     "path_settings": { "max_dist": 40, "allow_open_doors": true, "avoid_traps": true, "avoid_sharp": true },
     "special_attacks": [ [ "PARROT_AT_DANGER", 0 ] ],
     "death_function": [ "NORMAL" ],
-    "monster_weapon": "knife_combat",
+    "monster_weapon": "mon_feral_soldier_monster_weapon",
     "death_drops": "mon_feral_soldier_death_drops",
     "zombify_into": "mon_zombie_soldier",
     "anger_triggers": [ "FRIEND_DIED", "FRIEND_ATTACKED", "HURT" ],
@@ -778,7 +778,7 @@
     "armor_bullet": 8,
     "armor_acid": 0,
     "starting_ammo": { "8mm_caseless": 60 },
-    "monster_weapon": "rm51_assault_rifle",
+    "monster_weapon": "corpo_gun",
     "special_attacks": [
       [ "PARROT_AT_DANGER", 3 ],
       {
@@ -812,7 +812,6 @@
     "dodge": 2,
     "harvest": "human",
     "starting_ammo": { "9mm": 17 },
-    "monster_weapon": "usp_9mm",
     "special_attacks": [
       [ "PARROT_AT_DANGER", 5 ],
       {
@@ -868,7 +867,7 @@
     "path_settings": { "max_dist": 40, "allow_open_doors": true, "avoid_traps": true, "avoid_sharp": true },
     "emit_fields": [ { "emit_id": "emit_shadow_field_darkfield", "delay": "1 s" } ],
     "starting_ammo": { "5x50dart": 100 },
-    "monster_weapon": "needlegun",
+    "monster_weapon": "mon_feral_blackops_boss_commander_monster_weapon",
     "special_attacks": [
       [ "PARROT_AT_DANGER", 0 ],
       {
@@ -993,7 +992,7 @@
     "path_settings": { "max_dist": 40, "allow_open_doors": true, "avoid_traps": true, "avoid_sharp": true },
     "emit_fields": [ { "emit_id": "emit_shadow_field_darkfield", "delay": "1 s" } ],
     "starting_ammo": { "8mm_caseless": 25, "bot_flashbang_hack": 100 },
-    "monster_weapon": "rm103a_pistol",
+    "monster_weapon": "mon_feral_blackops_boss_technician_monster_weapon",
     "special_attacks": [
       [ "PARROT_AT_DANGER", 0 ],
       [ "PULL_METAL_WEAPON", 25 ],
@@ -1065,7 +1064,7 @@
     "path_settings": { "max_dist": 40, "allow_open_doors": true, "avoid_traps": true, "avoid_sharp": true },
     "emit_fields": [ { "emit_id": "emit_shadow_field_darkfield", "delay": "1 s" } ],
     "starting_ammo": { "8mm_caseless": 25 },
-    "monster_weapon": "rm11b_sniper_rifle",
+    "monster_weapon": "mon_feral_blackops_boss_sniper_monster_weapon",
     "special_attacks": [
       [ "PARROT_AT_DANGER", 0 ],
       {

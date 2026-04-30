@@ -1348,13 +1348,13 @@ matec_id Character::pick_technique( Creature &t, const item &weap,
         // TODO: these are the stat requirements for tec_disarm
         // dice(   dex_cur +    get_skill_level("unarmed"),  8) >
         // dice(p->dex_cur + p->get_skill_level("melee"),   10))
-        if( tec.disarms && ( !t.has_weapon() || ( m != nullptr && m->type->monster_weapon.is_empty() ) ||
+        if( tec.disarms && ( !t.has_weapon() || ( m != nullptr && !m->type->monster_weapon ) ||
                              t.has_effect( effect_monster_disarmed ) ) ) {
             continue;
         }
 
         if( ( tec.take_weapon && ( has_weapon() || ( !t.has_weapon() || ( m != nullptr &&
-                                   m->type->monster_weapon.is_empty() ) || t.has_effect( effect_monster_disarmed ) ) ) ) ) {
+                                   !m->type->monster_weapon ) || t.has_effect( effect_monster_disarmed ) ) ) ) ) {
             continue;
         }
 
@@ -1632,7 +1632,7 @@ void Character::perform_technique( const ma_technique &technique, Creature &t, d
     }
 
     player *p = dynamic_cast<player *>( &t );
-    const auto m = dynamic_cast<const monster *>( &t );
+    auto m = dynamic_cast<monster *>( &t );
 
     if( technique.take_weapon && !has_weapon() && p != nullptr && p->is_armed() ) {
         if( p->is_player() ) {
@@ -1644,12 +1644,13 @@ void Character::perform_technique( const ma_technique &technique, Creature &t, d
         }
 
         wield( p->remove_primary_weapon() );
-    } else if( m != nullptr && !m->type->monster_weapon.is_empty() &&
+    } else if( m != nullptr && m->type->monster_weapon &&
                !t.has_effect( effect_monster_disarmed ) ) {
-        add_msg_player_or_npc( _( "You disarm %s and take their weapon!" ),
-                               _( "<npcname> disarms %s and takes their weapon!" ),
+        // No wielding it because monster_weapon might be a collection
+        m->drop_monster_weapon();
+        add_msg_player_or_npc( _( "You disarm %s!" ),
+                               _( "<npcname> disarms %s!" ),
                                m->disp_name() );
-        wield( item::spawn( m->type->monster_weapon ) );
         t.add_effect( effect_monster_disarmed, 1_turns );
     }
 
@@ -1662,9 +1663,9 @@ void Character::perform_technique( const ma_technique &technique, Creature &t, d
                                    _( "<npcname> disarms %s!" ),
                                    p->name );
         }
-    } else if( m != nullptr && !m->type->monster_weapon.is_empty() &&
+    } else if( m != nullptr && m->type->monster_weapon &&
                !t.has_effect( effect_monster_disarmed ) ) {
-        g->m.add_item_or_charges( m->pos(), item::spawn( m->type->monster_weapon ) );
+        m->drop_monster_weapon();
         add_msg_player_or_npc( _( "You disarm %s!" ),
                                _( "<npcname> disarms %s!" ),
                                m->disp_name() );
