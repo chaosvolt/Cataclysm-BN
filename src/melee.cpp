@@ -603,6 +603,10 @@ void Character::melee_attack( Creature &t, bool allow_special, const matec_id *f
         melee::roll_all_damage( *this, critical_hit, d, false,
                                 use_weapon ? cur_weapon : null_item_reference(), attack );
 
+        // Don't kick if using a spear
+        if( technique.force_unarmed && reach_attacking ) {
+            technique_id = tec_none;
+        }
         // if you have two broken arms you aren't doing any martial arts
         // and your hits are not going to hurt very much
         if( get_working_arm_count() < 1 ) {
