@@ -640,19 +640,20 @@ void Character::melee_attack( Creature &t, bool allow_special, const matec_id *f
             if( allow_special ) {
                 perform_special_attacks( t, dealt_special_dam );
             }
-            t.deal_melee_hit( this, use_weapon ? &cur_weapon : &null_item_reference(), hit_spread, critical_hit, d, dealt_dam );
+            t.deal_melee_hit( this, use_weapon ? &cur_weapon : &null_item_reference(), hit_spread, critical_hit,
+                              d, dealt_dam );
 
             if( use_weapon ) {
-            // Lua imelee on_hit callback
-            if( const auto *imelee_cb = cur_weapon.type->imelee_callbacks ) {
-                imelee_cb->call_on_hit( *this, t, cur_weapon, dealt_dam );
-            }
+                // Lua imelee on_hit callback
+                if( const auto *imelee_cb = cur_weapon.type->imelee_callbacks ) {
+                    imelee_cb->call_on_hit( *this, t, cur_weapon, dealt_dam );
+                }
             }
 
             if( dealt_special_dam.type_damage( DT_CUT ) > 0 ||
                 dealt_special_dam.type_damage( DT_STAB ) > 0 ||
                 ( ( cur_weapon.is_null() || !use_weapon ) && ( dealt_dam.type_damage( DT_CUT ) > 0 ||
-                                            dealt_dam.type_damage( DT_STAB ) > 0 ) ) ) {
+                        dealt_dam.type_damage( DT_STAB ) > 0 ) ) ) {
                 if( has_trait( trait_POISONOUS ) ) {
                     add_msg_if_player( m_good, _( "You poison %s!" ), t.disp_name() );
                     t.add_effect( effect_poison, 6_turns );
