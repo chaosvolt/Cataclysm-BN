@@ -597,14 +597,14 @@ void Character::melee_attack( Creature &t, bool allow_special, const matec_id *f
         }
 
         const ma_technique &technique = technique_id.obj();
-        const bool use_weapon = !technique.force_unarmed && !reach_attacking;
+        const bool use_weapon = !technique.force_unarmed;
 
         damage_instance d;
         melee::roll_all_damage( *this, critical_hit, d, false,
                                 use_weapon ? cur_weapon : null_item_reference(), attack );
 
         // Don't kick if using a spear
-        if( technique.force_unarmed && reach_attacking ) {
+        if( !use_weapon && reach_attacking ) {
             technique_id = tec_none;
         }
         // if you have two broken arms you aren't doing any martial arts
@@ -640,16 +640,18 @@ void Character::melee_attack( Creature &t, bool allow_special, const matec_id *f
             if( allow_special ) {
                 perform_special_attacks( t, dealt_special_dam );
             }
-            t.deal_melee_hit( this, &cur_weapon, hit_spread, critical_hit, d, dealt_dam );
+            t.deal_melee_hit( this, use_weapon ? &cur_weapon : &null_item_reference(), hit_spread, critical_hit, d, dealt_dam );
 
+            if( use_weapon ) {
             // Lua imelee on_hit callback
             if( const auto *imelee_cb = cur_weapon.type->imelee_callbacks ) {
                 imelee_cb->call_on_hit( *this, t, cur_weapon, dealt_dam );
             }
+            }
 
             if( dealt_special_dam.type_damage( DT_CUT ) > 0 ||
                 dealt_special_dam.type_damage( DT_STAB ) > 0 ||
-                ( cur_weapon.is_null() && ( dealt_dam.type_damage( DT_CUT ) > 0 ||
+                ( ( cur_weapon.is_null() || !use_weapon ) && ( dealt_dam.type_damage( DT_CUT ) > 0 ||
                                             dealt_dam.type_damage( DT_STAB ) > 0 ) ) ) {
                 if( has_trait( trait_POISONOUS ) ) {
                     add_msg_if_player( m_good, _( "You poison %s!" ), t.disp_name() );
@@ -679,7 +681,7 @@ void Character::melee_attack( Creature &t, bool allow_special, const matec_id *f
 
             // Practice melee and relevant weapon skill (if any) except when using CQB bionic
             if( !has_active_bionic( bio_cqb ) ) {
-                melee_train( *this, 5, 10, cur_weapon );
+                melee_train( *this, 5, 10, use_weapon ? cur_weapon : null_item_reference() );
             }
 
             if( dam >= 5 && has_artifact_with( AEP_SAP_LIFE ) ) {
