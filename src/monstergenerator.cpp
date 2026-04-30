@@ -863,7 +863,7 @@ void mtype::load( const JsonObject &jo, const std::string &src )
 
     if( jo.has_member( "monster_weapon" ) ) {
         monster_weapon = item_group::load_item_group( jo.get_member( "monster_weapon" ),
-                      "distribution" );
+                         "distribution" );
     }
     if( jo.has_member( "death_drops" ) ) {
         death_drops = item_group::load_item_group( jo.get_member( "death_drops" ),
