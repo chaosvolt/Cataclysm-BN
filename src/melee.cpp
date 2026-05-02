@@ -1651,14 +1651,6 @@ void Character::perform_technique( const ma_technique &technique, Creature &t, d
         }
 
         wield( p->remove_primary_weapon() );
-    } else if( m != nullptr && m->type->monster_weapon &&
-               !t.has_effect( effect_monster_disarmed ) ) {
-        // No wielding it because monster_weapon might be a collection
-        m->drop_monster_weapon();
-        add_msg_player_or_npc( _( "You disarm %s!" ),
-                               _( "<npcname> disarms %s!" ),
-                               m->disp_name() );
-        t.add_effect( effect_monster_disarmed, 1_turns );
     }
 
     if( technique.disarms && p != nullptr && p->is_armed() ) {
@@ -1670,7 +1662,10 @@ void Character::perform_technique( const ma_technique &technique, Creature &t, d
                                    _( "<npcname> disarms %s!" ),
                                    p->name );
         }
-    } else if( m != nullptr && m->type->monster_weapon &&
+    }
+
+        // No wielding it because monster_weapon might be a collection
+    if( ( technique.disarms || technique.take_weapon ) && m != nullptr && m->type->monster_weapon &&
                !t.has_effect( effect_monster_disarmed ) ) {
         m->drop_monster_weapon();
         add_msg_player_or_npc( _( "You disarm %s!" ),
