@@ -1355,13 +1355,15 @@ matec_id Character::pick_technique( Creature &t, const item &weap,
         // TODO: these are the stat requirements for tec_disarm
         // dice(   dex_cur +    get_skill_level("unarmed"),  8) >
         // dice(p->dex_cur + p->get_skill_level("melee"),   10))
-        if( tec.disarms && ( !t.has_weapon() || ( m != nullptr && !m->type->monster_weapon ) ||
+        if( tec.disarms && ( ( m == nullptr && !t.has_weapon() ) || ( m != nullptr &&
+                             !m->type->monster_weapon ) ||
                              t.has_effect( effect_monster_disarmed ) ) ) {
             continue;
         }
 
-        if( ( tec.take_weapon && ( has_weapon() || ( !t.has_weapon() || ( m != nullptr &&
-                                   !m->type->monster_weapon ) || t.has_effect( effect_monster_disarmed ) ) ) ) ) {
+        if( ( tec.take_weapon && ( ( has_weapon() ) || ( ( m == nullptr && !t.has_weapon() ) ||
+                                   ( m != nullptr &&
+                                     !m->type->monster_weapon ) || t.has_effect( effect_monster_disarmed ) ) ) ) ) {
             continue;
         }
 
