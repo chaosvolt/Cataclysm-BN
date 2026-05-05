@@ -723,10 +723,8 @@ void game::load_map( const tripoint_abs_sm &pos_sm,
     // The load-manager center is the middle of the loaded region, not the
     // top-left corner.  pos_sm is the top-left corner (abs_sub), so offset
     // by reality_bubble_radius_ in each horizontal direction.
-    const tripoint_abs_sm bubble_center(
-        pos_sm.raw().x + reality_bubble_radius_,
-        pos_sm.raw().y + reality_bubble_radius_,
-        pos_sm.raw().z );
+    const tripoint_abs_sm bubble_center = pos_sm + point_rel_sm( reality_bubble_radius_,
+                                          reality_bubble_radius_ );
 
     // Create or update the reality bubble request.
     if( reality_bubble_handle_ == 0 ) {
@@ -846,7 +844,7 @@ bool game::start_game()
 
     init_autosave();
 
-    background_pane background;
+    loading_image_splash background;
     static_popup popup;
     popup.message( "%s", _( "Please wait as we build your world" ) );
     ui_manager::redraw();
@@ -1168,7 +1166,6 @@ vehicle *game::place_vehicle_nearby(
             veh->dimension_id_ = target_map.get_bound_dimension();
             get_overmapbuffer( veh->dimension_id_ ).add_vehicle( veh );
             veh->tracking_on = true;
-            target_map.save();
             return veh;
         }
     }
@@ -2698,6 +2695,7 @@ input_context get_default_mode_input_context()
     ctxt.register_action( "reload_weapon" );
     ctxt.register_action( "reload_wielded" );
     ctxt.register_action( "unload" );
+    ctxt.register_action( "unload_all" );
     ctxt.register_action( "throw" );
     ctxt.register_action( "fire" );
     ctxt.register_action( "cast_spell" );
@@ -3365,7 +3363,6 @@ bool game::save_maps()
         // Drain any in-flight lazy-border preload tasks before save so that
         // save_quad workers do not race with background workers calling add_submap().
         submap_loader.drain_lazy_loads();
-        m.save();
         save_all_overmapbuffers(); // can throw — saves every loaded dimension's overmapbuffer
         // Save mapbuffers for all registered dimensions (active + any kept/non-active).
         // save_all() dispatches dimension saves in parallel; each slot uses
@@ -9298,8 +9295,9 @@ static auto list_vehicles( const vehicle_list_t &vehicle_list ) -> vehicle_menu_
                                                velocity_units( VU_VEHICLE ) );
                 const std::string engine_text = string_format( _( "Engine: %s" ),
                                                 cur_vehicle->engine_on ? _( "on" ) : _( "off" ) );
-                const std::string moving_text = string_format( _( "Moving: %s" ),
-                                                moving ? _( "yes" ) : _( "no" ) );
+                const auto moving_text = string_format( _( "Moving: %s" ),
+                                                        moving ? pgettext( "vehicle status value", "yes" ) :
+                                                        pgettext( "vehicle status value", "no" ) );
                 const std::string id_text = string_format( "[%s]", cur_vehicle->type.str() );
                 const bool wheels_ok = cur_vehicle->sufficient_wheel_config();
                 const std::string wheels_text = wheels_ok ?
@@ -9335,8 +9333,9 @@ static auto list_vehicles( const vehicle_list_t &vehicle_list ) -> vehicle_menu_
                                                 volume_units_abbr() );
                 const std::string leak_text = _( "This vehicle is leaking fuel." );
                 const bool can_float = cur_vehicle->can_float();
-                const std::string float_text = string_format( _( "Floats: %s" ),
-                                               can_float ? _( "yes" ) : _( "no" ) );
+                const auto float_text = string_format( _( "Floats: %s" ),
+                                                       can_float ? pgettext( "vehicle status value", "yes" ) :
+                                                       pgettext( "vehicle status value", "no" ) );
 
                 int line = 0;
                 trim_and_print( w_vehicle_info, point( 1, line++ ), width - 4, c_light_gray,
@@ -11990,6 +11989,7 @@ bool game::grabbed_furn_move( const tripoint &dp )
     // Actually move the furniture.
     m.furn_set( fdest, m.furn( fpos ), atd ? atd->clone() : nullptr );
     m.furn_set( fpos, f_null );
+    u.clear_memorized_overlay( m.bub_to_abs( tripoint_bub_ms( fpos ) ).raw() );
 
     if( fire_intensity == 1 && !pulling_furniture ) {
         m.remove_field( fpos, fd_fire );
@@ -13259,8 +13259,7 @@ bool game::travel_to_dimension( const std::string &dim_id,
             if( active_world ) {
                 active_world->start_save_tx();
             }
-            here.save();
-            get_overmapbuffer( current_dimension_id_ ).save();
+            get_overmapbuffer( current_dimension_id_ ).save( current_dimension_id_ );
             MAPBUFFER_REGISTRY.get( old_dim_id ).save();
             if( !save_dimension_data() ) {
                 if( active_world ) {
@@ -13644,8 +13643,10 @@ void game::vertical_shift( const int z_after )
         shift_monsters( tripoint( 0, 0, z_after - z_before ) );
         reload_npcs();
     } else {
-        // Shift the map itself
-        m.vertical_shift( z_after );
+        // Adjust the map's z-reference so get_levz() returns the new z-level.
+        // All z-levels are loaded simultaneously in z-level builds; no map load
+        // or unload is required for vertical movement.
+        m.set_abs_sub( tripoint_abs_sm( m.get_abs_sub().xy(), z_after ) );
     }
 
     m.spawn_monsters( true );

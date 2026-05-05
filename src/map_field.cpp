@@ -1259,7 +1259,7 @@ auto process_fields_in_submap( submap &sm,
                 }
 
                 // --- Z-rise: level-3 fire spreads upward ---
-                if( pos.z() < OVERMAP_HEIGHT && cur.get_field_intensity() == 3 ) {
+                if( can_spread && pos.z() < OVERMAP_HEIGHT && cur.get_field_intensity() == 3 ) {
                     const tripoint_abs_sm above_pos( pos.raw() + tripoint{ 0, 0, 1 } );
                     auto *above_sm = mb.lookup_submap_in_memory( above_pos.raw() );
                     if( above_sm ) {
@@ -1421,6 +1421,7 @@ auto process_fields_in_submap( submap &sm,
             if( !is_newborn && cur.gas_can_spread() ) {
                 const auto gas_pct = cur_fd_type.percent_spread;
                 if( gas_pct > 0 && cur.get_field_intensity() > 1 &&
+                    !sm.floor_cache[local.x()][local.y()] &&
                     rng( 1, 100 ) <= gas_pct ) {
                     // Try to fall first.
                     auto spread_done = false;
