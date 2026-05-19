@@ -291,6 +291,7 @@ static const trait_id trait_DEBUG_LS( "DEBUG_LS" );
 static const trait_id trait_DEBUG_NIGHTVISION( "DEBUG_NIGHTVISION" );
 static const trait_id trait_DEBUG_NOTEMP( "DEBUG_NOTEMP" );
 static const trait_id trait_DEBUG_STORAGE( "DEBUG_STORAGE" );
+static const trait_id trait_DEBUG_WEIGHTLESSNESS( "DEBUG_WEIGHTLESSNESS" );
 static const trait_id trait_DOWN( "DOWN" );
 static const trait_id trait_ELECTRORECEPTORS( "ELECTRORECEPTORS" );
 static const trait_id trait_FASTLEARNER( "FASTLEARNER" );
@@ -2003,7 +2004,7 @@ void Character::recalc_sight_limits()
         best_bonus_nv = std::max( best_bonus_nv, 10.0f );
     }
     if( worn_with_flag( flag_GNVE_EFFECT ) ) {
-        vision_mode_cache.set( NV_GOGGLES );
+        vision_mode_cache.set( ENV_GOGGLES );
         best_bonus_nv = std::max( best_bonus_nv, 18.0f );
     }
     if( has_trait( trait_BIRD_EYE ) ) {
@@ -2516,6 +2517,7 @@ detached_ptr<item> Character::wear_item( detached_ptr<item> &&wear,
 
     const bool was_deaf = is_deaf();
     const bool supertinymouse = get_size() == creature_size::tiny;
+    const bool size_matters = to_wear.get_sizing( *this ) != item::sizing::ignore;
     last_item = to_wear.typeId();
 
 
@@ -2540,13 +2542,13 @@ detached_ptr<item> Character::wear_item( detached_ptr<item> &&wear,
         if( !was_deaf && is_deaf() ) {
             add_msg_if_player( m_info, _( "You're deafened!" ) );
         }
-        if( supertinymouse && !to_wear.has_flag( flag_UNDERSIZE ) &&
+        if( size_matters && supertinymouse && !to_wear.has_flag( flag_UNDERSIZE ) &&
             !to_wear.has_flag( flag_resized_small ) ) {
             add_msg_if_player( m_warning,
                                _( "This %s is too big to wear comfortably!  Maybe it could be refitted." ),
                                to_wear.tname() );
-        } else if( !supertinymouse && ( to_wear.has_flag( flag_UNDERSIZE ) ||
-                                        to_wear.has_flag( flag_resized_small ) ) ) {
+        } else if( size_matters && !supertinymouse && ( to_wear.has_flag( flag_UNDERSIZE ) ||
+                   to_wear.has_flag( flag_resized_small ) ) ) {
             add_msg_if_player( m_warning,
                                _( "This %s is too small to wear comfortably!  Maybe it could be refitted." ),
                                to_wear.tname() );
@@ -4449,17 +4451,16 @@ char_encumbrance_data Character::calc_encumbrance( const item &new_item ) const
 
 units::mass Character::get_weight() const
 {
-    units::mass ret = 0_gram;
-    units::mass wornWeight = std::accumulate( worn.begin(), worn.end(), 0_gram,
-    []( units::mass sum, const item * const & itm ) {
-        return sum + itm->weight();
-    } );
+    if( has_trait( trait_DEBUG_WEIGHTLESSNESS ) ) { return 0_gram; }
 
-    ret += bodyweight();       // The base weight of the player's body
-    ret += inv.weight();           // Weight of the stored inventory
-    ret += wornWeight;             // Weight of worn items
-    ret += primary_weapon().weight();        // Weight of wielded item
-    ret += bionics_weight();       // Weight of installed bionics
+    const auto worn_weight = std::ranges::fold_left( worn, 0_gram,
+    []( const auto sum, const auto * const itm ) { return sum + itm->weight(); } );
+
+    auto ret = bodyweight();                       // The base weight of the player's body
+    ret += inv.weight();                           // Weight of the stored inventory
+    ret += worn_weight;                            // Weight of worn items
+    ret += primary_weapon().weight();              // Weight of wielded item
+    ret += bionics_weight();                       // Weight of installed bionics
     return ret;
 }
 
@@ -5166,7 +5167,7 @@ std::pair<std::string, nc_color> Character::get_hunger_description() const
     nc_color hunger_color = c_white;
     if( days_left >= days_max ) {
         hunger_string = _( "Engorged" );
-        hunger_color = c_green;
+        hunger_color = c_pink;
     } else if( days_max - days_left < 0.5f ) {
         hunger_string = _( "Sated" );
         hunger_color = c_green;
@@ -7211,6 +7212,15 @@ int Character::visibility( bool, int ) const
     if( ( g->u.movement_mode_is( CMM_CROUCH ) ) ) {
         stealth_modifier += crouching_bonus;
     };
+    map &here = get_map();
+    int const camo_modifier = 50;
+    if( worn_with_flag( flag_NATURE_CAMO ) && ( here.has_flag( "PLOWABLE", pos() ) ||
+            here.has_flag( "SHRUB", pos() ) ) ) {
+        stealth_modifier += camo_modifier;
+    } else if( worn_with_flag( flag_URBAN_CAMO ) && ( here.has_flag( "ROAD", pos() ) ||
+               here.has_flag( "MINEABLE", pos() ) ) ) {
+        stealth_modifier += camo_modifier;
+    }
     return clamp( 100 - stealth_modifier, 20, 160 );
 }
 
@@ -7270,6 +7280,11 @@ float Character::active_light() const
 
 bool Character::sees_with_specials( const Creature &critter ) const
 {
+    // Prevent seeing through floors across z-levels
+    if( posz() != critter.posz() ) {
+        return false;
+    }
+
     // electroreceptors grants vision of robots and electric monsters through walls
     if( ( has_trait( trait_ELECTRORECEPTORS ) || has_active_bionic( bio_electrosense ) ) &&
         ( critter.in_species( ROBOT ) || critter.has_flag( MF_ELECTRIC ) ) ) {
@@ -7418,6 +7433,13 @@ std::string Character::extended_description() const
     }
 
     ss += "--\n";
+
+    std::vector<std::string> apperance_desc = get_apperance_description();
+    if( !apperance_desc.empty() ) {
+        ss += ( _( "Apperance: " ) + enumerate_as_string( apperance_desc ) );
+        ss += "\n";
+    }
+
     ss += _( "Wielding:" ) + std::string( " " );
     if( primary_weapon().is_null() ) {
         ss += _( "Nothing" );
@@ -7432,6 +7454,39 @@ std::string Character::extended_description() const
     } );
 
     return replace_colors( ss );
+}
+
+
+std::vector<std::string> Character::get_apperance_description() const
+{
+    std::map<std::string, trait_id> apperance_muts;
+    std::vector<std::string> valid_apperance_categories = {"hair_style", "hair_color", "eye_color", "skin_tone"};
+
+    for( const trait_id &mutation : get_mutations() ) {
+        for( std::string cat : valid_apperance_categories )  {
+            auto mut_obj = mutation.obj();
+            if( mut_obj.types.contains( cat ) ) {
+                apperance_muts[cat] = mutation;
+            }
+        }
+    }
+
+    std::vector<std::string> apperance_desc;
+
+    if( apperance_muts.count( "hair_style" ) && apperance_muts.count( "hair_color" ) ) {
+        apperance_desc.push_back( apperance_muts["hair_color"].obj().apperance_desc() + " " +
+                                  apperance_muts["hair_style"].obj().apperance_desc() + _( " hair" ) );
+    }
+
+    if( apperance_muts.count( "eye_color" ) ) {
+        apperance_desc.push_back( apperance_muts["eye_color"].obj().apperance_desc() + _( " eyes" ) );
+    }
+
+    if( apperance_muts.count( "skin_tone" ) ) {
+        apperance_desc.push_back( apperance_muts["skin_tone"].obj().apperance_desc() + _( " skin" ) );
+    }
+
+    return apperance_desc;
 }
 
 social_modifiers Character::get_mutation_social_mods() const
@@ -11655,8 +11710,9 @@ bool Character::sees( const Creature &critter ) const
 {
     // This handles only the player/npc specific stuff (monsters don't have traits or bionics).
     const int dist = rl_dist( pos(), critter.pos() );
-    if( dist <= 5 && ( has_active_mutation( trait_ANTENNAE ) ||
-                       ( has_active_bionic( bio_ground_sonar ) && !critter.has_flag( MF_FLIES ) ) ) ) {
+    if( posz() == critter.posz() && dist <= 5 &&
+        ( has_active_mutation( trait_ANTENNAE ) ||
+          ( has_active_bionic( bio_ground_sonar ) && !critter.has_flag( MF_FLIES ) ) ) ) {
         return true;
     }
 

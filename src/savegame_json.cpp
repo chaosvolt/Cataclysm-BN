@@ -85,6 +85,7 @@
 #include "morale_types.h"
 #include "mtype.h"
 #include "mutation.h"
+#include "newcharacter.h"
 #include "npc.h"
 #include "npc_class.h"
 #include "options.h"
@@ -238,7 +239,7 @@ void player_activity::deserialize( JsonIn &jsin )
     // ACT_MIGRATION_CANCEL will clear the backlog and reset npc state
     // this may cause inconvenience but should avoid any lasting damage to npcs
     if( has_actor && type != ACT_MIGRATION_CANCEL ) {
-        if( !data.has_member( "actor" ) ) {
+        if( !data.has_member( "actor" ) || data.has_null( "actor" ) ) {
             type = ACT_MIGRATION_CANCEL;
         } else {
             auto actor = data.get_object( "actor" );
@@ -693,6 +694,7 @@ void Character::load( const JsonObject &data )
             }
         }
     }
+    newcharacter::add_default_mutation_type_traits( *this );
     recalculate_size();
 
     data.read( "my_bionics", *my_bionics );
@@ -2040,6 +2042,7 @@ void monster::load( const JsonObject &data )
     }
 
     data.read( "friendly", friendly );
+    data.read( "training_level", training_level );
     data.read( "mission_id", mission_id );
     data.read( "no_extra_death_drops", no_extra_death_drops );
     data.read( "dead", dead );
@@ -2143,6 +2146,7 @@ void monster::store( JsonOut &json ) const
     json.member( "hp", hp );
     json.member( "special_attacks", special_attacks );
     json.member( "friendly", friendly );
+    json.member( "training_level", training_level );
     json.member( "fish_population", fish_population );
     json.member( "faction", faction.id().str() );
     json.member( "mission_id", mission_id );
@@ -2900,6 +2904,7 @@ void vehicle_part::deserialize( JsonIn &jsin )
     data.read( "target_second_y", target.second.y );
     data.read( "target_second_z", target.second.z );
     data.read( "ammo_pref", ammo_pref );
+    data.read( "part_color", part_color_ );
     if( data.has_member( "portal_tap_linked" ) ) {
         data.read( "portal_tap_linked", portal_tap_linked );
         data.read( "portal_tap_dim_id", portal_tap_dim_id );
@@ -2984,6 +2989,7 @@ void vehicle_part::serialize( JsonOut &json ) const
         json.member( "target_second_z", target.second.z );
     }
     json.member( "ammo_pref", ammo_pref );
+    json.member( "part_color", part_color_ );
     if( portal_tap_linked ) {
         json.member( "portal_tap_linked", portal_tap_linked );
         json.member( "portal_tap_dim_id", portal_tap_dim_id );

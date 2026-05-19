@@ -137,6 +137,12 @@ enum peek_act : int {
     // obvious future additional value is PA_BLIND_FIRE
 };
 
+enum look_around_mode : int {
+    LA_MODE_DEFAULT, // -+ FOV Range
+    LA_MODE_2D, // Same layer as origin
+    LA_MODE_3D // 3D, Ignore FOV Setting
+};
+
 struct look_around_result {
     std::optional<tripoint> position;
     std::optional<peek_act> peek_action;
@@ -192,7 +198,7 @@ class game : public submap_load_listener
         void setup( bool load_world_modfiles = true );
         /** Saving and loading functions. */
         void serialize( std::ostream &fout ); // for save
-        void unserialize( std::istream &fin ); // for load
+        auto unserialize( std::istream &fin ) -> bool; // for load
         void unserialize_dimension_data( std::istream &fin ); // for load
         void unserialize_master( std::istream &fin ); // for load
 
@@ -670,7 +676,7 @@ class game : public submap_load_listener
         void zones_manager();
 
         // Look at nearby terrain ';', or select zone points
-        std::optional<tripoint> look_around( bool force_3d = false );
+        std::optional<tripoint> look_around( look_around_mode mode = LA_MODE_DEFAULT );
         /**
          * @brief
          *
@@ -686,7 +692,8 @@ class game : public submap_load_listener
          */
         look_around_result look_around( bool show_window, tripoint &center,
                                         const tripoint &start_point, bool has_first_point, bool select_zone, bool peeking,
-                                        bool is_moving_zone = false, const tripoint &end_point = tripoint_zero, bool force_3d = false );
+                                        bool is_moving_zone = false, const tripoint &end_point = tripoint_zero,
+                                        look_around_mode mode = LA_MODE_DEFAULT );
 
         // Shared method to print "look around" info
         void pre_print_all_tile_info( const tripoint &lp, const catacurses::window &w_info,
@@ -850,6 +857,8 @@ class game : public submap_load_listener
 
         /** Attempt to load first valid save (if any) in world */
         bool load( const std::string &world );
+        bool load( const save_t &name ); // Load a player-specific save file
+        auto clear_failed_load_save_block() -> void { saving_blocked_by_failed_load = false; }
 
         /** Returns true if the menu handled stuff and player shouldn't do anything else */
         bool npc_menu( npc &who, const bool &force = false );
@@ -861,7 +870,7 @@ class game : public submap_load_listener
         void on_move_effects();
     private:
         // Game-start procedures
-        bool load( const save_t &name ); // Load a player-specific save file
+        auto validate_save_json( std::istream &fin ) -> bool; // for load
         void load_master(); // Load the master data file, with factions &c
 #if defined(__ANDROID__)
         void load_shortcuts( std::istream &fin );
@@ -889,8 +898,8 @@ class game : public submap_load_listener
         // create vehicle nearby, for example; for a profession vehicle.
         vehicle *place_vehicle_nearby(
             const vproto_id &id, const point_abs_omt &origin, int min_distance,
-            int max_distance, const std::vector<std::string> &omt_search_types = {},
-            bool notwater = false );
+        int max_distance, const std::vector<std::string> &omt_search_types = {},
+        bool notwater = false );
         // V Menu Functions and helpers:
         void list_items_monsters(); // Called when you invoke the `V`-menu
 
@@ -917,9 +926,10 @@ class game : public submap_load_listener
         void examine( const tripoint &p ); // Examine nearby terrain  'e'
         void examine();
 
-        void pickup(); // Pickup nearby items 'g', min 0
+        void pickup(); // Pick up items from one nearby tile 'g', min 0
+        void pickup_all(); // Pick up items from all nearby tiles ',', min 0
         void pickup( const tripoint &p );
-        void pickup_feet(); // Pick items at player position ',', min 1
+        void pickup_feet(); // Pick items at player position, min 1
 
         void drop(); // Drop an item  'd'
         void drop_in_direction(); // Drop w/ direction  'D'
@@ -1189,6 +1199,7 @@ class game : public submap_load_listener
         int next_mission_id = 0;
         std::set<character_id> follower_ids; // Keep track of follower NPC IDs
         int moves_since_last_save = 0;
+        bool saving_blocked_by_failed_load = false;
         time_t last_save_timestamp;
         mutable std::array<float, OVERMAP_LAYERS> latest_lightlevels;
         // remoteveh() cache

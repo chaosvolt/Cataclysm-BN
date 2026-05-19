@@ -95,6 +95,7 @@ static const efftype_id effect_in_pit( "in_pit" );
 static const efftype_id effect_lightsnare( "lightsnare" );
 static const efftype_id effect_migo_atmosphere( "migo_atmosphere" );
 static const efftype_id effect_monster_armor( "monster_armor" );
+static const efftype_id effect_monster_disarmed( "monster_disarmed" );
 static const efftype_id effect_no_sight( "no_sight" );
 static const efftype_id effect_onfire( "onfire" );
 static const efftype_id effect_pacified( "pacified" );
@@ -1021,6 +1022,31 @@ std::string monster::extended_description() const
 
     if( !type->has_flag( m_flag::MF_NOHEAD ) ) {
         ss += std::string( _( "It has a head." ) ) + "\n";
+    }
+
+    if( training_level > 0 && type->pet_training ) {
+        const auto training_adj = []( float ratio ) -> const std::string {
+            if( ratio > 1.5f )
+            {
+                return _( "much" );
+            } else if( ratio > 1.25f )
+            {
+                return _( "noticeably" );
+            }
+            return _( "slightly" );
+        };
+        const float hp_ratio    = std::pow( type->pet_training->hp,    training_level );
+        const float melee_ratio = std::pow( type->pet_training->melee, training_level );
+        const float dodge_ratio = std::pow( type->pet_training->dodge, training_level );
+        if( hp_ratio > 1.0f ) {
+            ss += string_format( _( "It is %s tougher than normal." ),    training_adj( hp_ratio ) )    + "\n";
+        }
+        if( melee_ratio > 1.0f ) {
+            ss += string_format( _( "It is %s stronger than normal." ),   training_adj( melee_ratio ) ) + "\n";
+        }
+        if( dodge_ratio > 1.0f ) {
+            ss += string_format( _( "It is %s more agile than normal." ), training_adj( dodge_ratio ) ) + "\n";
+        }
     }
 
     ss += "--\n";
@@ -1969,9 +1995,18 @@ void monster::melee_attack( Creature &target, float accuracy )
 
     damage_instance damage = !is_hallucination() ? type->melee_damage : damage_instance();
     if( !is_hallucination() && type->melee_dice > 0 ) {
-        damage.add_damage( DT_BASH, dice( type->melee_dice, type->melee_sides ) );
+        damage.add_damage( DT_BASH, dice( type->melee_dice,
+                                          has_effect( effect_monster_disarmed ) ? type->melee_sides / 2 : type->melee_sides ) );
         damage.add_damage( DT_BASH, bash_bonus );
         damage.add_damage( DT_CUT, cut_bonus );
+        if( has_effect( effect_monster_disarmed ) ) {
+            for( damage_unit &elem : damage.damage_units ) {
+                if( elem.amount > 0 && ( elem.type != DT_BASH ) ) {
+                    elem.amount = 0;
+                    continue;
+                }
+            }
+        }
     }
 
     dealt_damage_instance dealt_dam;
@@ -2492,12 +2527,20 @@ int monster::get_armor_type( damage_type dt, bodypart_id bp ) const
 
 float monster::get_hit_base() const
 {
-    return type->melee_skill;
+    float base = type->melee_skill;
+    if( training_level > 0 && type->pet_training ) {
+        base *= std::pow( type->pet_training->melee, training_level );
+    }
+    return base;
 }
 
 float monster::get_dodge_base() const
 {
-    return type->sk_dodge;
+    float base = type->sk_dodge;
+    if( training_level > 0 && type->pet_training ) {
+        base *= std::pow( type->pet_training->dodge, training_level );
+    }
+    return base;
 }
 
 float monster::hit_roll() const
@@ -2563,7 +2606,11 @@ float monster::get_dodge() const
 
 float monster::get_melee() const
 {
-    return type->melee_skill;
+    float base = type->melee_skill;
+    if( training_level > 0 && type->pet_training ) {
+        base *= std::pow( type->pet_training->melee, training_level );
+    }
+    return base;
 }
 
 float monster::dodge_roll()
@@ -2946,6 +2993,7 @@ void monster::die( Creature *nkiller )
     }
     if( !no_extra_death_drops ) {
         drop_items_on_death();
+        drop_monster_weapon();
     }
     // TODO: should actually be class Character
     player *ch = dynamic_cast<player *>( get_killer() );
@@ -3196,6 +3244,47 @@ void monster::drop_items_on_death()
     }
 
     auto items = item_group::items_from( type->death_drops,
+                                         calendar::start_of_cataclysm );
+
+    // Apply both global and category-specific spawn rates
+    const auto global_spawn_rate = get_option<float>( "ITEM_SPAWNRATE" );
+
+    // Filter items based on combined spawn rates using std::erase_if
+    std::erase_if( items, [global_spawn_rate]( const auto & it ) {
+        // Always keep mission items
+        if( it->has_flag( flag_MISSION_ITEM ) ) {
+            return false; // keep
+        }
+
+        // Calculate combined rate: global × category
+        const auto category_rate = get_item_category_spawn_rate( *it );
+        const auto final_rate = std::min( global_spawn_rate * category_rate, 1.0f );
+
+        // Remove item based on final probability (erase_if removes when predicate is true)
+        return rng_float( 0, 1 ) >= final_rate;
+    } );
+
+    // If there aren't any items left, there's nothing left to do
+    if( items.empty() ) {
+        return;
+    }
+
+    g->m.spawn_items( pos(), std::move( items ) );
+}
+
+void monster::drop_monster_weapon()
+{
+    if( is_hallucination() ) {
+        return;
+    }
+    if( !type->monster_weapon ) {
+        return;
+    }
+    if( has_effect( effect_monster_disarmed ) ) {
+        return;
+    }
+
+    auto items = item_group::items_from( type->monster_weapon,
                                          calendar::start_of_cataclysm );
 
     // Apply both global and category-specific spawn rates
@@ -3697,12 +3786,16 @@ void monster::on_damage_of_type( int amt, damage_type dt, const bodypart_id &bp 
 
 int monster::get_hp_max( const bodypart_id & ) const
 {
-    return type->hp;
+    return get_hp_max();
 }
 
 int monster::get_hp_max() const
 {
-    return type->hp;
+    int base = type->hp;
+    if( training_level > 0 && type->pet_training ) {
+        return static_cast<int>( base * std::pow( type->pet_training->hp, training_level ) );
+    }
+    return base;
 }
 
 int monster::get_hp( const bodypart_id & ) const

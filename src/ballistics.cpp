@@ -476,6 +476,12 @@ auto projectile_attack( const projectile &proj_arg, const tripoint &source,
         prev_point = tp;
         tp = trajectory[i];
 
+        if( !here.inbounds( tp ) ) {
+            traj_len = i;
+            tp = prev_point;
+            break;
+        }
+
         if( tp.z != prev_point.z ) {
             tripoint floor1 = prev_point;
             tripoint floor2 = tp;
@@ -617,6 +623,11 @@ auto projectile_attack( const projectile &proj_arg, const tripoint &source,
                 has_momentum = proj.impact.total_damage() > 0 && is_bullet;
 
                 apply_overpenetration_penalty( is_projectile_modify_overpenetration );
+                // Force embed based on damage after overpenetration penalties
+                if( thrown_item != &null_item_reference() && rng( 1, 100 ) > proj.impact.total_damage() ) {
+                    has_momentum = false;
+                    apply_overpenetration_penalty( 0.0 );
+                }
             } else {
                 attack.missed_by = aim.missed_by;
             }

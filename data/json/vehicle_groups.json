@@ -115,9 +115,11 @@
       [ "boat_motor_police", 150 ],
       [ "CG_patrol_boat", 75 ],
       [ "CG_cutter", 25 ],
-      [ "sailboat", 125 ],
+      [ "sailboat", 100 ],
+      [ "carbon_catamaran", 10 ],
       [ "pirate_ship", 25 ],
       [ "DUKW", 75 ],
+      [ "floatplane_small", 25 ],
       [ "hovercraft_motor_single", 25 ],
       [ "CG_cutter_25mm", 25 ]
     ]
@@ -147,7 +149,8 @@
       [ "kayak_racing", 50 ],
       [ "kayak_motorized", 25 ],
       [ "wood_rowboat_double", 60 ],
-      [ "inflatable_boat", 115 ],
+      [ "inflatable_boat", 100 ],
+      [ "floatplane_small", 15 ],
       [ "jetski", 30 ],
       [ "raft", 190 ],
       [ "fishing_boat", 25 ],
@@ -543,6 +546,7 @@
       [ "autotractor", 1000 ],
       [ "excavator", 500 ],
       [ "helicopter_gyro", 100 ],
+      [ "plane_small_wood", 100 ],
       [ "tractor_heavy_plow", 250 ],
       [ "tractor_heavy_seed", 250 ],
       [ "tractor_heavy_reaper", 250 ],
@@ -594,6 +598,22 @@
       [ "motorcycle_methcart", 50 ],
       [ "whillys_mb", 10 ],
       [ "tractor_bandit", 150 ]
+    ]
+  },
+  {
+    "id": "survivor_vehicles",
+    "type": "vehicle_group",
+    "//": "Various vehicles used by survivors for the surrounded vehicle map extra",
+    "vehicles": [
+      [ "military_cargo_truck", 40 ],
+      [ "armored_car", 50 ],
+      [ "humvee", 60 ],
+      [ "jltv", 40 ],
+      [ "whillys_mb", 80 ],
+      [ "pickup_technical", 100 ],
+      [ "tractor_bandit", 100 ],
+      [ "surv_rv", 75 ],
+      [ "surv_car", 180 ]
     ]
   },
   {
@@ -775,7 +795,8 @@
     "id": "runway",
     "//": "Lower chance of wrecked helis, include planes and other aircraft",
     "vehicles": [
-      [ "plane_small", 500 ],
+      [ "plane_small", 400 ],
+      [ "plane_small_wood", 100 ],
       [ "plane_f35_lightning", 25 ],
       [ "plane_av8_harrier", 5 ],
       [ "2seater2", 100 ],
@@ -1200,6 +1221,11 @@
       [ "tank_m60_patton", 25 ],
       [ "tank_m60_patton_mothballed", 25 ]
     ]
+  },
+  {
+    "type": "vehicle_group",
+    "id": "crashed_aircraft",
+    "vehicles": [ [ "plane_f35_lightning_wreckage", 150 ], [ "plane_f15e_eagle_wreckage", 100 ], [ "plane_av8_harrier_wreckage", 80 ] ]
   },
   {
     "type": "vehicle_group",

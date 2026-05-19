@@ -23,6 +23,7 @@
 #include "iexamine.h"
 #include "input.h"
 #include "item.h"
+#include "item_functions.h"
 #include "lua_action_menu.h"
 #include "map.h"
 #include "map_iterator.h"
@@ -141,6 +142,8 @@ std::string action_ident( action_id act )
             return "advinv";
         case ACTION_PICKUP:
             return "pickup";
+        case ACTION_PICKUP_ALL:
+            return "pickup_all";
         case ACTION_PICKUP_FEET:
             return "pickup_feet";
         case ACTION_GRAB:
@@ -586,20 +589,20 @@ bool can_butcher_at( const tripoint &p )
     const int factor = you.max_quality( qual_BUTCHER );
     const int factorD = you.max_quality( qual_CUT_FINE );
     map_stack items = get_map().i_at( p );
-    bool has_item = false;
-    bool has_corpse = false;
 
     const inventory &crafting_inv = you.crafting_inventory();
     for( item *&items_it : items ) {
         if( items_it->is_corpse() ) {
             if( factor != INT_MIN  || factorD != INT_MIN ) {
-                has_corpse = true;
+                return true;
             }
         } else if( crafting::can_disassemble( you, *items_it, crafting_inv ).success() ) {
-            has_item = true;
+            return true;
+        } else if( item_funcs::can_be_unloaded( *items_it ) ) {
+            return true;
         }
     }
-    return has_corpse || has_item;
+    return false;
 }
 
 bool can_move_vertical_at( const tripoint &p, int movez )
@@ -686,6 +689,7 @@ bool can_interact_at( action_id action, const tripoint &p )
         case ACTION_EXAMINE:
             return can_examine_at( p );
         case ACTION_PICKUP:
+        case ACTION_PICKUP_ALL:
         case ACTION_PICKUP_FEET:
             return can_pickup_at( p );
         default:
@@ -960,7 +964,7 @@ action_id handle_action_menu()
             register_actions( {
                 ACTION_EXAMINE, ACTION_SMASH, ACTION_MOVE_DOWN, ACTION_MOVE_UP,
                 ACTION_OPEN, ACTION_CLOSE, ACTION_CHAT, ACTION_PICKUP,
-                ACTION_PICKUP_FEET, ACTION_GRAB, ACTION_HAUL, ACTION_BUTCHER, ACTION_LOOT,
+                ACTION_PICKUP_ALL, ACTION_PICKUP_FEET, ACTION_GRAB, ACTION_HAUL, ACTION_BUTCHER, ACTION_LOOT,
             } );
             register_lua_action_entries( category_id );
         } else if( category_id == "combat" ) {
@@ -1169,5 +1173,149 @@ std::optional<tripoint> choose_adjacent_highlight(
         g->add_draw_callback( hilite_cb );
     }
 
-    return choose_adjacent( message, allow_vertical );
+    const auto selection = choose_adjacent( message, allow_vertical );
+    if( selection.has_value() && std::ranges::contains( valid, selection.value() ) ) {
+        return selection;
+    }
+
+    return std::nullopt;
+}
+
+std::optional<tripoint> choose_adjacent_uilist(
+    const std::string &message,
+    const std::string &failure_message,
+    const std::function < auto( const tripoint & ) -> bool > &allowed,
+    const std::function < auto( const tripoint & ) -> std::optional<std::string> > &name,
+    const bool allow_vertical )
+{
+    struct direction_entry {
+        std::string short_name;
+        std::string long_name;
+        int inv_key;
+
+        constexpr direction_entry( const std::string &s, const std::string &n, const int k ) noexcept
+            : short_name( s ), long_name( n ), inv_key( k ) {}
+    };
+
+    static const std::unordered_map<tripoint, direction_entry> DIR_NAMES = {
+        { tripoint_south_west, direction_entry( _( "SW" ), _( "South West" ), '1' )},
+        { tripoint_south, direction_entry( _( "S" ), _( "South" ), '2' )},
+        { tripoint_south_east, direction_entry( _( "SE" ), _( "South East" ), '3' )},
+        { tripoint_west, direction_entry( _( "W" ), _( "West" ), '4' )},
+        { tripoint_zero, direction_entry( _( "-" ), _( "Directly below you" ), '5' )},
+        { tripoint_east, direction_entry( _( "E" ), _( "East" ), '6' )},
+        { tripoint_north_west, direction_entry( _( "NW" ), _( "North West" ), '7' )},
+        { tripoint_north, direction_entry( _( "N" ), _( "North" ), '8' )},
+        { tripoint_north_east, direction_entry( _( "NE" ), _( "North East" ), '9' )},
+        { tripoint_above, direction_entry( _( "UP" ), _( "Above" ), '<' )},
+        { tripoint_below, direction_entry( _( "DN" ), _( "Below" ), '>' )},
+    };
+
+    std::vector<tripoint> valid;
+    const map &here = get_map();
+    const tripoint center = g->u.pos();
+    if( allowed ) {
+        for( const tripoint &pos : here.points_in_radius( center, 1, 0 ) ) {
+            if( !here.obstructed_by_vehicle_rotation( center, pos ) && allowed( pos ) ) {
+                valid.emplace_back( pos );
+            }
+        }
+        if( allow_vertical ) {
+            for( const tripoint &pos : { tripoint_above, tripoint_below } ) {
+                if( !here.obstructed_by_vehicle_rotation( center, pos ) && allowed( pos ) ) {
+                    valid.emplace_back( pos );
+                }
+            }
+        }
+    }
+
+
+    const bool auto_select = get_option<bool>( "AUTOSELECT_SINGLE_VALID_TARGET" );
+    if( auto_select ) {
+        if( valid.empty() ) {
+            add_msg( failure_message );
+            return std::nullopt;
+        }
+        if( valid.size() == 1 ) {
+            return valid.back();
+        }
+    }
+
+    uilist lst;
+    lst.title = message;
+    int i = 0;
+    for( const auto &pos : valid ) {
+        const auto ent = DIR_NAMES.at( pos - center );
+        std::string text;
+        if( name ) {
+            const auto x = name( pos );
+            if( x.has_value() ) {
+                text = string_format( "%s (%s)", x.value(), ent.short_name );
+            } else {
+                text = ent.long_name;
+            }
+        } else {
+            text = ent.long_name;
+        }
+        lst.addentry( i++, true, ent.inv_key, text );
+    }
+
+    lst.query();
+    if( lst.ret < 0 ) {
+        add_msg( failure_message );
+        return std::nullopt;
+    }
+
+    return valid.at( lst.ret );
+}
+
+std::optional<std::pair<tripoint, tripoint>> choose_area( const std::string &message,
+        const tripoint &_start_pos, bool allow_vertical )
+{
+
+    auto &u = g->u;
+    ui_adaptor ui;
+
+    on_out_of_scope invalidate_current_ui( [&]() { ui.mark_resize(); } );
+    ui.mark_resize();
+
+    static_popup popup;
+    popup.on_top( true );
+    popup.message( "%s (%s)", message, _( "Select first point." ) );
+
+    tripoint center = _start_pos == tripoint_zero ? ( u.pos() + u.view_offset ) : _start_pos;
+
+    const look_around_mode mode = allow_vertical ? LA_MODE_DEFAULT : LA_MODE_2D;
+    const auto [p0, _] = g->look_around( false, center, center, false, true, false, false,
+                                         tripoint_zero, mode );
+    if( p0 ) {
+        auto highlight = make_shared_fast<game::draw_callback_t>( [&]() {
+            zone_draw_options opt;
+            opt.start = p0.value();
+            g->draw_zones( opt );
+        } );
+        g->add_draw_callback( highlight );
+
+        popup.message( "%s (%s)", message, _( "Select second point." ) );
+        const auto [p1, _] = g->look_around( false, center, p0.value(), true, true, false, false,
+                                             tripoint_zero, mode );
+        if( p1 ) {
+            auto first =
+                tripoint(
+                    std::min( p0->x, p1->x ),
+                    std::min( p0->y, p1->y ),
+                    std::min( p0->z, p1->z )
+                );
+            auto second =
+                tripoint(
+                    std::max( p0->x, p1->x ),
+                    std::max( p0->y, p1->y ),
+                    std::max( p0->z, p1->z )
+                );
+            return std::pair( first, second );
+        }
+    }
+
+    return std::nullopt;
+
 }

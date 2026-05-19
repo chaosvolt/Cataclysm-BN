@@ -68,10 +68,12 @@
 #include "sounds.h"
 #include "string_formatter.h"
 #include "string_id.h"
+#include "string_input_popup.h"
 #include "submap.h"
 #include "translations.h"
 #include "units_utility.h"
 #include "veh_type.h"
+#include "vehicle_palette.h"
 #include "vehicle_functions.h"
 #include "weather.h"
 #include "ui.h"
@@ -80,6 +82,7 @@
  *   assemble "structure" once here instead of repeatedly later.
  */
 static const std::string part_location_structure( "structure" );
+static const std::string part_location_under( "under" );
 static const std::string part_location_center( "center" );
 static const std::string part_location_onroof( "on_roof" );
 
@@ -303,6 +306,8 @@ void vehicle::copy_static_from( const vehicle &source )
     propellers = source.propellers;
     wings = source.wings;
     balloons = source.balloons;
+    converters = source.converters;
+    tanks = source.tanks;
     droppers = source.droppers;
     rail_wheelcache = source.rail_wheelcache;
     steering = source.steering;
@@ -401,8 +406,24 @@ vehicle::vehicle(
         // Copy the already made vehicle. The blueprint is created when the json data is loaded
         // and is guaranteed to be valid (has valid parts etc.).
         copy_static_from( *proto.blueprint );
-        for( vehicle_part &part : proto.blueprint->parts ) {
-            parts.emplace_back( part, this );
+        if( proto.color_palette.is_valid() ) {
+            std::vector<RGBColor> colors = proto.color_palette->pick_colors();
+            for( vehicle_part &part : proto.blueprint->parts ) {
+                parts.emplace_back( part, this );
+                auto &real_part = parts.back();
+                if( proto.color_match.contains( real_part.id.str() ) ) {
+                    const auto [old_bg, old_fg] = real_part.get_color( true );
+                    const auto c = colors.at( proto.color_match.at( real_part.id.str() ) );
+                    real_part.set_color(
+                        old_bg == RGBColor{} ? c : old_bg,
+                        old_fg == RGBColor{} ? c : old_fg
+                    );
+                }
+            }
+        } else {
+            for( vehicle_part &part : proto.blueprint->parts ) {
+                parts.emplace_back( part, this );
+            }
         }
         refresh_locations_hack();
         init_state( init_veh_fuel, init_veh_status, locked, has_keys );
@@ -2020,7 +2041,8 @@ int vehicle::install_part( point dp, vehicle_part &&new_part )
                 "COOLER",
                 "WATER_PURIFIER",
                 "ROCKWHEEL",
-                "ROADHEAD"
+                "ROADHEAD",
+                "CONVERTER"
             }
         };
 
@@ -2040,6 +2062,14 @@ int vehicle::install_part( point dp, vehicle_part &&new_part )
     pt.enabled = enable;
 
     pt.mount = dp;
+
+    if( pt.base->has_var( TINT_COLOR_VAR_NAME ) || pt.base->has_var( TINT_COLOR_FG_VAR_NAME ) ||
+        pt.base->has_var( TINT_COLOR_BG_VAR_NAME ) ) {
+        const auto c = pt.base->get_var<RGBColor>( TINT_COLOR_VAR_NAME, {} );
+        const auto bg = pt.base->get_var<RGBColor>( TINT_COLOR_FG_VAR_NAME, c );
+        const auto fg = pt.base->get_var<RGBColor>( TINT_COLOR_BG_VAR_NAME, c );
+        pt.part_color_ = {.bg = bg, .fg = fg };
+    }
 
     refresh();
     get_map().invalidate_lightmap_caches();
@@ -2624,7 +2654,7 @@ bool vehicle::find_and_split_vehicles( int exclude )
         bool success = split_vehicles( all_vehicles );
         if( success ) {
             // update the active cache
-            shift_parts( point_zero );
+            g->m.reset_vehicle_cache();
             return true;
         }
     }
@@ -2681,11 +2711,10 @@ bool vehicle::split_vehicles( const std::vector<std::vector <int>> &new_vehs,
         if( new_vehicle == nullptr ) {
             // make sure the split_part0 is a legal 0,0 part
             if( split_parts.size() > 1 ) {
-                for( size_t sp = 0; sp < split_parts.size(); sp++ ) {
-                    int p = split_parts[ sp ];
+                for( const auto p : split_parts ) {
                     if( part_info( p ).location == part_location_structure &&
                         !part_info( p ).has_flag( "PROTRUSION" ) ) {
-                        split_part0 = sp;
+                        split_part0 = p;
                         break;
                     }
                 }
@@ -4835,7 +4864,7 @@ double vehicle::total_lift( const bool fuelled, const bool safe, const bool idea
     }
 }
 
-int vehicle::get_takeoff_speed() const
+int vehicle::get_takeoff_speed( std::string speed_type ) const
 {
     const int needed_force = to_newton( total_mass() ) - thrust_of_rotorcraft( true, false, true ) -
                              total_balloon_lift();
@@ -4846,10 +4875,15 @@ int vehicle::get_takeoff_speed() const
         // m^2 area is always 1
         return acc + ( 0.5 * liftcoff );
     } );
+    if( liftwithoutspeed < 1 ) {
+        return 0;
+    }
     const double needed_met_sec_squared = needed_force / liftwithoutspeed;
     const double needed_met_sec = std::sqrt( needed_met_sec_squared );
     const double needed_km_hour = needed_met_sec / 1000 * 3600;
-    std::string speed_type = get_option<std::string>( "USE_METRIC_SPEEDS" );
+    if( speed_type == "default" ) {
+        speed_type = get_option<std::string>( "USE_METRIC_SPEEDS" );
+    }
     if( speed_type == "km/h" ) {
         return ceil( needed_km_hour );
     } else if( speed_type == "mph" ) {
@@ -4920,31 +4954,35 @@ double vehicle::coeff_water_drag() const
     if( !coeff_water_dirty ) {
         return coefficient_water_resistance;
     }
-    std::vector<int> structure_indices = all_parts_at_location( part_location_structure );
-    if( structure_indices.empty() ) {
-        // huh?
-        coeff_water_dirty = false;
-        hull_height = 0.3;
-        draft_m = 1.0;
-        return 1250.0;
+    std::vector<int> hull_indices = all_parts_at_location( part_location_under );
+    double hull_coverage;
+    if( hull_indices.empty() ) {
+        hull_coverage = 0;
+    } else {
+        hull_coverage = static_cast<double>( floating.size() ) / hull_indices.size();
     }
-    double hull_coverage = static_cast<double>( floating.size() ) / structure_indices.size();
 
-    int tile_width = mount_max.y - mount_min.y + 1;
-    double width_m = tile_to_width( tile_width );
+    std::set<int> occupied_y;
+    for( int idx : hull_indices ) {
+        occupied_y.insert( parts[idx].mount.y );
+    }
+    // Tile == 1m width
+    // I have a feeling this and actual_area_m cancle out somewhere in there...
+    double width_m = occupied_y.size();
+    if( width_m == 0 ) {
+        width_m = 1;
+    }
 
-    // actual area of the hull in m^2 (handles non-rectangular shapes)
-    // footprint area in tiles = tile width * tile length
-    // effective footprint percent = # of structure tiles / footprint area in tiles
-    // actual hull area in m^2 = footprint percent * length in meters * width in meters
-    // length in meters = length in tiles
-    // actual area in m = # of structure tiles * length in tiles * width in meters /
-    //                    ( length in tiles * width in tiles )
-    // actual area in m = # of structure tiles * width in meters / width in tiles
-    double actual_area_m = width_m * structure_indices.size() / tile_width;
+    // Each piece of hull is 1m^2
+    // Thus area is the number of hull pieces
+    double actual_area_m = hull_indices.size();
 
     // effective hull area is actual hull area * hull coverage
-    hull_area = actual_area_m * std::max( 0.1, hull_coverage );
+    if( hull_coverage == 0 ) {
+        hull_area = 0;
+    } else {
+        hull_area = actual_area_m * std::max( 0.1, hull_coverage );
+    }
     // Treat the hullform as a simple cuboid to calculate displaced depth of
     // water.
     // Apply Archimedes' principle (mass of water displaced is mass of vehicle).
@@ -4952,12 +4990,20 @@ double vehicle::coeff_water_drag() const
     // water_mass = vehicle_mass
     // area * depth = vehicle_mass / water_density
     // depth = vehicle_mass / water_density / area
-    draft_m = to_kilogram( total_mass() ) / water_density / hull_area * get_lift_percent( true );
-    draft_m = std::max( draft_m, 0.0 );
+    if( hull_area == 0 ) {
+        draft_m = 1;
+    } else {
+        draft_m = to_kilogram( total_mass() ) / water_density / hull_area * get_lift_percent( true );
+        draft_m = std::max( draft_m, 0.0 );
+    }
     // increase the streamlining as more of the boat is covered in boat boards
     double c_water_drag = 1.25 - hull_coverage;
     // hull height starts at 0.3m and goes up as you add more boat boards
-    hull_height = 0.3 + 0.5 * hull_coverage;
+    if( hull_coverage == 0 ) {
+        hull_height = 0;
+    } else {
+        hull_height = 0.3 + 0.5 * hull_coverage;
+    }
     // F_water_drag = c_water_drag * cross_area * 1/2 * water_density * v^2
     // coeff_water_resistance = c_water_drag * cross_area * 1/2 * water_density
     coefficient_water_resistance = c_water_drag * width_m * draft_m * 0.5 * water_density;
@@ -6493,6 +6539,8 @@ void vehicle::refresh()
     propellers.clear();
     droppers.clear();
     balloons.clear();
+    converters.clear();
+    tanks.clear();
     steering.clear();
     speciality.clear();
     floating.clear();
@@ -6570,7 +6618,12 @@ void vehicle::refresh()
         if( vpi.has_flag( VPFLAG_BALLOON ) ) {
             balloons.push_back( p );
         }
-
+        if( vpi.has_flag( "CONVERTER" ) ) {
+            converters.push_back( p );
+        }
+        if( vpi.has_flag( "FLUIDTANK" ) ) {
+            tanks.push_back( p );
+        }
         if( vpi.has_flag( VPFLAG_DROPPER ) ) {
             droppers.push_back( p );
         }
@@ -7795,6 +7848,65 @@ void vehicle::update_time( const time_point &update_to )
     time_duration elapsed = update_to - last_update;
     last_update = update_to;
 
+    if( !converters.empty() ) {
+        for( int p : converters ) {
+            const auto &part = parts[p];
+            if( !part.is_unavailable() && part.enabled ) {
+                int repeat = part.info().get_max_conversions() * to_seconds<int>( elapsed ) / 60;
+                auto [ consume_type, consume_charges ] = part.info().get_conversion_input();
+                auto [ output_type, output_charges ] = part.info().get_conversion_output();
+                const item *output = item::spawn_temporary( output_type, calendar::turn, output_charges );
+                vehicle_part *consume_tank = nullptr;
+                if( !consume_type.is_null() ) {
+                    auto consume_tank_idx = std::ranges::find_if( tanks, [&]( int tank ) {
+                        const auto &part = parts[tank];
+                        if( part.ammo_current() == consume_type && part.ammo_remaining() > consume_charges ) {
+                            return true;
+                        }
+                        return false;
+                    } );
+                    if( consume_tank_idx == tanks.end() ) {
+                        continue;
+                    }
+                    consume_tank = &parts[*consume_tank_idx];
+                }
+                vehicle_part *output_tank = nullptr;
+                if( !output_type.is_null() ) {
+                    auto output_tank_idx = std::ranges::find_if( tanks, [&]( int tank ) {
+                        const auto &part = parts[tank];
+                        if( part.can_reload( output ) && part.ammo_capacity() - part.ammo_remaining() > output_charges ) {
+                            return true;
+                        }
+                        return false;
+                    } );
+                    if( output_tank_idx == tanks.end() ) {
+                        continue;
+                    }
+                    output_tank = &parts[*output_tank_idx];
+                }
+                int max_repeats = repeat;
+                if( consume_tank ) {
+                    max_repeats = std::min( max_repeats, consume_tank->ammo_remaining() / consume_charges );
+                }
+                if( output_tank ) {
+                    max_repeats = std::min( max_repeats,
+                                            ( output_tank->ammo_capacity() - output_tank->ammo_remaining() ) / output_charges );
+                }
+                if( part.info().get_conversion_charges() > 0 ) {
+                    max_repeats = std::min( max_repeats,
+                                            fuel_left( itype_battery ) / part.info().get_conversion_charges() );
+                }
+                if( consume_tank != nullptr ) {
+                    consume_tank->ammo_consume( max_repeats * consume_charges, global_part_pos3( *consume_tank ) );
+                }
+                if( output_tank != nullptr ) {
+                    output_tank->ammo_set( output_type, output_tank->ammo_remaining() + max_repeats * output_charges );
+                }
+                discharge_battery( part.info().get_conversion_charges() * max_repeats );
+            }
+        }
+    }
+
     if( sm_pos.z < 0 ) {
         return;
     }
@@ -8248,4 +8360,33 @@ void vehicle::item_dropper_drop_all( )
     }
 
     item_dropper_drop( ret, false );
+}
+void vehicle::set_cruise_control_speed()
+{
+    const auto requested_min_autodrive_speed = string_input_popup()
+            .title( _( "Minumum Speed in tiles per tick? ( 6 km/hr and 4 mph per )" ) )
+            .text( std::to_string( min_autodrive_speed ) )
+            .only_digits( true )
+            .max_length( 3 )
+            .query_int();
+    min_autodrive_speed = requested_min_autodrive_speed > 0 ? requested_min_autodrive_speed :
+                          min_autodrive_speed;
+    const auto requested_max_autodrive_speed = string_input_popup()
+            .title( _( "Maxumum Speed in tiles per tick? ( 6 km/hr and 4 mph per )" ) )
+            .text( std::to_string( max_autodrive_speed ) )
+            .only_digits( true )
+            .max_length( 3 )
+            .query_int();
+    max_autodrive_speed = requested_max_autodrive_speed > 0 ? requested_max_autodrive_speed :
+                          max_autodrive_speed;
+    if( max_autodrive_speed < min_autodrive_speed ) {
+        max_autodrive_speed = min_autodrive_speed;
+    }
+    const auto takeoff = get_takeoff_speed( "t/t" );
+    if( takeoff > 0 && takeoff > min_autodrive_speed * 0.8 ) {
+        popup( "Warning: Minimum speed is less than safe flight speed" );
+    }
+    if( takeoff > 0 && takeoff > max_autodrive_speed * 0.5 ) {
+        popup( "Warning: Maximum speed is less then safe flight speed" );
+    }
 }

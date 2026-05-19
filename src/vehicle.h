@@ -1151,7 +1151,7 @@ class vehicle
         /**
          * speed needed for aircraft takeoff
          */
-        int get_takeoff_speed() const;
+        int get_takeoff_speed( std::string speed_type = "default" ) const;
         /**
          * total area of every propeller in m^2
          */
@@ -1659,6 +1659,8 @@ class vehicle
         std::vector<int> rail_wheelcache;  // List of rail wheels
         std::vector<int> steering;         // List of STEERABLE parts
         std::vector<int> droppers;         // List of droppers
+        std::vector<int> tanks;            // List of FLUIDTANKs
+        std::vector<int> converters;       // List of coverters
         // List of parts that will not be on a vehicle very often, or which only one will be present
         std::vector<int> speciality;
         std::vector<int> floating;         // List of parts that provide buoyancy to boats
@@ -1840,6 +1842,10 @@ class vehicle
         bool is_following = false;
         int follow_distance = 0;
         bool is_patrolling = false;
+        // Autodrive speed
+        int min_autodrive_speed = 1;
+        int max_autodrive_speed = 9;
+
         // TODO: change these to a bitset + enum?
         // cruise control on/off
         bool cruise_on = true;
@@ -1878,6 +1884,9 @@ class vehicle
         // Returns debug data to overlay on the screen, a vector of {map tile position
         // relative to vehicle pos, color and text}.
         std::vector<std::tuple<point, int, std::string>> get_debug_overlay_data() const;
+
+        // Set cruise control
+        void set_cruise_control_speed();
 };
 
 namespace rot

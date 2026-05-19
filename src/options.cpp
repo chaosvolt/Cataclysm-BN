@@ -1164,8 +1164,8 @@ std::vector<options_manager::id_and_option> options_manager::build_soundpacks_li
 #if defined(__ANDROID__)
 bool options_manager::android_get_default_setting( const char *settings_name, bool default_value )
 {
-    JNIEnv *env = static_cast< JNIEnv *>( SDL_AndroidGetJNIEnv() );
-    jobject activity = static_cast< jobject>( SDL_AndroidGetActivity() );
+    JNIEnv *env = static_cast< JNIEnv *>( SDL_GetAndroidJNIEnv() );
+    jobject activity = static_cast< jobject>( SDL_GetAndroidActivity() );
     jclass clazz( env->GetObjectClass( activity ) );
     jmethodID method_id = env->GetMethodID( clazz, "getDefaultSetting", "(Ljava/lang/String;Z)Z" );
     jboolean ans = env->CallBooleanMethod( activity, method_id, env->NewStringUTF( settings_name ),
@@ -1618,7 +1618,7 @@ void options_manager::add_options_interface()
          //~ 12h time, e.g.  11:59pm
     {   { "12h", translate_marker( "12h" ) },
         //~ Military time, e.g.  2359
-        { "military", translate_marker( "Military" ) },
+        { "military", translate_marker_context( "time format", "Military" ) },
         //~ 24h time, e.g.  23:59
         { "24h", translate_marker( "24h" ) }
     },
@@ -2000,6 +2000,21 @@ void options_manager::add_options_graphics()
          translate_marker( "Sets custom night vision color." ), "#2eab01", 60 );
 
     get_option( "NIGHT_VISION_COLOR" ).setPrerequisite( "NIGHT_VISION_DEFAULT_COLOR", "custom" );
+
+    add( "ENHANCED_NIGHT_VISION_DEFAULT_COLOR", graphics,
+         translate_marker( "Enhanced Night Vision Default Colors" ),
+    translate_marker( "Choose from default night vision colors." ), {
+        { "#6cf5e7", translate_marker( "White Phosphor" ) },
+        { "#33e84e", translate_marker( "Green Phosphor" ) },
+        { "#888888", translate_marker( "Gray" ) },
+        { "custom", translate_marker( "Custom" ) }
+    }, "#6cf5e7" );
+
+    add( "ENHANCED_NIGHT_VISION_COLOR", graphics, translate_marker( "Enhanced Night Vision Color" ),
+         translate_marker( "Sets custom night vision color." ), "#6cf5e7", 60 );
+
+    get_option( "ENHANCED_NIGHT_VISION_COLOR" ).setPrerequisite( "ENHANCED_NIGHT_VISION_DEFAULT_COLOR",
+            "custom" );
 
     add_empty_line();
 
@@ -2407,6 +2422,32 @@ void options_manager::add_options_performance()
              translate_marker( "When enabled, obstacles at other z-levels correctly cast 3D shadows. Requires 3D FoV. Significantly slower than disabled." ),
              false
            );
+        add( "PREVENT_OCCLUSION", page_id, translate_marker( "Handle occlusion by high sprites" ),
+             translate_marker( "Draw tall sprites normal (Off), retracted/transparent (On), or automatically retracting/transparent near the player (Auto)." ),
+        {
+            { "off", translate_marker( "Off" ) },
+            { "on", translate_marker( "On" ) },
+            { "auto", translate_marker( "Auto" ) }
+        },
+        "auto" );
+        add( "PREVENT_OCCLUSION_TRANSP", page_id, translate_marker( "Prevent occlusion via transparency" ),
+             translate_marker( "Prevent high-sprite occlusion by using semi-transparent *_transparent tile variants when available." ),
+             true
+           );
+        add( "PREVENT_OCCLUSION_RETRACT", page_id, translate_marker( "Prevent occlusion via retraction" ),
+             translate_marker( "Prevent high-sprite occlusion by retracting sprites that define retracted offsets." ),
+             true
+           );
+        add( "PREVENT_OCCLUSION_MIN_DIST", page_id,
+             translate_marker( "Minimum distance for automatic occlusion handling" ),
+             translate_marker( "Minimum distance for automatic occlusion handling. Values above zero override tileset settings." ),
+             0.0, 60.0, 0.0, 0.1
+           );
+        add( "PREVENT_OCCLUSION_MAX_DIST", page_id,
+             translate_marker( "Maximum distance for automatic occlusion handling" ),
+             translate_marker( "Maximum distance for automatic occlusion handling. Values above zero override tileset settings." ),
+             0.0, 60.0, 0.0, 0.1
+           );
     } );
 
     get_option( "FOV_3D_Z_RANGE" ).setPrerequisite( "FOV_3D" );
@@ -2706,14 +2747,6 @@ void options_manager::add_options_debug()
          translate_marker( "If true, injuries cause persistent pain until they are healed." ), false );
 
     add_empty_line();
-
-    add( "MIN_AUTODRIVE_SPEED", debug, translate_marker( "Minimum auto-drive speed" ),
-         translate_marker( "Set the minimum speed for the auto-drive feature.  In tiles/s.  Default is 1 (6 km/h or 4 mph)." ),
-         1, 100, 1 );
-
-    add( "MAX_AUTODRIVE_SPEED", debug, translate_marker( "Maximum auto-drive speed" ),
-         translate_marker( "Set the maximum speed for the auto-drive feature.  In tiles/s.  Default is 9 (57 km/h or 36 mph)." ),
-         1, 100, 9 );
 
     add( "LIMITED_BAYONETS", debug, translate_marker( "New bayonet system" ),
          translate_marker( "If true, bayonets replace weapon attack instead of adding to it.  WIP feature, weakens bayonets heavily at the moment." ),
@@ -4057,10 +4090,14 @@ std::string options_manager::show( bool ingame, const bool world_options_only,
 
             } else if( iter.first == "TILES" || iter.first == "USE_TILES" || iter.first == "STATICZEFFECT" ||
                        iter.first == "MEMORY_MAP_MODE" || iter.first == "OVERMAP_TILES" ||
-                       iter.first == "NIGHT_VISION_COLOR" || iter.first == "NIGHT_VISION_DEFAULT_COLOR" ) {
+                       iter.first == "NIGHT_VISION_COLOR" || iter.first == "NIGHT_VISION_DEFAULT_COLOR" ||
+                       iter.first == "ENHANCED_NIGHT_VISION_COLOR" ||
+                       iter.first == "ENHANCED_NIGHT_VISION_DEFAULT_COLOR" ) {
                 used_tiles_changed = true;
                 if( iter.first == "STATICZEFFECT" || iter.first == "MEMORY_MAP_MODE" ||
-                    iter.first == "NIGHT_VISION_COLOR" || iter.first == "NIGHT_VISION_DEFAULT_COLOR" ) {
+                    iter.first == "NIGHT_VISION_COLOR" || iter.first == "NIGHT_VISION_DEFAULT_COLOR" ||
+                    iter.first == "ENHANCED_NIGHT_VISION_COLOR" ||
+                    iter.first == "ENHANCED_NIGHT_VISION_DEFAULT_COLOR" ) {
                     force_tile_change = true;
                 }
             } else if( iter.first == "USE_LANG" ) {
@@ -4226,6 +4263,13 @@ void options_manager::cache_to_globals()
     fov_3d = ::get_option<bool>( "FOV_3D" );
     fov_3d_z_range = ::get_option<int>( "FOV_3D_Z_RANGE" );
     fov_3d_occlusion = ::get_option<bool>( "FOV_3D_OCCLUSION" );
+    const auto prevent_occlusion_option = ::get_option<std::string>( "PREVENT_OCCLUSION" );
+    prevent_occlusion = prevent_occlusion_option == "off" ? 0 : prevent_occlusion_option == "on" ? 1 :
+                        2;
+    prevent_occlusion_retract = ::get_option<bool>( "PREVENT_OCCLUSION_RETRACT" );
+    prevent_occlusion_transp = ::get_option<bool>( "PREVENT_OCCLUSION_TRANSP" );
+    prevent_occlusion_min_dist = ::get_option<float>( "PREVENT_OCCLUSION_MIN_DIST" );
+    prevent_occlusion_max_dist = ::get_option<float>( "PREVENT_OCCLUSION_MAX_DIST" );
     static_z_effect = ::get_option<bool>( "STATICZEFFECT" );
     overmap_transparency = ::get_option<bool>( "OVERMAP_TRANSPARENCY" );
     PICKUP_RANGE = ::get_option<int>( "PICKUP_RANGE" );

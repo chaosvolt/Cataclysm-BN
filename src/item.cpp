@@ -373,6 +373,13 @@ item::item( const itype *type, time_point turn, int qty ) : type( type ),
     if( type->relic_data ) {
         relic_data = type->relic_data;
     }
+
+    for( const auto &func : type->use_methods | std::views::values ) {
+        const auto actor = func.get_actor_ptr();
+        if( actor != nullptr ) {
+            actor->on_spawned( *this );
+        }
+    }
 }
 
 item::item( const itype_id &id, time_point turn, int qty )
@@ -489,6 +496,13 @@ item::item( const item &source ) : game_object<item>( source ), contents( this )
     for( item * const &it : source.components ) {
         components.push_back( item::spawn( *it ) );
     }
+
+    for( const auto &func : type->use_methods | std::views::values ) {
+        const auto actor = func.get_actor_ptr();
+        if( actor != nullptr ) {
+            actor->on_spawned( *this );
+        }
+    }
 }
 
 item &item::operator=( const item &source )
@@ -538,6 +552,14 @@ item &item::operator=( const item &source )
     for( item * const &it : source.components ) {
         components.push_back( item::spawn( *it ) );
     }
+
+    for( const auto &func : type->use_methods | std::views::values ) {
+        const auto actor = func.get_actor_ptr();
+        if( actor != nullptr ) {
+            actor->on_spawned( *this );
+        }
+    }
+
     return *this;
 }
 
@@ -1315,7 +1337,7 @@ item::sizing item::get_sizing( const Character &who ) const
     }
     bool to_ignore = true;
     for( const armor_portion_data &piece : armor_data->data ) {
-        if( piece.encumber != 0 ) {
+        if( piece.encumber != 0 || piece.max_encumber != 0 ) {
             to_ignore = false;
         }
     }
@@ -1661,6 +1683,24 @@ void item::basic_info( std::vector<iteminfo> &info, const iteminfo_query *parts,
         }, enumeration_conjunction::none );
         info.emplace_back( "BASE", _( "Weapon Category: " ),
                            "<header>" + weapon_categories + "</header>" );
+    }
+
+    if( has_var( TINT_COLOR_VAR_NAME ) && !get_use( iuse_paint_stuff::IUSE_ACTION ) ) {
+        const auto c = get_var<RGBColor>( TINT_COLOR_VAR_NAME, {} );
+        const auto fg = get_var<RGBColor>( TINT_COLOR_FG_VAR_NAME, c );
+        const auto bg = get_var<RGBColor>( TINT_COLOR_BG_VAR_NAME, c );
+        if( fg != RGBColor{} || bg != RGBColor{} ) {
+            if( bg != fg ) {
+                info.emplace_back( "TOOL", string_format( _( "Painted With: <bold>%s, %s</bold>" ),
+                                   bg.friendly_name(), fg.friendly_name() ) );
+            } else if( bg == RGBColor{} ) {
+                info.emplace_back( "TOOL", string_format( _( "Painted With: <bold>%s</bold>" ),
+                                   fg.friendly_name() ) );
+            } else {
+                info.emplace_back( "TOOL", string_format( _( "Painted With: <bold>%s</bold>" ),
+                                   bg.friendly_name() ) );
+            }
+        }
     }
 
     if( parts->test( iteminfo_parts::DESCRIPTION ) ) {
@@ -4689,15 +4729,19 @@ void item::on_wear( Character &who )
             int lhs = 0;
             int rhs = 0;
             set_side( side::LEFT );
-            const char_encumbrance_data left_enc = who.get_encumbrance( *this );
+            const char_encumbrance_data left_enc = who.get_encumbrance();
             for( const bodypart_id &bp : all_bps ) {
-                lhs += left_enc.elems.at( bp.id() ).encumbrance;
+                if( get_covered_body_parts().test( bp.id() ) ) {
+                    lhs += left_enc.elems.at( bp.id() ).encumbrance;
+                }
             }
 
             set_side( side::RIGHT );
-            const char_encumbrance_data right_enc = who.get_encumbrance( *this );
+            const char_encumbrance_data right_enc = who.get_encumbrance();
             for( const bodypart_id &bp : all_bps ) {
-                rhs += right_enc.elems.at( bp.id() ).encumbrance;
+                if( get_covered_body_parts().test( bp.id() ) ) {
+                    rhs += right_enc.elems.at( bp.id() ).encumbrance;
+                }
             }
 
             set_side( lhs <= rhs ? side::LEFT : side::RIGHT );
@@ -4919,6 +4963,22 @@ void item::on_damage( int qty, damage_type )
     if( type->iequippable_callbacks ) {
         type->iequippable_callbacks->call_on_durability_change(
             get_avatar(), *this, damage_, damage_ + qty );
+    }
+}
+
+void item::on_map_placement( const map &m, const tripoint &p )
+{
+
+    // TODO: Move to reveal_map_actor
+    if( is_map() && !has_var( "reveal_map_center_omt" ) ) {
+        set_var( "reveal_map_center_omt", ms_to_omt_copy( m.getabs( p ) ) );
+    }
+
+    for( const auto &func : type->use_methods | std::views::values ) {
+        const auto actor = func.get_actor_ptr();
+        if( actor != nullptr ) {
+            actor->on_placed( *this, m, p );
+        }
     }
 }
 

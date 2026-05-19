@@ -52,6 +52,7 @@
 #include "cata_utility.h"
 #include "catalua_hooks.h"
 #include "catalua_sol.h"
+#include "cached_options.h"
 #include "catacharset.h"
 #include "character.h"
 #include "character_display.h"
@@ -108,6 +109,7 @@
 #include "item.h"
 #include "item_category.h"
 #include "item_contents.h"
+#include "item_functions.h"
 #include "item_stack.h"
 #include "itype.h"
 #include "iuse.h"
@@ -295,6 +297,7 @@ static const efftype_id effect_flu( "flu" );
 static const efftype_id effect_infected( "infected" );
 static const efftype_id effect_laserlocked( "laserlocked" );
 static const efftype_id effect_lying_down( "lying_down" );
+static const efftype_id effect_monster_disarmed( "monster_disarmed" );
 static const efftype_id effect_no_sight( "no_sight" );
 static const efftype_id effect_npc_suspend( "npc_suspend" );
 static const efftype_id effect_onfire( "onfire" );
@@ -601,6 +604,7 @@ void game::setup( bool load_world_modfiles )
     next_npc_id = character_id( 1 );
     next_mission_id = 1;
     new_game = true;
+    saving_blocked_by_failed_load = false;
     uquit = QUIT_NO;   // We haven't quit the game
     bVMonsterLookFire = true;
 
@@ -679,6 +683,7 @@ void game::load_map( const tripoint_abs_sm &pos_sm,
             submap_loader.release_load( lazy_border_handle_ );
             lazy_border_handle_ = 0;
         }
+        fire_loader.clear( submap_loader );
         submap_loader.flush_prev_desired();
     }
 
@@ -835,6 +840,7 @@ bool game::start_game()
 
     seed = rng_bits();
     new_game = true;
+    saving_blocked_by_failed_load = false;
     start_calendar();
     get_weather().nextweather = calendar::turn;
     safe_mode = ( get_option<bool>( "SAFEMODE" ) ? SAFE_MODE_ON : SAFE_MODE_OFF );
@@ -1676,6 +1682,7 @@ bool game::cleanup_at_end()
 
     // Clear dimension tracking state before clearing MAPBUFFER and item types.
     // Metadata must be cleared so stale pointers are not accessed after unload_data().
+    fire_loader.clear( submap_loader );
     kept_pocket_dimension_id_.clear();
     loaded_dimensions_.clear();
 
@@ -2670,6 +2677,7 @@ input_context get_default_mode_input_context()
     ctxt.register_action( "examine" );
     ctxt.register_action( "advinv" );
     ctxt.register_action( "pickup" );
+    ctxt.register_action( "pickup_all" );
     ctxt.register_action( "pickup_feet" );
     ctxt.register_action( "grab" );
     ctxt.register_action( "haul" );
@@ -3114,7 +3122,9 @@ bool game::load( const std::string &world )
     try {
         world_generator->set_active_world( wptr );
         g->setup();
-        g->load( wptr->world_saves.front() );
+        if( !g->load( wptr->world_saves.front() ) ) {
+            return false;
+        }
     } catch( const std::exception &err ) {
         debugmsg( "cannot load world '%s': %s", world, err.what() );
         return false;
@@ -3125,11 +3135,23 @@ bool game::load( const std::string &world )
 
 bool game::load( const save_t &name )
 {
-    background_pane background;
-    static_popup popup;
-    popup.message( "%s", _( "Please wait…\nLoading the save…" ) );
+    auto background = std::unique_ptr<background_pane>();
+    auto popup = std::unique_ptr<static_popup>();
+    if( !test_mode ) {
+        background = std::make_unique<background_pane>();
+        popup = std::make_unique<static_popup>();
+        popup->message( "%s", _( "Please wait…\nLoading the save…" ) );
+    }
 
     using namespace std::placeholders;
+
+    saving_blocked_by_failed_load = true;
+    auto save_json_valid = false;
+    const auto validate_save = [&]( std::istream & fin ) { save_json_valid = validate_save_json( fin ); };
+    if( !get_active_world()->read_from_file( name.base_path() + SAVE_EXTENSION, validate_save ) ||
+        !save_json_valid ) {
+        return false;
+    }
 
     // Now load up the master game data; factions (and more?)
     load_master();
@@ -3151,8 +3173,11 @@ bool game::load( const save_t &name )
         submap_loader.release_load( lazy_border_handle_ );
         lazy_border_handle_ = 0;
     }
-    if( !get_active_world()->read_from_file( name.base_path() + SAVE_EXTENSION,
-            std::bind( &game::unserialize, this, _1 ) ) ) {
+    fire_loader.clear( submap_loader );
+    auto unserialized = false;
+    const auto load_save = [&]( std::istream & fin ) { unserialized = unserialize( fin ); };
+    if( !get_active_world()->read_from_file( name.base_path() + SAVE_EXTENSION, load_save ) ||
+        !unserialized ) {
         return false;
     }
 
@@ -3298,6 +3323,7 @@ bool game::load( const save_t &name )
     m.update_visibility_cache( get_levz() );
     m.invalidate_map_cache( get_levz() );
 
+    saving_blocked_by_failed_load = false;
     return true;
 }
 
@@ -3437,6 +3463,9 @@ bool game::save( bool quitting )
 {
     world *world = get_active_world();
     if( !world ) {
+        return false;
+    }
+    if( saving_blocked_by_failed_load ) {
         return false;
     }
 
@@ -4860,9 +4889,12 @@ void game::world_tick()
     ZoneScoped;
     TracyPlot( "Active Dimensions", static_cast<int64_t>( loaded_dimensions_.size() ) );
 
-    const auto  fire_spread = reality_bubble_fire_spread;
-    const auto  do_emits   = calendar::once_every( 10_seconds );
-    const auto  abs_sub    = m.get_abs_sub();
+    const auto fire_spread = reality_bubble_fire_spread;
+    const auto do_emits = calendar::once_every( 10_seconds );
+
+    if( !fire_spread ) {
+        fire_loader.clear( submap_loader );
+    }
 
     auto total_field_count = int64_t{0};
     MAPBUFFER_REGISTRY.for_each( [&]( const std::string & dim, mapbuffer & mb ) {
@@ -6231,6 +6263,9 @@ bool game::revive_corpse( const tripoint &p, item &it )
 
     critter.no_extra_death_drops = true;
     critter.add_effect( effect_downed, 5_turns );
+    if( critter.type->monster_weapon ) {
+        critter.add_effect( effect_monster_disarmed, 1_turns );
+    }
     for( detached_ptr<item> &component : it.remove_components() ) {
         critter.add_corpse_component( std::move( component ) );
     }
@@ -7339,6 +7374,11 @@ void game::pickup()
     pickup( *examp_ );
 }
 
+void game::pickup_all()
+{
+    pickup::pick_up_all_nearby();
+}
+
 void game::pickup( const tripoint &p )
 {
     // Highlight target
@@ -8371,21 +8411,38 @@ void game::pre_print_all_tile_info( const tripoint &lp, const catacurses::window
     print_all_tile_info( lp, w_info, area_name, 1, first_line, last_line, cache );
 }
 
-std::optional<tripoint> game::look_around( bool force_3d )
+std::optional<tripoint> game::look_around( look_around_mode mode )
 {
     tripoint center = u.pos() + u.view_offset;
     look_around_result result = look_around( /*show_window=*/true, center, center, false, false,
-                                false, false, tripoint_zero, force_3d );
+                                false, false, tripoint_zero, mode );
     return result.position;
 }
 
 look_around_result game::look_around( bool show_window, tripoint &center,
                                       const tripoint &start_point, bool has_first_point, bool select_zone, bool peeking,
-                                      bool is_moving_zone, const tripoint &end_point, bool force_3d )
+                                      bool is_moving_zone, const tripoint &end_point, look_around_mode mode )
 {
     bVMonsterLookFire = false;
+
+    auto zlSwitch = [&]<typename T>( T normal, T m2d, T m3d ) {
+        switch( mode ) {
+            default:
+            case LA_MODE_DEFAULT:
+                return normal;
+            case LA_MODE_2D:
+                return m2d;
+            case LA_MODE_3D:
+                return m3d;
+        };
+    };
+
     // TODO: Make this `true`
-    const bool allow_zlev_move = m.has_zlevels() && ( get_option<bool>( "FOV_3D" ) || force_3d );
+    const bool allow_zlev_move = zlSwitch(
+                                     m.has_zlevels() && get_option<bool>( "FOV_3D" ),
+                                     false,
+                                     true
+                                 );
 
     temp_exit_fullscreen();
 
@@ -8482,10 +8539,10 @@ look_around_result game::look_around( bool show_window, tripoint &center,
 #endif // TILES
 
     const int old_levz = get_levz();
-    const int min_levz = force_3d ? -OVERMAP_DEPTH : std::max( old_levz - fov_3d_z_range,
-                         -OVERMAP_DEPTH );
-    const int max_levz = force_3d ? OVERMAP_HEIGHT : std::min( old_levz + fov_3d_z_range,
-                         OVERMAP_HEIGHT );
+    const int min_levz = zlSwitch( std::max( old_levz - fov_3d_z_range, -OVERMAP_DEPTH ),
+                                   old_levz,        -OVERMAP_DEPTH );
+    const int max_levz = zlSwitch( std::min( old_levz + fov_3d_z_range, OVERMAP_HEIGHT ), old_levz,
+                                   OVERMAP_HEIGHT );
 
     m.update_visibility_cache( old_levz );
     const visibility_variables &cache = m.get_visibility_variables_cache();
@@ -10651,6 +10708,7 @@ void game::butcher()
     std::vector<item *> corpses;
     std::vector<item *> disassembles;
     std::vector<item *> salvageables;
+    std::vector<item *> unloadables;
     map_stack items = m.i_at( u.pos() );
     const inventory &crafting_inv = u.crafting_inventory();
     auto q_cache = u.crafting_inventory().get_quality_cache();
@@ -10660,6 +10718,7 @@ void game::butcher()
     corpses.reserve( items.size() );
     salvageables.reserve( items.size() );
     disassembles.reserve( items.size() );
+    unloadables.reserve( items.size() );
 
     // Split into corpses, disassemble-able, and salvageable items
     // It's not much additional work to just generate a corpse list and
@@ -10675,6 +10734,9 @@ void game::butcher()
                 disassembles.push_back( current_item );
             } else if( !first_item_without_tools ) {
                 first_item_without_tools = current_item;
+            }
+            if( item_funcs::can_be_unloaded( *current_item ) ) {
+                unloadables.push_back( current_item );
             }
         }
     }
@@ -10716,6 +10778,7 @@ void game::butcher()
         MULTIBUTCHER,
         MULTIDISASSEMBLE_ONE,
         MULTIDISASSEMBLE_ALL,
+        MULTIUNLOAD_ALL,
         NUM_BUTCHER_ACTIONS
     };
     // What are we butchering (i.e.. which vector to pick indices from)
@@ -10786,6 +10849,10 @@ void game::butcher()
             kmenu.addentry_col( MULTISALVAGE, true, 'z', _( "Salvage everything" ),
                                 to_string_clipped( time_duration::from_turns( time_to_salvage / 100 ) ) );
         }
+        if( unloadables.size() > 1 ) {
+            kmenu.addentry_col( MULTIUNLOAD_ALL, true, 'u', _( "Unload Everything" ),
+                                std::to_string( unloadables.size() ) + + _( " objects" ) );
+        }
 
         kmenu.query();
 
@@ -10843,6 +10910,9 @@ void game::butcher()
                     break;
                 case MULTIDISASSEMBLE_ALL:
                     crafting::disassemble_all( u, true );
+                    break;
+                case MULTIUNLOAD_ALL:
+                    avatar_action::unload_all( u, false );
                     break;
                 default:
                     debugmsg( "Invalid butchery type: %d", indexer_index );
@@ -11363,7 +11433,7 @@ bool game::walk_move( const tripoint &dest_loc, const bool via_ramp )
                 if( mons->has_flag( MF_LOUDMOVES ) ) {
                     volume += 6;
                 }
-                sounds::sound( dest_loc, volume, sounds::sound_t::movement, mons->type->get_footsteps(), false,
+                sounds::sound( dest_loc, volume, sounds::sound_t::movement, mons->type->get_footsteps(), true,
                                "none", "none" );
             } else {
                 sounds::sound( dest_loc, volume, sounds::sound_t::movement, _( "footsteps" ), true,
@@ -12693,6 +12763,11 @@ void game::vertical_move( int movez, bool force, bool peeking )
                 }
                 add_msg( m_info, _( "There is something above blocking your way." ) );
                 return;
+            } else {
+                if( dest.z > OVERMAP_HEIGHT ) {
+                    add_msg( m_info, _( "Tried to move outside of zlevel world bounds." ) );
+                    return;
+                }
             }
         }
 
@@ -12724,14 +12799,20 @@ void game::vertical_move( int movez, bool force, bool peeking )
             return;
         }
 
-        if( ( m.impassable( dest ) || !standing_on_air ) && !can_noclip ) {
-            add_msg( m_info, _( "You can't go down here!" ) );
-            if( !m.has_flag( "GOES_UP", u.pos() ) ) {
-                suggest_auto_walk_to_stairs( u, m, "down" );
+        if( m.impassable( dest ) || !standing_on_air ) {
+            if( !can_noclip ) {
+                add_msg( m_info, _( "You can't go down here!" ) );
+                if( !m.has_flag( "GOES_UP", u.pos() ) ) {
+                    suggest_auto_walk_to_stairs( u, m, "down" );
+                }
+                return;
+            } else {
+                if( dest.z < -OVERMAP_DEPTH ) {
+                    add_msg( m_info, _( "Tried to move outside of zlevel world bounds." ) );
+                    return;
+                }
             }
-            return;
         }
-
     }
 
     if( force ) {

@@ -66,6 +66,8 @@ struct tile_type {
     bool is_multitile_subtile = false;
     int height_3d = 0;
     point offset = point_zero;
+    point offset_retracted = point_zero;
+    float pixelscale = 1.0f;
 
     std::vector<std::string> available_subtiles;
     std::set<flag_id> flags;
@@ -129,50 +131,77 @@ class texture
         friend class dynamic_atlas;
     private:
         SDL_Texture_SharedPtr sdl_texture_ptr;
-        SDL_Rect srcrect = { 0, 0, 0, 0 };
+        SDL_FRect srcrect = { 0, 0, 0, 0 };
 
     public:
-        texture( SDL_Texture_SharedPtr ptr, const SDL_Rect &rect ) : sdl_texture_ptr( ptr ),
+        texture( SDL_Texture_SharedPtr ptr, const SDL_FRect &rect ) : sdl_texture_ptr( ptr ),
             srcrect( rect ) { }
+        texture( SDL_Texture_SharedPtr ptr, const SDL_Rect &rect ) : sdl_texture_ptr( ptr ),
+            srcrect( { static_cast<float>( rect.x ), static_cast<float>( rect.y ),
+                     static_cast<float>( rect.w ), static_cast<float>( rect.h ) } ) { }
         texture() = default;
 
         /// Returns the width (first) and height (second) of the stored texture.
         std::pair<int, int> dimension() const {
-            return std::make_pair( srcrect.w, srcrect.h );
+            return std::make_pair( static_cast<int>( srcrect.w ), static_cast<int>( srcrect.h ) );
         }
 
-        /// Interface to @ref SDL_RenderCopyEx, using this as the texture, and
+        /// Interface to @ref SDL_RenderTextureRotated, using this as the texture, and
         /// null as source rectangle (render the whole texture). Other parameters
         /// are simply passed through.
-        int render_copy_ex( const SDL_Renderer_Ptr &renderer, const SDL_Rect *const dstrect,
-                            const double angle,
-                            const SDL_Point *const center, const SDL_RendererFlip flip ) const {
-            return SDL_RenderCopyEx( renderer.get(), sdl_texture_ptr.get(), &srcrect, dstrect, angle, center,
-                                     flip );
+        bool render_copy_ex( const SDL_Renderer_Ptr &renderer, const SDL_FRect *const dstrect,
+                             const double angle,
+                             const SDL_FPoint *const center, const SDL_FlipMode flip ) const {
+            return SDL_RenderTextureRotated( renderer.get(), sdl_texture_ptr.get(), &srcrect, dstrect,
+                                             angle, center, flip );
         }
 
-        /// Interface to @ref SDL_RenderCopy, using this as the texture
-        int render_copy( const SDL_Renderer_Ptr &renderer, const SDL_Rect *const dstrect ) const {
-            return SDL_RenderCopy( renderer.get(), sdl_texture_ptr.get(), &srcrect, dstrect );
+        bool render_copy_ex( const SDL_Renderer_Ptr &renderer, const SDL_Rect *const dstrect,
+                             const double angle,
+                             const SDL_Point *const center, const SDL_FlipMode flip ) const {
+            const std::optional<SDL_FRect> fdst = dstrect
+                                                  ? std::optional<SDL_FRect>( SDL_FRect{ float( dstrect->x ), float( dstrect->y ),
+                                                          float( dstrect->w ), float( dstrect->h ) } )
+                                                  : std::nullopt;
+            const std::optional<SDL_FPoint> fcenter = center
+                    ? std::optional<SDL_FPoint>( SDL_FPoint{ float( center->x ), float( center->y ) } )
+                    : std::nullopt;
+            return SDL_RenderTextureRotated( renderer.get(), sdl_texture_ptr.get(), &srcrect,
+                                             fdst ? &fdst.value() : nullptr, angle,
+                                             fcenter ? &fcenter.value() : nullptr, flip );
         }
 
-        int get_blend_mode( SDL_BlendMode *mode ) const {
+        /// Interface to @ref SDL_RenderTexture, using this as the texture
+        bool render_copy( const SDL_Renderer_Ptr &renderer, const SDL_FRect *const dstrect ) const {
+            return SDL_RenderTexture( renderer.get(), sdl_texture_ptr.get(), &srcrect, dstrect );
+        }
+
+        bool render_copy( const SDL_Renderer_Ptr &renderer, const SDL_Rect *const dstrect ) const {
+            if( !dstrect ) {
+                return SDL_RenderTexture( renderer.get(), sdl_texture_ptr.get(), &srcrect, nullptr );
+            }
+            const SDL_FRect fdst{ float( dstrect->x ), float( dstrect->y ),
+                                  float( dstrect->w ), float( dstrect->h ) };
+            return SDL_RenderTexture( renderer.get(), sdl_texture_ptr.get(), &srcrect, &fdst );
+        }
+
+        bool get_blend_mode( SDL_BlendMode *mode ) const {
             return SDL_GetTextureBlendMode( sdl_texture_ptr.get(), mode );
         }
 
-        int set_blend_mode( const SDL_BlendMode mode ) const {
+        bool set_blend_mode( const SDL_BlendMode mode ) const {
             return SDL_SetTextureBlendMode( sdl_texture_ptr.get(), mode );
         }
 
-        int get_alpha_mod( uint8_t *mod ) const {
+        bool get_alpha_mod( uint8_t *mod ) const {
             return SDL_GetTextureAlphaMod( sdl_texture_ptr.get(), mod );
         }
 
-        int set_alpha_mod( const uint8_t mod ) const {
+        bool set_alpha_mod( const uint8_t mod ) const {
             return SDL_SetTextureAlphaMod( sdl_texture_ptr.get(), mod );
         }
 
-        int set_color_mod( const uint8_t r, const uint8_t g, const uint8_t b ) const {
+        bool set_color_mod( const uint8_t r, const uint8_t g, const uint8_t b ) const {
             return SDL_SetTextureColorMod( sdl_texture_ptr.get(), r, g, b );
         }
 
@@ -224,7 +253,9 @@ enum class tileset_fx_type {
     none,
     shadow,
     night,
+    enhanced_night,
     overexposed,
+    enhanced_overexposed,
     underwater,
     underwater_dark,
     memory,
@@ -330,6 +361,9 @@ class tileset
 
         int tile_width;
         int tile_height;
+        int zlevel_height = 0;
+        float prevent_occlusion_min_dist = 0.0f;
+        float prevent_occlusion_max_dist = 0.0f;
 
         // multiplier for pixel-doubling tilesets
         float tile_pixelscale;
@@ -392,6 +426,15 @@ class tileset
         }
         float get_tile_pixelscale() const {
             return tile_pixelscale;
+        }
+        auto get_zlevel_height() const -> int {
+            return zlevel_height;
+        }
+        auto get_prevent_occlusion_min_dist() const -> float {
+            return prevent_occlusion_min_dist;
+        }
+        auto get_prevent_occlusion_max_dist() const -> float {
+            return prevent_occlusion_max_dist;
         }
         const std::string &get_tileset_id() const {
             return tileset_id;
@@ -471,6 +514,8 @@ class tileset_loader
         const SDL_Renderer_Ptr &renderer;
 
         point sprite_offset;
+        point sprite_offset_retracted;
+        float sprite_pixelscale = 1.0f;
 
         int sprite_width = 0;
         int sprite_height = 0;
@@ -771,7 +816,8 @@ class cata_tiles
                              unsigned int loc_rand, bool is_fg, int rota,
                              const tint_config &tint, lit_level ll,
                              bool apply_visual_effects, int overlay_count,
-                             int *height_3d, size_t warp_hash = TILESET_NO_WARP );
+                             int *height_3d, int retract = 0,
+                             size_t warp_hash = TILESET_NO_WARP );
 
         /**
          * @brief Calls draw_sprite_at() twice each for foreground and background.
@@ -792,7 +838,7 @@ class cata_tiles
                            unsigned int loc_rand, int rota,
                            const tint_config &bg_tint, const tint_config &fg_tint,
                            lit_level ll, bool apply_visual_effects, int &height_3d,
-                           int overlay_count );
+                           int overlay_count, int retract );
 
         /**
          * @brief Draws a colored solid color tile at position, with optional blending
@@ -848,26 +894,20 @@ class cata_tiles
         static auto get_trap_color( const trap &tr, const map &map, tripoint tripoint ) -> color_tint_pair;
         static auto get_field_color( const field &f, const map &m, const tripoint &p ) -> color_tint_pair;
         auto get_item_color( const item &i, const map &m, const tripoint &p ) -> color_tint_pair;
-        auto get_item_color( const item &i ) -> color_tint_pair;
         static auto get_vpart_color(
-            const optional_vpart_position &vp, const map &m, const tripoint &p ) -> color_tint_pair;
+            const optional_vpart_position &vp, const map &m, const tripoint &p,
+            const bool use_roof = false ) -> color_tint_pair;
         static auto get_monster_color(
             const monster &mon, const map &m, const tripoint &p ) -> color_tint_pair;
         static auto get_character_color(
             const Character &ch, const map &m, const tripoint &p ) -> color_tint_pair;
         auto get_effect_color(
             const effect &eff, const Character &c, const map &m, const tripoint &p ) -> color_tint_pair;
-        auto get_effect_color(
-            const effect &eff, const Character &c ) -> color_tint_pair;
         auto get_bionic_color(
             const bionic &bio, const Character &c, const map &m, const tripoint &p )-> color_tint_pair;
-        auto get_bionic_color(
-            const bionic &bio, const Character &c )-> color_tint_pair;
         auto get_mutation_color(
             const mutation &mut, const Character &c, const map &m,
             const tripoint &p )-> color_tint_pair;
-        auto get_mutation_color(
-            const mutation &mut, const Character &c )-> color_tint_pair;
 
         bool draw_terrain( const tripoint &p, lit_level ll, int &height_3d,
                            const bool ( &invisible )[5], int z_drop );
@@ -1149,6 +1189,7 @@ class cata_tiles
          * Allows usage of night vision tilesets during sprite rendering.
          */
         bool nv_goggles_activated = false;
+        bool env_goggles_activated = false;
 
         // Active warp hash for character rendering (0 if none)
         size_t active_warp_hash = TILESET_NO_WARP;

@@ -159,6 +159,27 @@ static const ter_str_id t_rock_floor_no_roof( "t_rock_floor_no_roof" );
 static const std::string str_DOOR_LOCKING( "DOOR_LOCKING" );
 static const std::string str_OPENCLOSE_INSIDE( "OPENCLOSE_INSIDE" );
 
+namespace
+{
+
+auto horde_should_avoid_vehicle_tile( const map &here, const tripoint &p,
+                                      const mongroup &group ) -> bool
+{
+    if( !group.horde ) {
+        return false;
+    }
+
+    const auto vp = here.veh_at( p );
+    if( !vp ) {
+        return false;
+    }
+
+    const auto &veh = vp->vehicle();
+    return veh.is_owned_by( get_avatar() );
+}
+
+} // namespace
+
 #define dbg(x) DebugLog((x),DC::Map)
 
 static location_vector<item> nulitems( new
@@ -880,7 +901,7 @@ void map::on_vehicle_moved( const point sm_min, const point sm_max, const int sm
         return;
     }
     level_cache &ch = get_cache( smz );
-
+    invalidate_lightmap_caches();
     // Mark dirty only the submaps the vehicle actually occupies (union of old
     // and new footprint), rather than the entire z-level.
     for( int smx = sm_min.x; smx <= sm_max.x; ++smx ) {
@@ -1081,7 +1102,9 @@ void map::vehmove()
     // neighbours reachable but not in the set get on_map=false as before.
     std::set<vehicle *> all_veh_ptrs;
     std::ranges::for_each( vehicle_list, [&]( const wrapped_vehicle & w ) {
-        all_veh_ptrs.insert( w.v );
+        if( loaded_vehicles.contains( w.v ) ) {
+            all_veh_ptrs.insert( w.v );
+        }
     } );
     std::map<vehicle *, bool> connected_vehicles;
     vehicle::enumerate_vehicles( connected_vehicles, all_veh_ptrs );
@@ -2529,6 +2552,8 @@ bool map::ter_set( const tripoint &p, const ter_id &new_terrain )
     // Make sure that if we supported something and no longer do so, it falls down
     support_dirty( above );
 
+    invalidate_lightmap_caches();
+
     return true;
 }
 
@@ -3655,6 +3680,17 @@ bool map::has_adjacent_terrain_with( const tripoint &p,
         }
     }
 
+    return false;
+}
+
+bool map::has_nearby( const tripoint &p,
+                      const std::function<bool( map &m, const tripoint &p )> &pred, int radius )
+{
+    for( const tripoint &adj : points_in_radius( p, radius ) ) {
+        if( pred( *this, adj ) ) {
+            return true;
+        }
+    }
     return false;
 }
 
@@ -4995,7 +5031,6 @@ bool map::open_door(
     if( vp ) {
         return open_door_veh( who, vp, p, inside );
     }
-
     return false;
 }
 
@@ -5658,10 +5693,6 @@ void map::add_item( const tripoint &p, detached_ptr<item> &&new_item )
         new_item->activate();
     }
 
-    if( new_item->is_map() && !new_item->has_var( "reveal_map_center_omt" ) ) {
-        new_item->set_var( "reveal_map_center_omt", ms_to_omt_copy( getabs( p ) ) );
-    }
-
     current_submap->is_uniform = false;
     invalidate_max_populated_zlev( p.z );
 
@@ -5673,6 +5704,8 @@ void map::add_item( const tripoint &p, detached_ptr<item> &&new_item )
         }
         current_submap->active_items.add( *new_item );
     }
+
+    new_item->on_map_placement( *this, p );
 
     current_submap->get_items( l ).push_back( std::move( new_item ) );
     return;
@@ -9031,6 +9064,10 @@ void map::spawn_monsters_submap_group( const tripoint &gp, mongroup &group, bool
 
             if( !ignore_inside_checks && !is_outside( fp ) ) {
                 continue; // monster must spawn outside.
+            }
+
+            if( horde_should_avoid_vehicle_tile( *this, fp, group ) ) {
+                continue; // hordes must not appear inside player-owned vehicles.
             }
 
             locations.push_back( fp );
