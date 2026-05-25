@@ -257,7 +257,9 @@
       { "point": [ -2, 2, -7 ], "overmap": "central_lab_core_corner_south" },
       { "point": [ -1, 2, -7 ], "overmap": "central_lab_core_edge_south" },
       { "point": [ 0, 2, -7 ], "overmap": "central_lab_down_south" },
-      { "point": [ 1, 2, -7 ], "overmap": "central_lab_core_edge_south" }
+      { "point": [ 1, 2, -7 ], "overmap": "central_lab_core_edge_south" },
+      { "point": [ 2, 2, -7 ], "overmap": "central_lab_core_corner_east" },
+      { "point": [ 0, 0, -10 ], "overmap": "central_lab_endgame" }
     ],
     "connections": [
       { "point": [ 0, 4, 0 ], "connection": "local_road", "from": [ 0, 3, 0 ] },
