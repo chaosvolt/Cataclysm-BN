@@ -1,0 +1,462 @@
+[
+  {
+    "type": "mapgen",
+    "method": "json",
+    "nested_mapgen_id": "central_lab_surface_plaza_a_16x16",
+    "object": {
+      "mapgensize": [ 16, 16 ],
+      "rows": [
+        "%%%%%%%%%%%%%%%%",
+        "%%%%%%%%%%%%%%%%",
+        "%%%%%%%%%%%%%%%%",
+        "%%%%%%%%%%%%%%%%",
+        "%%%%%%%%%%%%%%%%",
+        "%%%%%%%%%%%%%%%%",
+        "%%%%%%%%%%%%%%%%",
+        "%%%%%%%%%%%%%%%%",
+        "%%%%%%%%%%%%%%%%",
+        "%%%%%%%%%%%%%%%%",
+        "%%%%%%%%%%%%%%%%",
+        "%%%%%%%%%%%%%%%%",
+        "%%%%%%%%%%%%%%%%",
+        "%%%%%%%%%%%%%%%%",
+        "%%%%%%%%%%%%%%%%",
+        "%%%%%%%%%%%%%%%%"
+      ],
+      "terrain": { "%": [ [ "t_region_groundcover", 80 ], [ "t_region_shrub_decorative", 20 ], [ "t_region_tree_shade", 10 ] ] }
+    }
+  },
+  {
+    "type": "mapgen",
+    "method": "json",
+    "nested_mapgen_id": "central_lab_surface_plaza_b_16x16",
+    "object": {
+      "mapgensize": [ 16, 16 ],
+      "rows": [
+        "%%%%%%%  %%%%%%%",
+        "%%%%%%    %%%%%%",
+        "%%%%%  %%  %%%%%",
+        "%%%%  %%%%  %%%%",
+        "%%%  %%%%%%  %%%",
+        "%%  %%%%%%%%  %%",
+        "%  %%%%%%%%%%  %",
+        "  %%%%%%%%%%%%  ",
+        "  %%%%%%%%%%%%  ",
+        "% %%%%%%%%%%%  %",
+        "%  %%%%%%%%%  %%",
+        "%%  %%%%%%%  %%%",
+        "%%%  %%%%%  %%%%",
+        "%%%%  %%%  %%%%%",
+        "%%%%%     %%%%%%",
+        "%%%%%%%  %%%%%%%"
+      ],
+      "terrain": {
+        " ": "t_region_groundcover_barren",
+        "%": [ [ "t_region_groundcover", 80 ], [ "t_region_shrub_decorative", 20 ], [ "t_region_tree_shade", 20 ] ]
+      }
+    }
+  },
+  {
+    "type": "mapgen",
+    "method": "json",
+    "nested_mapgen_id": "central_lab_surface_plaza_c_16x16",
+    "object": {
+      "mapgensize": [ 16, 16 ],
+      "rows": [
+        "%%%%%%%  %%%%%%%",
+        "%%%%%%%  %%%%%%%",
+        "%%%          %%%",
+        "%%            %%",
+        "%%   %%%%%%   %%",
+        "%%  %%%%%%%%  %%",
+        "%%  %%%%%%%%  %%",
+        "%%  %%%%%%%%    ",
+        "    %%%%%%%%    ",
+        "    %%%%%%%%  %%",
+        "%%  %%%%%%%%  %%",
+        "%%   %%%%%%   %%",
+        "%%            %%",
+        "%%%          %%%",
+        "%%%%%%%  %%%%%%%",
+        "%%%%%%%  %%%%%%%"
+      ],
+      "terrain": {
+        " ": "t_region_groundcover_barren",
+        "%": [ [ "t_region_groundcover", 80 ], [ "t_region_shrub_decorative", 20 ], [ "t_region_tree_shade", 20 ] ]
+      }
+    }
+  },
+  {
+    "type": "mapgen",
+    "method": "json",
+    "nested_mapgen_id": "central_lab_surface_plaza_d_16x16",
+    "object": {
+      "mapgensize": [ 16, 16 ],
+      "rows": [
+        "                ",
+        "                ",
+        "                ",
+        "      ....      ",
+        "     .~~~~.     ",
+        "    .~~,,~~.    ",
+        "   .~~,^^,~~.   ",
+        "   .~,^^^^,~.   ",
+        "   .~,^^^^,~.   ",
+        "   .~~,^^,~~.   ",
+        "    .~~,,~~.    ",
+        "     .~~~~.     ",
+        "      ....      ",
+        "                ",
+        "                ",
+        "                "
+      ],
+      "terrain": {
+        "%": [ [ "t_region_groundcover", 9 ], "t_region_shrub_decorative" ],
+        "^": "t_water_dp",
+        ",": [ "t_water_dp", "t_water_sh" ],
+        "~": "t_water_sh",
+        ".": [ "t_water_sh", "t_region_groundcover" ]
+      }
+    }
+  },
+  {
+    "type": "mapgen",
+    "method": "json",
+    "nested_mapgen_id": "central_lab_surface_plaza_e_16x16",
+    "object": {
+      "mapgensize": [ 16, 16 ],
+      "rows": [
+        "                ",
+        "  ............  ",
+        " .~~~~~~~~~~~~. ",
+        " .~~~~~~~~~~~~. ",
+        " .~~~,,,,,,~~~. ",
+        " .~~,^^^^^^,~~. ",
+        " .~~,^^^^^^,~~. ",
+        " .~~,^^^^^^,~~. ",
+        " .~~,^^^^^^,~~. ",
+        " .~~,^^^^^^,~~. ",
+        " .~~,^^^^^^,~~. ",
+        " .~~~,,,,,,~~~. ",
+        " .~~~~~~~~~~~~. ",
+        " .~~~~~~~~~~~~. ",
+        "  ............  ",
+        "                "
+      ],
+      "terrain": {
+        "%": [ [ "t_region_groundcover", 9 ], "t_region_shrub_decorative" ],
+        "^": "t_water_dp",
+        ",": [ "t_water_dp", "t_water_sh" ],
+        "~": "t_water_sh",
+        ".": [ "t_water_sh", "t_region_groundcover" ]
+      }
+    }
+  },
+  {
+    "type": "mapgen",
+    "method": "json",
+    "nested_mapgen_id": "central_lab_surface_dorm_a_17x6",
+    "object": {
+      "mapgensize": [ 17, 6 ],
+      "rows": [
+        "T +  Db Db Db Db ",
+        "|||s  b  b  b  b ",
+        "u +              ",
+        "u +              ",
+        "|||s  b  b  b  b ",
+        "T +  Db Db Db Db "
+      ],
+      "terrain": { "|": "t_wall_b", "+": "t_door_c" },
+      "furniture": { "b": "f_bed", "D": [ "f_dresser", "f_wardrobe" ], "s": "f_sink", "u": "f_shower" },
+      "toilets": { "T": {  } },
+      "items": { "b": { "item": "lab_dorm", "chance": 50 }, "D": { "item": "dresser", "chance": 25, "repeat": 5 } }
+    }
+  },
+  {
+    "type": "mapgen",
+    "method": "json",
+    "nested_mapgen_id": "central_lab_surface_dorm_b_17x6",
+    "object": {
+      "mapgensize": [ 17, 6 ],
+      "rows": [
+        "T + s|Db Db Db Db",
+        "|||  | b  b  b  b",
+        "u +  +           ",
+        "u +  +           ",
+        "|||  | b  b  b  b",
+        "T + s|Db Db Db Db"
+      ],
+      "terrain": { "|": "t_wall_b", "+": "t_door_c" },
+      "furniture": { "b": "f_bed", "D": [ "f_dresser", "f_wardrobe" ], "s": "f_sink", "u": "f_shower" },
+      "toilets": { "T": {  } },
+      "items": { "b": { "item": "lab_dorm", "chance": 50 }, "D": { "item": "dresser", "chance": 25, "repeat": 5 } }
+    }
+  },
+  {
+    "type": "mapgen",
+    "method": "json",
+    "nested_mapgen_id": "central_lab_surface_dorm_c_17x6",
+    "object": {
+      "mapgensize": [ 17, 6 ],
+      "rows": [
+        "T |B bbDbbDbbDbbD",
+        "|+|B             ",
+        "s        heeh    ",
+        "s        heeh    ",
+        "|+|B             ",
+        "u |B bbDbbDbbDbbD"
+      ],
+      "terrain": { "|": "t_wall_b", "+": "t_door_c" },
+      "furniture": {
+        "B": "f_bookcase",
+        "b": "f_bed",
+        "D": [ "f_dresser", "f_wardrobe" ],
+        "e": "f_table",
+        "h": "f_chair",
+        "s": "f_sink",
+        "u": "f_shower"
+      },
+      "toilets": { "T": {  } },
+      "items": {
+        "B": { "item": "games", "chance": 25, "repeat": 2 },
+        "b": { "item": "lab_dorm", "chance": 50 },
+        "D": { "item": "dresser", "chance": 25, "repeat": 5 }
+      }
+    }
+  },
+  {
+    "type": "mapgen",
+    "method": "json",
+    "nested_mapgen_id": "central_lab_surface_dorm_d_17x6",
+    "object": {
+      "mapgensize": [ 17, 6 ],
+      "rows": [
+        "T s|  heeh  osFcc",
+        "   +  heeh       ",
+        "||||             ",
+        "s  |             ",
+        "s  + b b b b b b ",
+        "   | bDbDbDbDbDbD"
+      ],
+      "terrain": { "|": "t_wall_b", "+": "t_door_c" },
+      "furniture": {
+        "B": "f_bookcase",
+        "b": "f_bed",
+        "c": "f_counter",
+        "D": [ "f_dresser", "f_wardrobe" ],
+        "e": "f_table",
+        "F": "f_fridge",
+        "h": "f_chair",
+        "o": "f_oven",
+        "s": "f_sink",
+        "u": "f_shower"
+      },
+      "toilets": { "T": {  } },
+      "items": {
+        "b": { "item": "lab_dorm", "chance": 50 },
+        "D": { "item": "dresser", "chance": 25, "repeat": 5 },
+        "F": { "item": "fridgesnacks", "chance": 50, "repeat": 4 },
+        "o": { "item": "oven", "chance": 25, "repeat": 2 }
+      }
+    }
+  },
+  {
+    "type": "mapgen",
+    "method": "json",
+    "nested_mapgen_id": "central_lab_surface_dorm_e_17x6",
+    "object": {
+      "mapgensize": [ 17, 6 ],
+      "rows": [
+        "bDbDbDbDbDbDbDbD ",
+        "b b b b b b b b  ",
+        "                 ",
+        "|+||+||+||+|heeh ",
+        "u |s |u |s |     ",
+        "u | T|u | T|Fscc "
+      ],
+      "terrain": { "|": "t_wall_b", "+": "t_door_c" },
+      "furniture": {
+        "b": "f_bed",
+        "c": "f_counter",
+        "D": [ "f_dresser", "f_wardrobe" ],
+        "e": "f_table",
+        "F": "f_fridge",
+        "h": "f_chair",
+        "s": "f_sink",
+        "u": "f_shower"
+      },
+      "toilets": { "T": {  } },
+      "items": {
+        "b": { "item": "lab_dorm", "chance": 50 },
+        "D": { "item": "dresser", "chance": 25, "repeat": 5 },
+        "F": { "item": "fridgesnacks", "chance": 50, "repeat": 4 }
+      }
+    }
+  },
+  {
+    "type": "mapgen",
+    "method": "json",
+    "nested_mapgen_id": "central_lab_surface_dorm_f_17x6",
+    "object": {
+      "mapgensize": [ 17, 6 ],
+      "rows": [
+        "bD bD bD bD bD bD",
+        "b  b  b  b  b  b ",
+        "                 ",
+        "                 ",
+        "b  b  b  b  b  b ",
+        "bD bD bD bD bD bD"
+      ],
+      "furniture": { "b": "f_bed", "D": [ "f_dresser", "f_wardrobe" ] },
+      "items": { "b": { "item": "lab_dorm", "chance": 50 }, "D": { "item": "dresser", "chance": 25, "repeat": 5 } }
+    }
+  },
+  {
+    "type": "mapgen",
+    "method": "json",
+    "nested_mapgen_id": "central_lab_surface_dorm_g_17x6",
+    "object": {
+      "mapgensize": [ 17, 6 ],
+      "rows": [
+        " bDbDbDbDbDbDbDb ",
+        " b b b b b b b b ",
+        "                 ",
+        "                 ",
+        " b b b b b b b b ",
+        " bDbDbDbDbDbDbDb "
+      ],
+      "furniture": { "b": "f_bed", "D": [ "f_dresser", "f_wardrobe" ] },
+      "items": { "b": { "item": "lab_dorm", "chance": 50 }, "D": { "item": "dresser", "chance": 25, "repeat": 5 } }
+    }
+  },
+  {
+    "type": "mapgen",
+    "method": "json",
+    "nested_mapgen_id": "central_lab_surface_office_a_17x6",
+    "object": {
+      "mapgensize": [ 17, 6 ],
+      "rows": [
+        "dd  ddd   ddd  dd",
+        "dh   h     h   hd",
+        "                 ",
+        "                 ",
+        "dh   h     h   hd",
+        "dd  ddd   ddd  dd"
+      ],
+      "furniture": { "d": "f_desk", "h": "f_chair" },
+      "items": { "d": { "item": "office", "chance": 50, "repeat": 4 } }
+    }
+  },
+  {
+    "type": "mapgen",
+    "method": "json",
+    "nested_mapgen_id": "central_lab_surface_office_b_17x6",
+    "object": {
+      "mapgensize": [ 17, 6 ],
+      "rows": [
+        "                 ",
+        " dddddd   dddddd ",
+        " d  h     h   hd ",
+        " dh   h     h  d ",
+        " dddddd   dddddd ",
+        "                 "
+      ],
+      "furniture": { "d": "f_desk", "h": "f_chair" },
+      "items": { "d": { "item": "office", "chance": 50, "repeat": 4 } }
+    }
+  },
+  {
+    "type": "mapgen",
+    "method": "json",
+    "nested_mapgen_id": "central_lab_surface_office_c_17x6",
+    "object": {
+      "mapgensize": [ 17, 6 ],
+      "rows": [
+        "                 ",
+        " d  d  ddd  d  d ",
+        " dh dh dhd hd hd ",
+        " d  d       d  d ",
+        "                 ",
+        "                 "
+      ],
+      "furniture": { "d": "f_desk", "h": "f_chair" },
+      "items": { "d": { "item": "office", "chance": 50, "repeat": 4 } }
+    }
+  },
+  {
+    "type": "mapgen",
+    "method": "json",
+    "nested_mapgen_id": "central_lab_surface_office_d_17x6",
+    "object": {
+      "mapgensize": [ 17, 6 ],
+      "rows": [
+        "                 ",
+        " dd dd FFF dd dd ",
+        " dh d      hd  d ",
+        " d  dh BBB  d hd ",
+        " dd dd BBB dd dd ",
+        "                 "
+      ],
+      "furniture": { "B": "f_bookcase", "d": "f_desk", "F": "f_filing_cabinet", "h": "f_chair" },
+      "items": {
+        "B": { "item": "lab_bookshelves", "chance": 25, "repeat": 3 },
+        "d": { "item": "office", "chance": 50, "repeat": 4 },
+        "F": { "item": "file_room", "chance": 75, "repeat": 6 }
+      }
+    }
+  },
+  {
+    "type": "mapgen",
+    "method": "json",
+    "nested_mapgen_id": "central_lab_surface_office_e_17x6",
+    "object": {
+      "mapgensize": [ 17, 6 ],
+      "rows": [
+        "p               t",
+        "    hhhhhhhhh    ",
+        "   heeeeeeeeeh   ",
+        "   heeeeeeeeeh   ",
+        "    hhhhhhhhh    ",
+        "t               p"
+      ],
+      "furniture": { "e": "f_table", "h": "f_chair", "p": [ "f_indoor_plant", "f_indoor_plant_y" ], "t": "f_trashcan" },
+      "items": { "t": { "item": "trash_cart", "chance": 25, "repeat": 3 } }
+    }
+  },
+  {
+    "type": "mapgen",
+    "method": "json",
+    "nested_mapgen_id": "central_lab_surface_office_f_17x6",
+    "object": {
+      "mapgensize": [ 17, 6 ],
+      "rows": [
+        "t               p",
+        "     h  h  h  h  ",
+        "  d  h  h  h  h  ",
+        " hd  h  h  h  h  ",
+        "     h  h  h  h  ",
+        "p               t"
+      ],
+      "furniture": { "d": "f_desk", "h": "f_chair", "p": [ "f_indoor_plant", "f_indoor_plant_y" ], "t": "f_trashcan" },
+      "items": { "d": { "item": "office", "chance": 50, "repeat": 4 }, "t": { "item": "trash_cart", "chance": 25, "repeat": 3 } }
+    }
+  },
+  {
+    "type": "mapgen",
+    "method": "json",
+    "nested_mapgen_id": "central_lab_surface_office_g_17x6",
+    "object": {
+      "mapgensize": [ 17, 6 ],
+      "rows": [
+        "                 ",
+        " FFFFFFF FFFFFFF ",
+        "                 ",
+        "                 ",
+        " FFFFFFF FFFFFFF ",
+        "                 "
+      ],
+      "furniture": { "F": "f_filing_cabinet" },
+      "items": { "F": { "item": "file_room", "chance": 75, "repeat": 6 } }
+    }
+  }
+]
