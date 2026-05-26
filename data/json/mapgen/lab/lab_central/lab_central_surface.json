@@ -328,8 +328,8 @@
         "                     FSS",
         "                     FSS",
         "                     FSS",
-        "                     FSS",
-        "                     FSS",
+        "                     fSS",
+        "                     fSS",
         "                     FSS",
         "                     FSS",
         "                     FSS",
@@ -866,15 +866,7 @@
         "S": "t_sidewalk"
       },
       "furniture": { "b": "f_bench" },
-      "place_nested": [
-        {
-          "chunks": [
-            "central_lab_surface_plaza_16x16"
-          ],
-          "x": 4,
-          "y": 4
-        }
-      ]
+      "place_nested": [ { "chunks": [ "central_lab_surface_plaza_16x16" ], "x": 4, "y": 4 } ]
     }
   },
   {
@@ -927,20 +919,8 @@
         "t": { "item": "trash_cart", "chance": 25, "repeat": 3 }
       },
       "place_nested": [
-        {
-          "chunks": [
-            "central_lab_surface_office_17x6"
-          ],
-          "x": 3,
-          "y": 2
-        },
-        {
-          "chunks": [
-            "central_lab_surface_office_17x6"
-          ],
-          "x": 3,
-          "y": 16
-        }
+        { "chunks": [ "central_lab_surface_office_17x6" ], "x": 3, "y": 2 },
+        { "chunks": [ "central_lab_surface_office_17x6" ], "x": 3, "y": 16 }
       ]
     }
   },
@@ -994,20 +974,8 @@
         "t": { "item": "trash_cart", "chance": 25, "repeat": 3 }
       },
       "place_nested": [
-        {
-          "chunks": [
-            "central_lab_surface_office_17x6"
-          ],
-          "x": 3,
-          "y": 2
-        },
-        {
-          "chunks": [
-            "central_lab_surface_office_17x6"
-          ],
-          "x": 3,
-          "y": 16
-        }
+        { "chunks": [ "central_lab_surface_office_17x6" ], "x": 3, "y": 2 },
+        { "chunks": [ "central_lab_surface_office_17x6" ], "x": 3, "y": 16 }
       ]
     }
   },
@@ -1087,27 +1055,9 @@
         "<": "t_stairs_up"
       },
       "place_nested": [
-        {
-          "chunks": [
-            "central_lab_surface_dorm_17x6"
-          ],
-          "x": 3,
-          "y": 2
-        },
-        {
-          "chunks": [
-            "central_lab_surface_dorm_17x6"
-          ],
-          "x": 3,
-          "y": 9
-        },
-        {
-          "chunks": [
-            "central_lab_surface_dorm_17x6"
-          ],
-          "x": 3,
-          "y": 16
-        }
+        { "chunks": [ "central_lab_surface_dorm_17x6" ], "x": 3, "y": 2 },
+        { "chunks": [ "central_lab_surface_dorm_17x6" ], "x": 3, "y": 9 },
+        { "chunks": [ "central_lab_surface_dorm_17x6" ], "x": 3, "y": 16 }
       ]
     }
   },
@@ -1154,27 +1104,9 @@
       },
       "furniture": { "d": "f_dryer", "w": "f_washer" },
       "place_nested": [
-        {
-          "chunks": [
-            "central_lab_surface_dorm_17x6"
-          ],
-          "x": 3,
-          "y": 2
-        },
-        {
-          "chunks": [
-            "central_lab_surface_dorm_17x6"
-          ],
-          "x": 3,
-          "y": 9
-        },
-        {
-          "chunks": [
-            "central_lab_surface_dorm_17x6"
-          ],
-          "x": 3,
-          "y": 16
-        }
+        { "chunks": [ "central_lab_surface_dorm_17x6" ], "x": 3, "y": 2 },
+        { "chunks": [ "central_lab_surface_dorm_17x6" ], "x": 3, "y": 9 },
+        { "chunks": [ "central_lab_surface_dorm_17x6" ], "x": 3, "y": 16 }
       ]
     }
   },
