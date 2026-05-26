@@ -439,6 +439,11 @@ class json_flag
             return requires_flag_;
         }
 
+        /** The tag to be displayed on the item's display name when it has this flag */
+        std::string tag() const {
+            return tag_;
+        }
+
         /** The flag's modifier on the fun value of comestibles */
         int taste_mod() const {
             return taste_mod_;
@@ -463,6 +468,7 @@ class json_flag
         bool inherit_ = true;
         bool craft_inherit_ = false;
         std::string requires_flag_;
+        std::string tag_;
         int taste_mod_ = 0;
 
         /** Load flag definition from JSON */
