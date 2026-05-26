@@ -5875,9 +5875,11 @@ void map::process_items()
             process_items_in_vehicles( *sm );
         } );
     }
-    // Making a copy, in case the original variable gets modified during `process_items_in_submap`
+    // Snapshot because processing can add or remove active submaps.
     ZoneScopedN( "process_items_submaps" );
-    const std::set<tripoint_abs_sm> submaps_with_active_items_copy = submaps_with_active_items;
+    const auto submaps_with_active_items_copy = std::vector<tripoint_abs_sm>(
+                submaps_with_active_items.begin(), submaps_with_active_items.end() );
+    auto active_items = std::vector<item *> {};
     for( const tripoint_abs_sm &abs_pos : submaps_with_active_items_copy ) {
         if( !submap_loader.is_simulated( bound_dimension_, tripoint_abs_sm( abs_pos ) ) ) {
             continue;
@@ -5888,7 +5890,7 @@ void map::process_items()
             continue;
         }
         if( !current_submap->active_items.empty() ) {
-            process_items_in_submap( *current_submap, local_pos );
+            process_items_in_submap( *current_submap, local_pos, active_items );
         }
     }
 }
@@ -5908,12 +5910,13 @@ static temperature_flag temperature_flag_at_point( const map &m, const tripoint_
     return temperature_flag::TEMP_NORMAL;
 }
 
-void map::process_items_in_submap( submap &current_submap, const tripoint_bub_sm &gridp )
+auto map::process_items_in_submap( submap &current_submap, const tripoint_bub_sm &gridp,
+                                   std::vector<item *> &active_items ) -> void
 {
     // Get a COPY of the active item list for this submap.
     // If more are added as a side effect of processing, they are ignored this turn.
     // If they are destroyed before processing, they don't get processed.
-    std::vector<item *> active_items = current_submap.active_items.get_for_processing();
+    current_submap.active_items.get_for_processing( active_items );
     const point grid_offset( gridp.x() * SEEX, gridp.y() * SEEY );
     for( item *&active_item_ref : active_items ) {
         if( !active_item_ref || !active_item_ref->is_loaded() ) {
@@ -6822,41 +6825,63 @@ void map::update_submap_active_item_status( const tripoint_bub_ms &p )
 void map::update_visibility_cache( const int zlev )
 {
     ZoneScopedN( "update_visibility_cache" );
+    const auto player_pos = g->u.bub_pos();
     visibility_variables_cache.variables_set = true; // Not used yet
     visibility_variables_cache.g_light_level = static_cast<int>( g->light_level( zlev ) );
     {
-        const level_cache &plr_ch = get_cache_ref( g->u.bub_pos().z() );
+        const level_cache &plr_ch = get_cache_ref( player_pos.z() );
         visibility_variables_cache.vision_threshold = g->u.get_vision_threshold(
-                    plr_ch.lm[plr_ch.idx( g->u.bub_pos().x(), g->u.bub_pos().y() )].max() );
+                    plr_ch.lm[plr_ch.idx( player_pos.x(), player_pos.y() )].max() );
     }
 
     visibility_variables_cache.u_clairvoyance = g->u.clairvoyance();
+    visibility_variables_cache.u_unimpaired_range = g->u.unimpaired_range();
     visibility_variables_cache.u_sight_impaired = g->u.sight_impaired();
     visibility_variables_cache.u_is_boomered = g->u.has_effect( effect_boomered );
+    visibility_variables_cache.visibility_scale_factor =
+        60.0f / static_cast<float>( g_max_view_distance );
 
     auto sm_squares_seen = std::vector<int>( static_cast<size_t>( my_MAPSIZE ) * my_MAPSIZE, 0 );
 
-    int min_z = fov_3d ? -OVERMAP_DEPTH : ( zlevels ? std::max( zlev - 1, -OVERMAP_DEPTH ) : zlev );
-    int max_z = fov_3d ? OVERMAP_HEIGHT : zlev;
+    const auto min_z = fov_3d ? -OVERMAP_DEPTH : ( zlevels ? std::max( zlev - 1,
+                       -OVERMAP_DEPTH ) : zlev );
+    const auto max_z = fov_3d ? OVERMAP_HEIGHT : zlev;
+    const auto max_delta_z = std::max( std::abs( min_z - player_pos.z() ),
+                                       std::abs( max_z - player_pos.z() ) );
+    const auto &reference_cache = get_cache_ref( zlev );
+    const auto *const distance_table = trigdist ?
+    &get_rl_dist_lookup_table( rl_dist_lookup_table_dimensions{
+        .max_dx = reference_cache.cache_x - 1,
+        .max_dy = reference_cache.cache_y - 1,
+        .max_dz = max_delta_z,
+        .trigdist = trigdist,
+    } ) :
+        nullptr;
 
-    for( int z = min_z; z <= max_z; z++ ) {
+    for( const auto z : std::views::iota( min_z, max_z + 1 ) ) {
 
         level_cache &vc_cache = get_cache( z );
         auto &visibility_cache = vc_cache.visibility_cache;
+        const auto dz = std::abs( z - player_pos.z() );
 
         // Fill visibility_cache.  apparent_light_at is read-only per tile.
         if( parallel_enabled && parallel_map_cache ) {
             parallel_for( 0, vc_cache.cache_x, [&]( int x ) {
-                for( int y = 0; y < vc_cache.cache_y; y++ ) {
+                const auto dx = std::abs( x - player_pos.x() );
+                for( const auto y : std::views::iota( 0, vc_cache.cache_y ) ) {
+                    const auto dy = std::abs( y - player_pos.y() );
+                    const auto dist = distance_table != nullptr ?
+                                      distance_table->distance_3d( dx, dy, dz ) :
+                                      std::max( { dx, dy, dz } );
                     visibility_cache[vc_cache.idx( x, y )] =
-                        apparent_light_at( tripoint_bub_ms{ x, y, z }, visibility_variables_cache );
+                        apparent_light_at( tripoint_bub_ms{ x, y, z }, visibility_variables_cache, dist );
                 }
             } );
             // Overmap discovery accumulation: serial, reads from the parallel-filled cache.
             // Kept separate because sm_squares_seen is not thread-safe to write from workers.
             if( z == zlev ) {
-                for( int x = 0; x < vc_cache.cache_x; x++ ) {
-                    for( int y = 0; y < vc_cache.cache_y; y++ ) {
+                for( const auto x : std::views::iota( 0, vc_cache.cache_x ) ) {
+                    for( const auto y : std::views::iota( 0, vc_cache.cache_y ) ) {
                         const auto ll = visibility_cache[vc_cache.idx( x, y )];
                         sm_squares_seen[( x / SEEX ) * my_MAPSIZE + y / SEEY] +=
                             ( ll == lit_level::BRIGHT || ll == lit_level::LIT );
@@ -6867,10 +6892,15 @@ void map::update_visibility_cache( const int zlev )
             // Serial path: merge visibility fill and overmap discovery into one pass,
             // avoiding a second full scan of the cache at the player's z-level.
             const bool count_discovery = ( z == zlev );
-            for( int x = 0; x < vc_cache.cache_x; x++ ) {
-                for( int y = 0; y < vc_cache.cache_y; y++ ) {
+            for( const auto x : std::views::iota( 0, vc_cache.cache_x ) ) {
+                const auto dx = std::abs( x - player_pos.x() );
+                for( const auto y : std::views::iota( 0, vc_cache.cache_y ) ) {
+                    const auto dy = std::abs( y - player_pos.y() );
+                    const auto dist = distance_table != nullptr ?
+                                      distance_table->distance_3d( dx, dy, dz ) :
+                                      std::max( { dx, dy, dz } );
                     const auto ll =
-                        apparent_light_at( tripoint_bub_ms{ x, y, z }, visibility_variables_cache );
+                        apparent_light_at( tripoint_bub_ms{ x, y, z }, visibility_variables_cache, dist );
                     visibility_cache[vc_cache.idx( x, y )] = ll;
                     if( count_discovery ) {
                         sm_squares_seen[( x / SEEX ) * my_MAPSIZE + y / SEEY] +=
@@ -8104,14 +8134,11 @@ void map::shift( const point_rel_sm &sp )
                 // Shift per-submap dirty bitsets so retained submaps stay clean.
                 shift_bitset_cache( gc.transparency_cache_dirty, gc.cache_mapsize, 1, sp );
                 shift_bitset_cache( gc.floor_cache_dirty, gc.cache_mapsize, 1, sp );
-                shift_bitset_cache( gc.outside_cache_dirty, gc.cache_mapsize, 1, sp );
                 // Shift flat cache data so retained submaps' data stays in the
                 // correct tile position.  New edge submaps get stale values that
                 // will be overwritten by the next build_*_cache() call.
                 shift_flat_cache( gc.transparency_cache, gc.cache_x, gc.cache_y, sp );
                 shift_flat_cache( gc.floor_cache, gc.cache_x, gc.cache_y, sp );
-                shift_flat_cache( gc.outside_cache, gc.cache_x, gc.cache_y, sp );
-                shift_flat_cache( gc.sheltered_cache, gc.cache_x, gc.cache_y, sp );
                 if( fov_3d_occlusion ) {
                     shift_flat_cache( gc.angled_sunlight_cache, gc.cache_x, gc.cache_y, sp );
                 }
