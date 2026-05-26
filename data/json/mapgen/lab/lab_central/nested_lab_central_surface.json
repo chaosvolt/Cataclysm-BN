@@ -2,7 +2,177 @@
   {
     "type": "mapgen",
     "method": "json",
-    "nested_mapgen_id": "central_lab_surface_plaza_a_16x16",
+    "nested_mapgen_id": "central_lab_surface_utility_6x6",
+    "object": {
+      "mapgensize": [ 6, 6 ],
+      "rows": [
+        "  }   ",
+        "T hST ",
+        "      ",
+        "T {BT ",
+        "      ",
+        "hsT{BT"
+      ],
+      "terrain": {
+        "B": "t_oil_circ_brkr_l",
+        "S": "t_switchgear_l",
+        "T": "t_support_l",
+        "h": "t_station_disc",
+        "s": "t_switchgear_s",
+        "{": "t_current_trans",
+        "}": "t_lgtn_arrest"
+      }
+    }
+  },
+  {
+    "type": "mapgen",
+    "method": "json",
+    "nested_mapgen_id": "central_lab_surface_utility_6x6",
+    "object": {
+      "mapgensize": [ 6, 6 ],
+      "rows": [
+        "    8S",
+        "T   T ",
+        " 888  ",
+        " 888  ",
+        "T   T ",
+        "    8S"
+      ],
+      "terrain": { "8": "t_potential_trans", "S": "t_switchgear_l", "T": "t_support_l" }
+    }
+  },
+  {
+    "type": "mapgen",
+    "method": "json",
+    "nested_mapgen_id": "central_lab_surface_utility_6x6",
+    "object": {
+      "mapgensize": [ 6, 6 ],
+      "rows": [
+        "hST{BT",
+        "{     ",
+        "B     ",
+        "hST   ",
+        "}     ",
+        "      "
+      ],
+      "terrain": {
+        "B": "t_oil_circ_brkr_l",
+        "S": "t_switchgear_l",
+        "T": "t_support_l",
+        "h": "t_station_disc",
+        "{": "t_current_trans",
+        "}": "t_lgtn_arrest"
+      }
+    }
+  },
+  {
+    "type": "mapgen",
+    "method": "json",
+    "nested_mapgen_id": "central_lab_surface_utility_6x6",
+    "object": {
+      "mapgensize": [ 6, 6 ],
+      "rows": [
+        "      ",
+        " GG   ",
+        " GGE  ",
+        " GG   ",
+        "      ",
+        "      "
+      ],
+      "terrain": { "E": "t_machinery_electronic", "G": "t_generator_broken" }
+    }
+  },
+  {
+    "type": "mapgen",
+    "method": "json",
+    "nested_mapgen_id": "central_lab_surface_utility_6x6",
+    "object": {
+      "mapgensize": [ 6, 6 ],
+      "rows": [
+        "      ",
+        " GG   ",
+        " GGE  ",
+        " GGE  ",
+        " GG   ",
+        "      "
+      ],
+      "terrain": { "E": "t_machinery_electronic", "G": "t_generator_broken" }
+    }
+  },
+  {
+    "type": "mapgen",
+    "method": "json",
+    "nested_mapgen_id": "central_lab_surface_utility_6x6",
+    "object": {
+      "mapgensize": [ 6, 6 ],
+      "rows": [
+        "GG  GG",
+        "GG  GG",
+        "      ",
+        "      ",
+        "GG  GG",
+        "GG  GG"
+      ],
+      "terrain": { "E": "t_machinery_electronic", "G": "t_generator_broken" }
+    }
+  },
+  {
+    "type": "mapgen",
+    "method": "json",
+    "nested_mapgen_id": "central_lab_surface_utility_6x6",
+    "object": {
+      "mapgensize": [ 6, 6 ],
+      "rows": [
+        "      ",
+        " P 1  ",
+        "   6  ",
+        "   6  ",
+        " P 2  ",
+        "      "
+      ],
+      "terrain": { "P": "t_plut_generator", "1": "t_switchgear_s", "2": "t_current_trans", "6": "t_console_broken" }
+    }
+  },
+  {
+    "type": "mapgen",
+    "method": "json",
+    "nested_mapgen_id": "central_lab_surface_utility_6x6",
+    "object": {
+      "mapgensize": [ 6, 6 ],
+      "rows": [
+        "      ",
+        "SS    ",
+        "SS 12 ",
+        "SS 3  ",
+        "SS    ",
+        "      "
+      ],
+      "terrain": { "1": "t_switchgear_s", "2": "t_current_trans", "3": "t_station_disc" },
+      "furniture": { "S": "f_solar_unit" }
+    }
+  },
+  {
+    "type": "mapgen",
+    "method": "json",
+    "nested_mapgen_id": "central_lab_surface_utility_6x6",
+    "object": {
+      "mapgensize": [ 6, 6 ],
+      "rows": [
+        "      ",
+        "S    S",
+        "S 1  S",
+        "S 23 S",
+        "S    S",
+        "      "
+      ],
+      "terrain": { "1": "t_switchgear_s", "2": "t_current_trans", "3": "t_station_disc" },
+      "furniture": { "S": "f_solar_unit" }
+    }
+  },
+  {
+    "type": "mapgen",
+    "method": "json",
+    "nested_mapgen_id": "central_lab_surface_plaza_16x16",
     "object": {
       "mapgensize": [ 16, 16 ],
       "rows": [
@@ -29,7 +199,7 @@
   {
     "type": "mapgen",
     "method": "json",
-    "nested_mapgen_id": "central_lab_surface_plaza_b_16x16",
+    "nested_mapgen_id": "central_lab_surface_plaza_16x16",
     "object": {
       "mapgensize": [ 16, 16 ],
       "rows": [
@@ -59,7 +229,7 @@
   {
     "type": "mapgen",
     "method": "json",
-    "nested_mapgen_id": "central_lab_surface_plaza_c_16x16",
+    "nested_mapgen_id": "central_lab_surface_plaza_16x16",
     "object": {
       "mapgensize": [ 16, 16 ],
       "rows": [
@@ -89,7 +259,7 @@
   {
     "type": "mapgen",
     "method": "json",
-    "nested_mapgen_id": "central_lab_surface_plaza_d_16x16",
+    "nested_mapgen_id": "central_lab_surface_plaza_16x16",
     "object": {
       "mapgensize": [ 16, 16 ],
       "rows": [
@@ -122,7 +292,7 @@
   {
     "type": "mapgen",
     "method": "json",
-    "nested_mapgen_id": "central_lab_surface_plaza_e_16x16",
+    "nested_mapgen_id": "central_lab_surface_plaza_16x16",
     "object": {
       "mapgensize": [ 16, 16 ],
       "rows": [
@@ -155,7 +325,7 @@
   {
     "type": "mapgen",
     "method": "json",
-    "nested_mapgen_id": "central_lab_surface_dorm_a_17x6",
+    "nested_mapgen_id": "central_lab_surface_dorm_17x6",
     "object": {
       "mapgensize": [ 17, 6 ],
       "rows": [
@@ -175,7 +345,7 @@
   {
     "type": "mapgen",
     "method": "json",
-    "nested_mapgen_id": "central_lab_surface_dorm_b_17x6",
+    "nested_mapgen_id": "central_lab_surface_dorm_17x6",
     "object": {
       "mapgensize": [ 17, 6 ],
       "rows": [
@@ -195,7 +365,7 @@
   {
     "type": "mapgen",
     "method": "json",
-    "nested_mapgen_id": "central_lab_surface_dorm_c_17x6",
+    "nested_mapgen_id": "central_lab_surface_dorm_17x6",
     "object": {
       "mapgensize": [ 17, 6 ],
       "rows": [
@@ -227,7 +397,7 @@
   {
     "type": "mapgen",
     "method": "json",
-    "nested_mapgen_id": "central_lab_surface_dorm_d_17x6",
+    "nested_mapgen_id": "central_lab_surface_dorm_17x6",
     "object": {
       "mapgensize": [ 17, 6 ],
       "rows": [
@@ -263,7 +433,7 @@
   {
     "type": "mapgen",
     "method": "json",
-    "nested_mapgen_id": "central_lab_surface_dorm_e_17x6",
+    "nested_mapgen_id": "central_lab_surface_dorm_17x6",
     "object": {
       "mapgensize": [ 17, 6 ],
       "rows": [
@@ -296,7 +466,7 @@
   {
     "type": "mapgen",
     "method": "json",
-    "nested_mapgen_id": "central_lab_surface_dorm_f_17x6",
+    "nested_mapgen_id": "central_lab_surface_dorm_17x6",
     "object": {
       "mapgensize": [ 17, 6 ],
       "rows": [
@@ -314,7 +484,7 @@
   {
     "type": "mapgen",
     "method": "json",
-    "nested_mapgen_id": "central_lab_surface_dorm_g_17x6",
+    "nested_mapgen_id": "central_lab_surface_dorm_17x6",
     "object": {
       "mapgensize": [ 17, 6 ],
       "rows": [
@@ -332,7 +502,7 @@
   {
     "type": "mapgen",
     "method": "json",
-    "nested_mapgen_id": "central_lab_surface_office_a_17x6",
+    "nested_mapgen_id": "central_lab_surface_office_17x6",
     "object": {
       "mapgensize": [ 17, 6 ],
       "rows": [
@@ -350,7 +520,7 @@
   {
     "type": "mapgen",
     "method": "json",
-    "nested_mapgen_id": "central_lab_surface_office_b_17x6",
+    "nested_mapgen_id": "central_lab_surface_office_17x6",
     "object": {
       "mapgensize": [ 17, 6 ],
       "rows": [
@@ -368,7 +538,7 @@
   {
     "type": "mapgen",
     "method": "json",
-    "nested_mapgen_id": "central_lab_surface_office_c_17x6",
+    "nested_mapgen_id": "central_lab_surface_office_17x6",
     "object": {
       "mapgensize": [ 17, 6 ],
       "rows": [
@@ -386,7 +556,7 @@
   {
     "type": "mapgen",
     "method": "json",
-    "nested_mapgen_id": "central_lab_surface_office_d_17x6",
+    "nested_mapgen_id": "central_lab_surface_office_17x6",
     "object": {
       "mapgensize": [ 17, 6 ],
       "rows": [
@@ -408,7 +578,7 @@
   {
     "type": "mapgen",
     "method": "json",
-    "nested_mapgen_id": "central_lab_surface_office_e_17x6",
+    "nested_mapgen_id": "central_lab_surface_office_17x6",
     "object": {
       "mapgensize": [ 17, 6 ],
       "rows": [
@@ -426,7 +596,7 @@
   {
     "type": "mapgen",
     "method": "json",
-    "nested_mapgen_id": "central_lab_surface_office_f_17x6",
+    "nested_mapgen_id": "central_lab_surface_office_17x6",
     "object": {
       "mapgensize": [ 17, 6 ],
       "rows": [
@@ -444,7 +614,7 @@
   {
     "type": "mapgen",
     "method": "json",
-    "nested_mapgen_id": "central_lab_surface_office_g_17x6",
+    "nested_mapgen_id": "central_lab_surface_office_17x6",
     "object": {
       "mapgensize": [ 17, 6 ],
       "rows": [

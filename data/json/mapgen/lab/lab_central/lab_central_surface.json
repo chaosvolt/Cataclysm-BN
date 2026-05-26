@@ -328,8 +328,8 @@
         "                     FSS",
         "                     FSS",
         "                     FSS",
-        "                     fSS",
-        "                     fSS",
+        "                     FSS",
+        "                     FSS",
         "                     FSS",
         "                     FSS",
         "                     FSS",
@@ -342,7 +342,15 @@
         "                     FSS",
         "                     FSS"
       ],
-      "terrain": { "F": "t_chainfence", "f": "t_chaingate_l", "S": "t_sidewalk" }
+      "terrain": { "F": "t_chainfence", "f": "t_chaingate_l", "S": "t_sidewalk" },
+      "place_nested": [
+        { "chunks": [ "central_lab_surface_utility_6x6" ], "x": 3, "y": 1 },
+        { "chunks": [ "central_lab_surface_utility_6x6" ], "x": 12, "y": 1 },
+        { "chunks": [ "central_lab_surface_utility_6x6" ], "x": 3, "y": 9 },
+        { "chunks": [ "central_lab_surface_utility_6x6" ], "x": 12, "y": 9 },
+        { "chunks": [ "central_lab_surface_utility_6x6" ], "x": 3, "y": 17 },
+        { "chunks": [ "central_lab_surface_utility_6x6" ], "x": 12, "y": 17 }
+      ]
     }
   },
   {
@@ -861,11 +869,7 @@
       "place_nested": [
         {
           "chunks": [
-            [ "central_lab_surface_plaza_a_16x16", 20 ],
-            [ "central_lab_surface_plaza_b_16x16", 20 ],
-            [ "central_lab_surface_plaza_c_16x16", 20 ],
-            [ "central_lab_surface_plaza_d_16x16", 20 ],
-            [ "central_lab_surface_plaza_e_16x16", 20 ]
+            "central_lab_surface_plaza_16x16"
           ],
           "x": 4,
           "y": 4
@@ -925,26 +929,14 @@
       "place_nested": [
         {
           "chunks": [
-            [ "central_lab_surface_office_a_17x6", 25 ],
-            [ "central_lab_surface_office_b_17x6", 25 ],
-            [ "central_lab_surface_office_c_17x6", 25 ],
-            [ "central_lab_surface_office_d_17x6", 25 ],
-            [ "central_lab_surface_office_e_17x6", 25 ],
-            [ "central_lab_surface_office_f_17x6", 25 ],
-            [ "central_lab_surface_office_g_17x6", 25 ]
+            "central_lab_surface_office_17x6"
           ],
           "x": 3,
           "y": 2
         },
         {
           "chunks": [
-            [ "central_lab_surface_office_a_17x6", 25 ],
-            [ "central_lab_surface_office_b_17x6", 25 ],
-            [ "central_lab_surface_office_c_17x6", 25 ],
-            [ "central_lab_surface_office_d_17x6", 25 ],
-            [ "central_lab_surface_office_e_17x6", 25 ],
-            [ "central_lab_surface_office_f_17x6", 25 ],
-            [ "central_lab_surface_office_g_17x6", 25 ]
+            "central_lab_surface_office_17x6"
           ],
           "x": 3,
           "y": 16
@@ -1004,26 +996,14 @@
       "place_nested": [
         {
           "chunks": [
-            [ "central_lab_surface_office_a_17x6", 25 ],
-            [ "central_lab_surface_office_b_17x6", 25 ],
-            [ "central_lab_surface_office_c_17x6", 25 ],
-            [ "central_lab_surface_office_d_17x6", 25 ],
-            [ "central_lab_surface_office_e_17x6", 25 ],
-            [ "central_lab_surface_office_f_17x6", 25 ],
-            [ "central_lab_surface_office_g_17x6", 25 ]
+            "central_lab_surface_office_17x6"
           ],
           "x": 3,
           "y": 2
         },
         {
           "chunks": [
-            [ "central_lab_surface_office_a_17x6", 25 ],
-            [ "central_lab_surface_office_b_17x6", 25 ],
-            [ "central_lab_surface_office_c_17x6", 25 ],
-            [ "central_lab_surface_office_d_17x6", 25 ],
-            [ "central_lab_surface_office_e_17x6", 25 ],
-            [ "central_lab_surface_office_f_17x6", 25 ],
-            [ "central_lab_surface_office_g_17x6", 25 ]
+            "central_lab_surface_office_17x6"
           ],
           "x": 3,
           "y": 16
@@ -1109,39 +1089,21 @@
       "place_nested": [
         {
           "chunks": [
-            [ "central_lab_surface_dorm_a_17x6", 25 ],
-            [ "central_lab_surface_dorm_b_17x6", 25 ],
-            [ "central_lab_surface_dorm_c_17x6", 25 ],
-            [ "central_lab_surface_dorm_d_17x6", 25 ],
-            [ "central_lab_surface_dorm_e_17x6", 25 ],
-            [ "central_lab_surface_dorm_f_17x6", 25 ],
-            [ "central_lab_surface_dorm_g_17x6", 25 ]
+            "central_lab_surface_dorm_17x6"
           ],
           "x": 3,
           "y": 2
         },
         {
           "chunks": [
-            [ "central_lab_surface_dorm_a_17x6", 25 ],
-            [ "central_lab_surface_dorm_b_17x6", 25 ],
-            [ "central_lab_surface_dorm_c_17x6", 25 ],
-            [ "central_lab_surface_dorm_d_17x6", 25 ],
-            [ "central_lab_surface_dorm_e_17x6", 25 ],
-            [ "central_lab_surface_dorm_f_17x6", 25 ],
-            [ "central_lab_surface_dorm_g_17x6", 25 ]
+            "central_lab_surface_dorm_17x6"
           ],
           "x": 3,
           "y": 9
         },
         {
           "chunks": [
-            [ "central_lab_surface_dorm_a_17x6", 25 ],
-            [ "central_lab_surface_dorm_b_17x6", 25 ],
-            [ "central_lab_surface_dorm_c_17x6", 25 ],
-            [ "central_lab_surface_dorm_d_17x6", 25 ],
-            [ "central_lab_surface_dorm_e_17x6", 25 ],
-            [ "central_lab_surface_dorm_f_17x6", 25 ],
-            [ "central_lab_surface_dorm_g_17x6", 25 ]
+            "central_lab_surface_dorm_17x6"
           ],
           "x": 3,
           "y": 16
@@ -1194,39 +1156,21 @@
       "place_nested": [
         {
           "chunks": [
-            [ "central_lab_surface_dorm_a_17x6", 25 ],
-            [ "central_lab_surface_dorm_b_17x6", 25 ],
-            [ "central_lab_surface_dorm_c_17x6", 25 ],
-            [ "central_lab_surface_dorm_d_17x6", 25 ],
-            [ "central_lab_surface_dorm_e_17x6", 25 ],
-            [ "central_lab_surface_dorm_f_17x6", 25 ],
-            [ "central_lab_surface_dorm_g_17x6", 25 ]
+            "central_lab_surface_dorm_17x6"
           ],
           "x": 3,
           "y": 2
         },
         {
           "chunks": [
-            [ "central_lab_surface_dorm_a_17x6", 25 ],
-            [ "central_lab_surface_dorm_b_17x6", 25 ],
-            [ "central_lab_surface_dorm_c_17x6", 25 ],
-            [ "central_lab_surface_dorm_d_17x6", 25 ],
-            [ "central_lab_surface_dorm_e_17x6", 25 ],
-            [ "central_lab_surface_dorm_f_17x6", 25 ],
-            [ "central_lab_surface_dorm_g_17x6", 25 ]
+            "central_lab_surface_dorm_17x6"
           ],
           "x": 3,
           "y": 9
         },
         {
           "chunks": [
-            [ "central_lab_surface_dorm_a_17x6", 25 ],
-            [ "central_lab_surface_dorm_b_17x6", 25 ],
-            [ "central_lab_surface_dorm_c_17x6", 25 ],
-            [ "central_lab_surface_dorm_d_17x6", 25 ],
-            [ "central_lab_surface_dorm_e_17x6", 25 ],
-            [ "central_lab_surface_dorm_f_17x6", 25 ],
-            [ "central_lab_surface_dorm_g_17x6", 25 ]
+            "central_lab_surface_dorm_17x6"
           ],
           "x": 3,
           "y": 16
