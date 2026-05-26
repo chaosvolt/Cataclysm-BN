@@ -1014,6 +1014,100 @@
       "terrain": { "_": "t_flat_roof", "-": "t_gutter", "o": "t_gutter_drop" }
     }
   },
+
+
+
+  {
+    "type": "mapgen",
+    "method": "json",
+    "om_terrain": [ "central_lab_surface_cafeteria" ],
+    "object": {
+      "fill_ter": "t_floor",
+      "rows": [
+        "SSSSSSSSSSSSSSSSSSSSSSSS",
+        "SSSSSSSSSSSSSSSSSSSSSSSS",
+        "SS||WWWWWW|++|WWWWWW||SS",
+        "Sg|                  |SS",
+        "SSW                  WSS",
+        "SSW bbbbbb    bbbbbb WSS",
+        "SSW eeeeee    eeeeee WSS",
+        "SSW eeeeee    eeeeee WSS",
+        "SSW bbbbbb    bbbbbb WSS",
+        "SSW                  WSS",
+        "SS|tt              tt|SS",
+        "SS|W|  beeb  beeb  |W|SS",
+        "SS__|  beeb  beeb  |__SS",
+        "SS__+  beeb  beeb  +__SS",
+        "SS__|  beeb  beeb  |__SS",
+        "SS|W|  beeb  beeb  |W|SS",
+        "SS|tt              tt|SS",
+        "SSW                  WSS",
+        "SSW                  WSS",
+        "SSW  vv          VV  WSS",
+        "SSW  |||cccccccc|||  WSS",
+        "SSW  |s          o|  WSS",
+        "SSW  |s          o|  WSS",
+        "SS|L +   cFFFFc   + L|SS"
+      ],
+      "terrain": {
+        "|": "t_wall_b",
+        "+": "t_door_c",
+        "_": "t_strconc_floor_no_roof",
+        "g": "t_gutter_downspout",
+        "S": "t_sidewalk",
+        "W": "t_reinforced_glass_shutter"
+      },
+      "furniture": { "b": "f_bench", "c": "f_counter", "e": "f_table", "F": "f_fridge", "L": "f_locker", "o": "f_oven", "s": "f_sink", "t": "f_trashcan", "V": "f_vending_c", "v": "f_vending_c" },
+      "items": {
+        "d": { "item": "fast_fridge", "chance": 50, "repeat": 10 },
+        "e": { "item": "fast_table", "chance": 25 },
+        "L": { "item": "cleaning", "chance": 50, "repeat": 4 },
+        "o": { "item": "oven", "chance": 75, "repeat": 3 },
+        "s": { "item": "restaur_sink", "chance": 75, "repeat": 5 },
+        "t": { "item": "trash_cart", "chance": 50, "repeat": 6 },
+        "V": { "item": "vending_food", "chance": 80 },
+        "v": { "item": "vending_drink", "chance": 80 }
+      }
+    }
+  },
+  {
+    "type": "mapgen",
+    "method": "json",
+    "om_terrain": [ "central_lab_surface_cafeteria_roof" ],
+    "object": {
+      "fill_ter": "t_open_air",
+      "rows": [
+        "                        ",
+        "                        ",
+        "  --------------------  ",
+        "  o__________________-  ",
+        "  -__________________-  ",
+        "  -__________________-  ",
+        "  -__________________-  ",
+        "  -__________________-  ",
+        "  -__________________-  ",
+        "  -__________________-  ",
+        "  -__________________-  ",
+        "  ---______________---  ",
+        "    -______________-    ",
+        "    -______________-    ",
+        "    -______________-    ",
+        "  ---______________---  ",
+        "  -__________________-  ",
+        "  -__________________-  ",
+        "  -__________________-  ",
+        "  -__________________-  ",
+        "  -__________________-  ",
+        "  -__________________-  ",
+        "  -__________________-  ",
+        "  -__________________-  "
+      ],
+      "terrain": { "_": "t_flat_roof", "-": "t_gutter", "o": "t_gutter_drop" }
+    }
+  },
+
+
+
   {
     "type": "mapgen",
     "method": "json",

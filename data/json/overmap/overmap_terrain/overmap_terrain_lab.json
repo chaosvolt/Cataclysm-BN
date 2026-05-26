@@ -325,6 +325,14 @@
   },
   {
     "type": "overmap_terrain",
+    "id": [ "central_lab_surface_cafeteria", "central_lab_surface_cafeteria_roof" ],
+    "name": "cafeteria",
+    "color": "i_light_blue",
+    "sym": "c",
+    "see_cost": 5
+  },
+  {
+    "type": "overmap_terrain",
     "id": [ "central_lab_surface_dorms", "central_lab_surface_dorms_2", "central_lab_surface_dorms_roof" ],
     "name": "dormitories",
     "color": "i_blue",
