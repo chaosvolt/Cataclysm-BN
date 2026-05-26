@@ -10040,7 +10040,7 @@ bool item::needs_processing() const
     return is_active() || has_flag( flag_RADIO_ACTIVATION ) || has_flag( flag_ETHEREAL_ITEM ) ||
            ( !contents.empty() && is_container() && contents.front().needs_processing() ) ||
            ( magazine_current() && magazine_current()->needs_processing() ) ||
-           is_artifact() || is_relic() || is_food();
+           is_artifact() || is_relic() || goes_bad();
 }
 
 int item::processing_speed() const
@@ -10089,7 +10089,7 @@ void item::update_rot_from_location( const temperature_flag temperature )
 
     auto pos = tripoint_bub_ms::zero();
     auto flag = temperature;
-    if( has_position() ) {
+    if( is_loaded() && has_position() ) {
         pos = position();
         flag = rot::temperature_flag_for_location( get_map(), *this );
     }
