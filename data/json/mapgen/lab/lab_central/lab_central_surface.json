@@ -440,18 +440,18 @@
         "SSSSSSSSSSSSSSSSSSSSSSSS",
         "SSSSSSSSSSSSSSSSSSSSSSSS",
         "|||WWWWW||___||WWWWW||SS",
-        "-|       |___|       |SS",
-        "-|       W___W       WSS",
-        "-|       |___|       WSS",
-        "-|       ||+||       WSS",
+        "-|       W___W       |SS",
+        "-|       |+|+|       WSS",
+        "-|                   WSS",
+        "-|                   WSS",
         "-|                   WSS",
         "-|                   WSS",
         "-|                   |SS",
-        "-|               ||W||SS",
-        "-|               |____SS",
-        "-|               +____SS",
-        "-|               |____SS",
-        "-|               ||W||SS",
+        "-|                 |W|SS",
+        "-|                 +__SS",
+        "-|                 |__SS",
+        "-|                 +__SS",
+        "-|                 |W|SS",
         "-|                   |SS",
         "-|                   WSS",
         "-|                   WSS",
@@ -1017,6 +1017,60 @@
   {
     "type": "mapgen",
     "method": "json",
+    "om_terrain": [ "central_lab_surface_medical_center" ],
+    "object": {
+      "fill_ter": "t_floor",
+      "rows": [
+        "SSSSSSSSSSSSSSSSSSSSSSSS",
+        "SSSSSSSSSSSSSSSSSSSSSSSS",
+        "SS||||||||||||||||||||SS",
+        "SS|   |   |   |   | T|SS",
+        "SS|   |   |   |   |  |SS",
+        "SS|   |   |   |   | s|SS",
+        "SS||+|||+|||+|||+||+||SS",
+        "SS|f                f|SS",
+        "SS|f                f|SS",
+        "SS||||||+||WW||  ||||SS",
+        "SS|      c    |  |   |SS",
+        "SS+      ch   W  +   |SS",
+        "SS+      c    W  |   |SS",
+        "SS|      ch   |  |||||SS",
+        "SSWe     ccGGc|  |   |SS",
+        "SSWh          +  +   |SS",
+        "SSWh          |  |   |SS",
+        "SSWh          |  |||||SS",
+        "SSWh          |  |   |SS",
+        "SSWh          |  +   |SS",
+        "SS|ehhhhhe    |ff|   |SS",
+        "SS||WWWWWW|++|||||||||SS",
+        "SSSSSSSSSSSSSSSSSSSSgSSS",
+        "SSSSSSSSSSSSSSSSSSSSSSSS"
+      ],
+      "terrain": {
+        "|": "t_wall_w",
+        "+": "t_door_c",
+        "g": "t_gutter_downspout",
+        "S": "t_sidewalk",
+        "W": "t_reinforced_glass_shutter"
+      },
+      "furniture": {
+        "c": "f_counter",
+        "e": "f_table",
+        "f": "f_glass_cabinet",
+        "G": "f_counter_gate_c",
+        "h": "f_chair",
+        "s": "f_sink"
+      },
+      "toilets": { "T": {  } },
+      "items": {
+        "e": { "item": "doctors_books", "chance": 50, "repeat": 2 },
+        "f": { "item": "tools_medical", "chance": 25, "repeat": 2 }
+      }
+    }
+  },
+  {
+    "type": "mapgen",
+    "method": "json",
     "om_terrain": [ "central_lab_surface_cafeteria" ],
     "object": {
       "fill_ter": "t_floor",
@@ -1067,8 +1121,8 @@
         "v": "f_vending_c"
       },
       "items": {
-        "d": { "item": "fast_fridge", "chance": 50, "repeat": 10 },
         "e": { "item": "fast_table", "chance": 25 },
+        "F": { "item": "fast_fridge", "chance": 50, "repeat": 10 },
         "L": { "item": "cleaning", "chance": 50, "repeat": 4 },
         "o": { "item": "oven", "chance": 75, "repeat": 3 },
         "s": { "item": "restaur_sink", "chance": 75, "repeat": 5 },
