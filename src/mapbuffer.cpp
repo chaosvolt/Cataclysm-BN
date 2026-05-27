@@ -7,6 +7,7 @@
 #include <functional>
 #include <memory>
 #include <mutex>
+#include <optional>
 #include <set>
 #include <sstream>
 #include <utility>
@@ -22,6 +23,8 @@
 #include "game_constants.h"
 #include "json.h"
 #include "map.h"
+#include "mapdata.h"
+#include "overmapbuffer.h"
 #include "output.h"
 #include "popup.h"
 #include "profile.h"
@@ -31,6 +34,49 @@
 #include "translations.h"
 #include "ui_manager.h"
 #include "world.h"
+
+namespace
+{
+
+auto uniform_terrain_for_omt( const std::string &dimension_id,
+                              const tripoint_abs_omt &omt_addr ) -> std::optional<ter_id>
+{
+    static const oter_id rock( "empty_rock" );
+    static const oter_id air( "open_air" );
+
+    const auto terrain_type = get_overmapbuffer( dimension_id ).ter( omt_addr );
+    if( terrain_type == air ) {
+        return t_open_air;
+    }
+    if( terrain_type == rock ) {
+        return t_rock;
+    }
+    return std::nullopt;
+}
+
+auto add_uniform_omt( mapbuffer &dest, const tripoint_abs_sm &base,
+                      const ter_id &terrain_type ) -> bool
+{
+    static constexpr auto offsets = std::array{
+        point_rel_sm::zero(),
+        point_rel_sm::east(),
+        point_rel_sm::south(),
+        point_rel_sm::south_east()
+    };
+
+    auto added_any = false;
+    std::ranges::for_each( offsets, [&]( const auto & offset ) {
+        const auto pos = base + offset;
+        auto sm = std::make_unique<submap>( pos );
+        sm->is_uniform = true;
+        sm->set_all_ter( terrain_type );
+        sm->last_touched = calendar::turn;
+        added_any |= dest.add_submap( pos, sm );
+    } );
+    return added_any;
+}
+
+} // namespace
 
 mapbuffer::mapbuffer() = default;
 mapbuffer::~mapbuffer() = default;
@@ -389,7 +435,7 @@ void mapbuffer::save( bool delete_after_save, bool notify_tracker, bool show_pro
     }
 
     // Flush the pending-writes cache to disk.  These are omts that were
-    // serialised in memory (by presave_omt or unload_omt) but not yet written.
+    // serialised in memory by unload_omt() but not yet written.
     // Omts still resident in submaps were already handled by save_omt() above;
     // only evicted omts need to be written here.
     //
@@ -599,9 +645,10 @@ bool mapbuffer::preload_omt( const tripoint_abs_omt &omt_addr )
     return from_cache;
 }
 
-bool mapbuffer::generate_omt( const tripoint_abs_omt &omt_addr )
+auto mapbuffer::generate_omt( const tripoint_abs_omt &omt_addr,
+                              const mapbuffer_generate_omt_options &options ) -> mapgen_result
 {
-    ZoneScoped;
+    ZoneScopedN( "mapbuffer_generate_omt" );
     const auto base = project_to<coords::sm>( omt_addr );
     const bool all_loaded =
         lookup_submap_in_memory( base )
@@ -609,75 +656,36 @@ bool mapbuffer::generate_omt( const tripoint_abs_omt &omt_addr )
         && lookup_submap_in_memory( base + point_south )
         && lookup_submap_in_memory( base + point_south_east );
     if( all_loaded ) {
-        return false;
+        return {};
     }
-    tinymap tmp_map;
-    tmp_map.bind_dimension( dimension_id_ );
-    tmp_map.generate( base, calendar::turn );
-    return true;
-}
 
-void mapbuffer::presave_omt( const tripoint_abs_omt &omt_addr )
-{
-    ZoneScoped;
-    const auto base = project_to<coords::sm>( omt_addr );
-    const std::array<tripoint_abs_sm, 4> addrs = { {
-            base,
-            base + point_rel_sm::east(),
-            base + point_rel_sm::south(),
-            base + point_rel_sm::south_east()
-        }
-    };
+    if( const auto uniform_terrain = uniform_terrain_for_omt( dimension_id_, omt_addr ) ) {
+        ZoneScopedN( "mapbuffer_generate_uniform_omt" );
+        return {
+            .status = add_uniform_omt( *this, base, *uniform_terrain )
+            ? mapgen_result_status::generated
+            : mapgen_result_status::not_generated,
+        };
+    }
 
-    // Collect raw submap pointers under the lock — brief hold only.
-    std::array<submap *, 4> ptrs = {};
-    bool all_uniform = true;
     {
-        std::lock_guard<std::recursive_mutex> lk( submaps_mutex_ );
-        for( int i = 0; i < 4; ++i ) {
-            const auto it = submaps.find( addrs[i] );
-            if( it != submaps.end() && it->second ) {
-                ptrs[i] = it->second.get();
-                if( !it->second->is_uniform ) {
-                    all_uniform = false;
-                }
-            }
+        ZoneScopedN( "mapbuffer_generate_tinymap" );
+        tinymap tmp_map;
+        tmp_map.bind_dimension( dimension_id_ );
+        const auto generate_result = tmp_map.generate( base, calendar::turn, {
+            .defer_postprocess_hooks = options.defer_postprocess_hooks,
+            .worker_safe = options.worker_safe,
+            .use_selected_mapgen = options.use_selected_mapgen,
+            .selected_mapgen = options.selected_mapgen,
+        } );
+        if( generate_result.needs_main_thread() ) {
+            return generate_result;
+        }
+        if( !generate_result.is_generated() ) {
+            return generate_result;
         }
     }
-
-    // Uniform omts regenerate faster than a disk round-trip.
-    if( all_uniform || disable_mapgen ) {
-        return;
-    }
-
-    // Serialise into the pending-writes cache outside the lock.  The submap
-    // objects stay alive until after this future resolves (submap_load_manager
-    // withholds eviction until the presave completes).  No disk I/O occurs here;
-    // the cache is flushed to disk only on an explicit save.
-    std::ostringstream buf;
-    {
-        JsonOut jsout( buf );
-        jsout.start_array();
-        for( int i = 0; i < 4; ++i ) {
-            submap *sm = ptrs[i];
-            if( !sm ) {
-                continue;
-            }
-            jsout.start_object();
-            jsout.member( "version", savegame_version );
-            jsout.member( "coordinates" );
-            jsout.start_array();
-            jsout.write( addrs[i].x() );
-            jsout.write( addrs[i].y() );
-            jsout.write( addrs[i].z() );
-            jsout.end_array();
-            sm->store( jsout );
-            jsout.end_object();
-        }
-        jsout.end_array();
-    }
-    std::lock_guard<std::mutex> pw_lk( pending_writes_mutex_ );
-    pending_writes_[omt_addr] = std::move( buf ).str();
+    return { .status = mapgen_result_status::generated };
 }
 
 auto mapbuffer::drain_pending_submap_destroy() -> void
