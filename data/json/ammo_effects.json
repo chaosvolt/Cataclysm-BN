@@ -461,5 +461,19 @@
     "id": "AMMO_40x46_MAKESHIFT_HE",
     "type": "ammo_effect",
     "explosion": { "damage": 60, "radius": 5 }
+  },
+  {
+    "id": "AMMO_84x246_HE",
+    "type": "ammo_effect",
+    "explosion": {
+      "damage": 80,
+      "radius": 6,
+      "fragment": { "impact": { "damage_type": "bullet", "amount": 220, "armor_multiplier": 1 }, "range": 7 }
+    }
+  },
+  {
+    "id": "AMMO_84x246_HEDP",
+    "type": "ammo_effect",
+    "explosion": { "damage": 125, "radius": 3 }
   }
 ]
