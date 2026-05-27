@@ -172,6 +172,206 @@
   {
     "type": "mapgen",
     "method": "json",
+    "nested_mapgen_id": "central_lab_surface_medcenter_h_3x3",
+    "object": {
+      "mapgensize": [ 3, 3 ],
+      "rows": [
+        " eh",
+        "   ",
+        " BB"
+      ],
+      "furniture": { "B": "f_bed", "e": "f_table", "h": "f_chair" },
+      "items": { "B": { "item": "hospital_bed", "chance": 50 }, "e": { "item": "tools_medical", "chance": 50, "repeat": 2 } }
+    }
+  },
+  {
+    "type": "mapgen",
+    "method": "json",
+    "nested_mapgen_id": "central_lab_surface_medcenter_h_3x3",
+    "object": {
+      "mapgensize": [ 3, 3 ],
+      "rows": [
+        "h  ",
+        "  B",
+        "f B"
+      ],
+      "furniture": { "B": "f_bed", "f": "f_glass_cabinet", "h": "f_chair" },
+      "items": { "B": { "item": "hospital_bed", "chance": 50 }, "f": { "item": "hospital_medical_items", "chance": 50, "repeat": 3 } }
+    }
+  },
+  {
+    "type": "mapgen",
+    "method": "json",
+    "nested_mapgen_id": "central_lab_surface_medcenter_h_3x3",
+    "object": {
+      "mapgensize": [ 3, 3 ],
+      "rows": [
+        " BB",
+        "   ",
+        " BB"
+      ],
+      "furniture": { "B": "f_bed" },
+      "items": { "B": { "item": "hospital_bed", "chance": 50 } }
+    }
+  },
+  {
+    "type": "mapgen",
+    "method": "json",
+    "nested_mapgen_id": "central_lab_surface_medcenter_h_3x3",
+    "object": {
+      "mapgensize": [ 3, 3 ],
+      "rows": [
+        "h f",
+        "   ",
+        "h6 "
+      ],
+      "terrain": { "6": "t_console_broken" },
+      "furniture": { "B": "f_bed", "f": "f_glass_cabinet", "h": "f_chair" },
+      "items": { "f": { "item": "hospital_medical_items", "chance": 50, "repeat": 3 } }
+    }
+  },
+  {
+    "type": "mapgen",
+    "method": "json",
+    "nested_mapgen_id": "central_lab_surface_medcenter_h_3x3",
+    "object": {
+      "mapgensize": [ 3, 3 ],
+      "rows": [
+        "6ef",
+        "   ",
+        " BB"
+      ],
+      "terrain": { "6": "t_console_broken" },
+      "furniture": { "B": "f_bed", "e": "f_table", "f": "f_glass_cabinet", "h": "f_chair" },
+      "items": {
+        "B": { "item": "hospital_bed", "chance": 50 },
+        "e": { "item": "tools_medical", "chance": 25, "repeat": 2 },
+        "f": { "item": "hospital_medical_items", "chance": 50, "repeat": 3 }
+      }
+    }
+  },
+  {
+    "type": "mapgen",
+    "method": "json",
+    "nested_mapgen_id": "central_lab_surface_medcenter_h_3x3",
+    "object": {
+      "mapgensize": [ 3, 3 ],
+      "rows": [
+        "fe6",
+        "  h",
+        "h  "
+      ],
+      "terrain": { "6": "t_console_broken" },
+      "furniture": { "B": "f_bed", "e": "f_table", "f": "f_glass_cabinet", "h": "f_chair" },
+      "items": {
+        "e": { "item": "tools_medical", "chance": 25, "repeat": 2 },
+        "f": { "item": "hospital_medical_items", "chance": 50, "repeat": 3 }
+      }
+    }
+  },
+  {
+    "type": "mapgen",
+    "method": "json",
+    "nested_mapgen_id": "central_lab_surface_medcenter_v_3x3",
+    "object": {
+      "mapgensize": [ 3, 3 ],
+      "rows": [
+        "B  ",
+        "B h",
+        "  e"
+      ],
+      "furniture": { "B": "f_bed", "e": "f_table", "h": "f_chair" },
+      "items": { "B": { "item": "hospital_bed", "chance": 50 }, "e": { "item": "tools_medical", "chance": 50, "repeat": 2 } }
+    }
+  },
+  {
+    "type": "mapgen",
+    "method": "json",
+    "nested_mapgen_id": "central_lab_surface_medcenter_v_3x3",
+    "object": {
+      "mapgensize": [ 3, 3 ],
+      "rows": [
+        "  B",
+        "h B",
+        "f  "
+      ],
+      "furniture": { "B": "f_bed", "f": "f_glass_cabinet", "h": "f_chair" },
+      "items": { "B": { "item": "hospital_bed", "chance": 50 }, "f": { "item": "hospital_medical_items", "chance": 50, "repeat": 3 } }
+    }
+  },
+  {
+    "type": "mapgen",
+    "method": "json",
+    "nested_mapgen_id": "central_lab_surface_medcenter_v_3x3",
+    "object": {
+      "mapgensize": [ 3, 3 ],
+      "rows": [
+        "   ",
+        "B B",
+        "B B"
+      ],
+      "furniture": { "B": "f_bed" },
+      "items": { "B": { "item": "hospital_bed", "chance": 50 } }
+    }
+  },
+  {
+    "type": "mapgen",
+    "method": "json",
+    "nested_mapgen_id": "central_lab_surface_medcenter_v_3x3",
+    "object": {
+      "mapgensize": [ 3, 3 ],
+      "rows": [
+        "f  ",
+        "  h",
+        "h 6"
+      ],
+      "terrain": { "6": "t_console_broken" },
+      "furniture": { "B": "f_bed", "f": "f_glass_cabinet", "h": "f_chair" },
+      "items": { "f": { "item": "hospital_medical_items", "chance": 50, "repeat": 3 } }
+    }
+  },
+  {
+    "type": "mapgen",
+    "method": "json",
+    "nested_mapgen_id": "central_lab_surface_medcenter_v_3x3",
+    "object": {
+      "mapgensize": [ 3, 3 ],
+      "rows": [
+        "6e ",
+        "  B",
+        "f B"
+      ],
+      "terrain": { "6": "t_console_broken" },
+      "furniture": { "B": "f_bed", "e": "f_table", "f": "f_glass_cabinet", "h": "f_chair" },
+      "items": {
+        "B": { "item": "hospital_bed", "chance": 50 },
+        "e": { "item": "tools_medical", "chance": 25, "repeat": 2 },
+        "f": { "item": "hospital_medical_items", "chance": 50, "repeat": 3 }
+      }
+    }
+  },
+  {
+    "type": "mapgen",
+    "method": "json",
+    "nested_mapgen_id": "central_lab_surface_medcenter_v_3x3",
+    "object": {
+      "mapgensize": [ 3, 3 ],
+      "rows": [
+        "f  ",
+        "e 6",
+        "h h"
+      ],
+      "terrain": { "6": "t_console_broken" },
+      "furniture": { "B": "f_bed", "e": "f_table", "f": "f_glass_cabinet", "h": "f_chair" },
+      "items": {
+        "e": { "item": "tools_medical", "chance": 25, "repeat": 2 },
+        "f": { "item": "hospital_medical_items", "chance": 50, "repeat": 3 }
+      }
+    }
+  },
+  {
+    "type": "mapgen",
+    "method": "json",
     "nested_mapgen_id": "central_lab_surface_plaza_16x16",
     "object": {
       "mapgensize": [ 16, 16 ],

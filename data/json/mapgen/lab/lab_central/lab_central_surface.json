@@ -209,6 +209,8 @@
         "<": "t_stairs_up",
         "+": "t_door_metal_interior_locked",
         ".": "t_metal_floor",
+        "!": "t_metal_floor_no_roof",
+        "@": "t_metal_floor_no_roof",
         "_": "t_pavement",
         "%": "t_fence_barbed",
         "R": "t_concrete_railing",
@@ -1052,7 +1054,16 @@
       "items": {
         "e": { "item": "doctors_books", "chance": 50, "repeat": 2 },
         "f": { "item": "tools_medical", "chance": 25, "repeat": 2 }
-      }
+      },
+      "place_nested": [
+        { "chunks": [ "central_lab_surface_medcenter_v_3x3" ], "x": 3, "y": 3 },
+        { "chunks": [ "central_lab_surface_medcenter_v_3x3" ], "x": 7, "y": 3 },
+        { "chunks": [ "central_lab_surface_medcenter_v_3x3" ], "x": 11, "y": 3 },
+        { "chunks": [ "central_lab_surface_medcenter_v_3x3" ], "x": 15, "y": 3 },
+        { "chunks": [ "central_lab_surface_medcenter_h_3x3" ], "x": 18, "y": 10 },
+        { "chunks": [ "central_lab_surface_medcenter_h_3x3" ], "x": 18, "y": 14 },
+        { "chunks": [ "central_lab_surface_medcenter_h_3x3" ], "x": 18, "y": 18 }
+      ]
     }
   },
   {
