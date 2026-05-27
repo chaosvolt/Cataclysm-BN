@@ -1052,8 +1052,8 @@
       "furniture": { "c": "f_counter", "e": "f_table", "f": "f_glass_cabinet", "G": "f_counter_gate_c", "h": "f_chair", "s": "f_sink" },
       "toilets": { "T": {  } },
       "items": {
-        "e": { "item": "doctors_books", "chance": 50, "repeat": 2 },
-        "f": { "item": "tools_medical", "chance": 25, "repeat": 2 }
+        "e": { "item": "magazines", "chance": 50, "repeat": 4 },
+        "f": [ { "item": "doctors_books", "chance": 50, "repeat": 2 }, { "item": "tools_medical", "chance": 25, "repeat": 2 } ]
       },
       "place_nested": [
         { "chunks": [ "central_lab_surface_medcenter_v_3x3" ], "x": 3, "y": 3 },
