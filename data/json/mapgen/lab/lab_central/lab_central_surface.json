@@ -1046,21 +1046,8 @@
         "SSSSSSSSSSSSSSSSSSSSgSSS",
         "SSSSSSSSSSSSSSSSSSSSSSSS"
       ],
-      "terrain": {
-        "|": "t_wall_w",
-        "+": "t_door_c",
-        "g": "t_gutter_downspout",
-        "S": "t_sidewalk",
-        "W": "t_reinforced_glass_shutter"
-      },
-      "furniture": {
-        "c": "f_counter",
-        "e": "f_table",
-        "f": "f_glass_cabinet",
-        "G": "f_counter_gate_c",
-        "h": "f_chair",
-        "s": "f_sink"
-      },
+      "terrain": { "|": "t_wall_w", "+": "t_door_c", "g": "t_gutter_downspout", "S": "t_sidewalk", "W": "t_reinforced_glass_shutter" },
+      "furniture": { "c": "f_counter", "e": "f_table", "f": "f_glass_cabinet", "G": "f_counter_gate_c", "h": "f_chair", "s": "f_sink" },
       "toilets": { "T": {  } },
       "items": {
         "e": { "item": "doctors_books", "chance": 50, "repeat": 2 },
