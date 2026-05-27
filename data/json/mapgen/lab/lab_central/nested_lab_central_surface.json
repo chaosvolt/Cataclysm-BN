@@ -337,9 +337,9 @@
     "object": {
       "mapgensize": [ 3, 3 ],
       "rows": [
-        "6e ",
-        "  B",
-        "f B"
+        "6 B",
+        "e B",
+        "f  "
       ],
       "terrain": { "6": "t_console_broken" },
       "furniture": { "B": "f_bed", "e": "f_table", "f": "f_glass_cabinet", "h": "f_chair" },
