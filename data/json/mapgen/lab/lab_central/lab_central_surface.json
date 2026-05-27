@@ -1014,9 +1014,6 @@
       "terrain": { "_": "t_flat_roof", "-": "t_gutter", "o": "t_gutter_drop" }
     }
   },
-
-
-
   {
     "type": "mapgen",
     "method": "json",
@@ -1057,7 +1054,18 @@
         "S": "t_sidewalk",
         "W": "t_reinforced_glass_shutter"
       },
-      "furniture": { "b": "f_bench", "c": "f_counter", "e": "f_table", "F": "f_fridge", "L": "f_locker", "o": "f_oven", "s": "f_sink", "t": "f_trashcan", "V": "f_vending_c", "v": "f_vending_c" },
+      "furniture": {
+        "b": "f_bench",
+        "c": "f_counter",
+        "e": "f_table",
+        "F": "f_fridge",
+        "L": "f_locker",
+        "o": "f_oven",
+        "s": "f_sink",
+        "t": "f_trashcan",
+        "V": "f_vending_c",
+        "v": "f_vending_c"
+      },
       "items": {
         "d": { "item": "fast_fridge", "chance": 50, "repeat": 10 },
         "e": { "item": "fast_table", "chance": 25 },
@@ -1105,9 +1113,6 @@
       "terrain": { "_": "t_flat_roof", "-": "t_gutter", "o": "t_gutter_drop" }
     }
   },
-
-
-
   {
     "type": "mapgen",
     "method": "json",
