@@ -118,6 +118,7 @@ static const flag_id f_VEHICLE_HOTWIRE( "VEHICLE_HOTWIRE" );
 
 static const std::string str_DOOR_LOCKING( "DOOR_LOCKING" );
 static const std::string str_OPENCLOSE_INSIDE( "OPENCLOSE_INSIDE" );
+static const std::string str_PERPETUAL( "PERPETUAL" );
 
 static const std::vector<std::string> vs_NO_HOTWIRING = {
     "MUSCLE_LEGS",
@@ -777,8 +778,10 @@ void vehicle::init_state( const int init_veh_fuel, const int init_veh_status,
         const size_t p = vp.part_index();
         vehicle_part &pt = vp.part();
 
-        if( vp.has_feature( VPFLAG_REACTOR ) && one_in( 4 ) ) {
-            // De-hardcoded reactors, may or may not start active
+        if( pt.info().has_flag( str_PERPETUAL ) ) {
+            pt.enabled = true;
+        } else if( vp.has_feature( VPFLAG_REACTOR ) && one_in( 4 ) ) {
+            // De-hardcoded reactors may or may not start active.
             pt.enabled = true;
         }
 
@@ -1464,7 +1467,8 @@ bool vehicle::is_engine_on( const int e ) const
 
 bool vehicle::is_part_on( const int p ) const
 {
-    return parts[p].enabled;
+    const auto &pt = parts[p];
+    return pt.enabled || ( pt.is_available() && pt.info().has_flag( str_PERPETUAL ) );
 }
 
 bool vehicle::is_alternator_on( const int a ) const
@@ -5645,7 +5649,7 @@ void vehicle::power_parts()
             const int gen_energy_bat = power_to_energy_bat( part_epower_w( elem ), 1_turns );
             if( parts[ elem ].is_unavailable() ) {
                 continue;
-            } else if( parts[ elem ].info().has_flag( STATIC( std::string( "PERPETUAL" ) ) ) ) {
+            } else if( parts[ elem ].info().has_flag( str_PERPETUAL ) ) {
                 reactor_working = true;
                 delta_energy_bat += std::min( storage_deficit_bat, gen_energy_bat );
             } else if( parts[elem].ammo_remaining() > 0 ) {
@@ -6615,7 +6619,7 @@ void vehicle::refresh()
         if( vpi.has_flag( VPFLAG_ENGINE ) ) {
             engines.push_back( p );
         }
-        if( vpi.has_flag( VPFLAG_REACTOR ) ) {
+        if( vp.part().is_reactor() || vp.part().is_perpetual_power_source() ) {
             reactors.push_back( p );
         }
         if( vpi.has_flag( VPFLAG_SOLAR_PANEL ) ) {
