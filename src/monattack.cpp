@@ -3414,6 +3414,20 @@ bool mattack::photograph( monster *z )
     return false;
 }
 
+bool mattack::tazer( monster *z )
+{
+    if( z->type->monster_weapon && z->has_effect( effect_monster_disarmed ) ) {
+        return false;
+    }
+    Creature *target = z->attack_target();
+    if( target == nullptr || !is_adjacent( z, target, false ) ) {
+        return false;
+    }
+
+    taze( z, target );
+    return true;
+}
+
 void mattack::taze( monster *z, Creature *target )
 {
     // It takes a while
