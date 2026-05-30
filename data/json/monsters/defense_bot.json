@@ -458,7 +458,7 @@
     "armor_electric": 72,
     "vision_day": 50,
     "revert_to_itype": "bot_tankbot",
-    "starting_ammo": { "556": 1000, "40x46mm_m433": 20 },
+    "starting_ammo": { "556": 1000, "40x46mm_m433": 20, "atgm_heat": 4 },
     "path_settings": { "max_dist": 20 },
     "//": "Marks targets for you if friendly, does nothing else otherwise since lacks POLICE_EYEBOT flag.",
     "special_attacks": [ [ "PHOTOGRAPH", 60 ], [ "MULTI_ROBOT", 3 ] ],

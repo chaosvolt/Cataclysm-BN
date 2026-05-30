@@ -16,10 +16,12 @@ constexpr int LUA_API_VERSION = 2;
 #include "avatar.h"
 #include "bionics.h"
 #include "catalua_console.h"
+#include "catalua_coord.h"
 #include "catalua_hooks.h"
 #include "catalua_impl.h"
 #include "catalua_icallback_actor.h"
 #include "catalua_readonly.h"
+#include "catalua_coord.h"
 #include "catalua_serde.h"
 #include "filesystem.h"
 #include "fstream_utils.h"
@@ -168,6 +170,7 @@ bool load_world_lua_state( const world *world, const std::string &path )
     const auto ret = world->read_from_file( path, [&]( std::istream & stream ) {
         JsonIn jsin( stream );
         JsonObject jsobj = jsin.get_object();
+        jsobj.allow_omitted_members();
 
         for( const mod_id &mod : mods ) {
             if( !jsobj.has_object( mod.str() ) ) {
@@ -481,6 +484,21 @@ auto get_hook_entries( sol::state_view lua, std::string_view hook_name,
 }
 
 } // namespace
+
+auto has_hooks( std::string_view hook_name, const hook_opts &opts ) -> bool
+{
+    auto &state = opts.state ? *opts.state : *DynamicDataLoader::get_instance().lua;
+    auto &lua = state.lua;
+
+    const auto maybe_hooks = lua.globals()["game"]["hooks"][hook_name].get<sol::optional<sol::table>>();
+    if( !maybe_hooks ) {
+        return false;
+    }
+
+    const auto &hooks = *maybe_hooks;
+    const auto &entries = get_hook_entries( lua, hook_name, hooks );
+    return !entries.empty();
+}
 
 auto run_hooks( std::string_view hook_name,
                 std::function < auto( sol::table &params ) -> void > init,
@@ -907,12 +925,12 @@ void run_on_game_load_hooks( lua_state &state )
     run_hooks( "on_game_load", nullptr, { .state = &state } );
 }
 
-void run_on_mapgen_postprocess_hooks( lua_state &state, map &m, const tripoint &p,
+void run_on_mapgen_postprocess_hooks( lua_state &state, map &m, const tripoint_abs_omt &p,
                                       const time_point &when )
 {
     run_hooks( "on_mapgen_postprocess", [&]( sol::table & params ) {
         params["map"] = &m;
-        params["omt"] = p;
+        params["omt"] = cata::detail::lua_coords::to_lua( p );
         params["when"] = when;
     }, { .state = &state } );
 }
@@ -949,7 +967,7 @@ void run_on_mapgen_postprocess_hooks_batch( lua_state &state, tinymap &tmp,
     std::ranges::for_each( items, [&]( const mapgen_hook_batch_item & item ) {
         tmp.bind_submaps_for_hook( item.sm_base );
         params["prev"] = sol::lua_nil;
-        params["omt"]  = item.omt_pos;
+        params["omt"]  = cata::detail::lua_coords::to_lua( item.omt_pos );
         params["when"] = item.when;
 
         std::ranges::for_each( entries, [&]( const hook_entry & e ) {

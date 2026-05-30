@@ -7,7 +7,7 @@ on:
   pull_request:
     branches: [main]
     paths-ignore: [docs/**, scripts/**, "**.md", "**.mdx"]
-    types: [opened, reopened, synchronize, ready_for_review]
+    types: [opened, reopened, synchronize]
   workflow_dispatch:
 
 # Cancel all previous instances in favor of latest revision of a PR.
@@ -15,6 +15,11 @@ on:
 concurrency:
   group: matrix-build-${{ github.event.pull_request.number || github.ref_name }}
   cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+permissions:
+  actions: read
+  contents: read
+  pull-requests: write
 
 jobs:
   skip-duplicates:
@@ -68,7 +73,7 @@ jobs:
       ZSTD_CLEVEL: 3
       TILES: ${{ matrix.tiles }}
       TEST_STAGE: ${{ matrix.test-stage }}
-      SKIP: ${{ matrix.always-run != true && ( github.event.pull_request.draft == true || needs.skip-duplicates.outputs.should_skip_code == true || needs.skip-duplicates.outputs.should_skip_data == true ) }}
+      SKIP: ${{ matrix.always-run != true && ( needs.skip-duplicates.outputs.should_skip_code == true || needs.skip-duplicates.outputs.should_skip_data == true ) }}
 
     steps:
       - name: checkout repository
@@ -142,7 +147,7 @@ jobs:
         uses: lukka/run-cmake@v10
         with:
           configurePreset: ${{ matrix.preset }}
-          configurePresetAdditionalArgs: "['-DUSE_PREFIX_DATA_DIR=OFF']"
+          configurePresetAdditionalArgs: "['-DUSE_PREFIX_DATA_DIR=OFF', '-DCATA_FORMAT_TARGETS=OFF']"
           buildPreset: ${{ matrix.preset }}
           buildPresetAdditionalArgs: "['-j', '2']"
 
@@ -151,6 +156,35 @@ jobs:
         run: |
           cmake --build build --target style-json-parallel
           tools/dialogue_validator.py data/json/npcs/* data/json/npcs/*/* data/json/npcs/*/*/*
+
+      - name: create Linux tiles playtest package
+        if: ${{ success() && env.SKIP == 'false' && matrix.upload-artifact == true }}
+        env:
+          VERSION_LABEL: pr-${{ github.event.pull_request.number || github.run_id }}
+        run: |
+          mkdir -p lang/mo
+          cmake --install build --prefix cataclysmbn-${VERSION_LABEL}
+          tar -czvf cbn-linux-tiles-x64-${VERSION_LABEL}.tar.gz cataclysmbn-${VERSION_LABEL}
+
+      - name: upload Linux tiles playtest package
+        if: ${{ success() && env.SKIP == 'false' && matrix.upload-artifact == true }}
+        uses: actions/upload-artifact@v4.6.0
+        with:
+          name: linux-tiles-x64-pr-${{ github.event.pull_request.number || github.run_id }}
+          path: cbn-linux-tiles-x64-pr-${{ github.event.pull_request.number || github.run_id }}.tar.gz
+          if-no-files-found: error
+
+      - name: Publish Linux artifact link
+        if: ${{ success() && github.event_name == 'pull_request' && env.SKIP == 'false' && matrix.upload-artifact == true }}
+        continue-on-error: true
+        uses: ./.github/actions/publish-pr-artifact-body
+        with:
+          repository: ${{ github.repository }}
+          pr-number: ${{ github.event.pull_request.number }}
+          run-id: ${{ github.run_id }}
+          run-url: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+          head-sha: ${{ github.event.pull_request.head.sha }}
+          token: ${{ github.token }}
 
       - name: run tests
         if: ${{ github.ref_name != 'main' && env.SKIP == 'false' }}
@@ -172,23 +206,6 @@ jobs:
               done
           fi
 
-      - name: create Linux tiles playtest package
-        if: ${{ success() && env.SKIP == 'false' && matrix.upload-artifact == true }}
-        env:
-          VERSION_LABEL: pr-${{ github.event.pull_request.number || github.run_id }}
-        run: |
-          mkdir -p lang/mo
-          cmake --install build --prefix cataclysmbn-${VERSION_LABEL}
-          tar -czvf cbn-linux-tiles-x64-${VERSION_LABEL}.tar.gz cataclysmbn-${VERSION_LABEL}
-
-      - name: upload Linux tiles playtest package
-        if: ${{ success() && env.SKIP == 'false' && matrix.upload-artifact == true }}
-        uses: actions/upload-artifact@v4.6.0
-        with:
-          name: linux-tiles-x64-pr-${{ github.event.pull_request.number || github.run_id }}
-          path: cbn-linux-tiles-x64-pr-${{ github.event.pull_request.number || github.run_id }}.tar.gz
-          if-no-files-found: error
-
       - name: upload artifacts if failed
         uses: actions/upload-artifact@v4.6.0
         if: failure()
@@ -199,7 +216,7 @@ jobs:
 
   builds:
     needs: skip-duplicates
-    if: ${{ github.event_name != 'push' && ( github.event_name != 'pull_request' || ( github.event.pull_request.draft != true && needs.skip-duplicates.outputs.should_skip_platform != 'true' ) ) }}
+    if: ${{ github.event_name != 'push' && needs.skip-duplicates.outputs.should_skip_platform != 'true' }}
     uses: ./.github/workflows/build.yml
     with:
       version-label: experimental
