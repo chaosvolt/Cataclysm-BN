@@ -276,12 +276,23 @@
       "central_lab_surface_security_bunker",
       "central_lab_surface_security_center",
       "central_lab_surface_security_corner",
-      "central_lab_surface_security_edge"
+      "central_lab_surface_security_edge",
+      "central_lab_surface_security_center_roof",
+      "central_lab_surface_security_corner_roof",
+      "central_lab_surface_security_edge_roof",
+      "central_lab_surface_security_edge_roof_2"
     ],
     "name": "security building",
     "color": "i_dark_gray",
     "sym": "s",
     "see_cost": 5
+  },
+  {
+    "type": "overmap_terrain",
+    "id": "central_lab_surface_security_helipad",
+    "copy-from": "central_lab_surface_security_edge_roof",
+    "name": "helipad",
+    "sym": "H"
   },
   {
     "type": "overmap_terrain",
