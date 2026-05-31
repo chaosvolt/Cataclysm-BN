@@ -704,47 +704,23 @@
       "place_nested": [
         {
           "chunks": [
-            [ "null", 20 ],
-            [ "roof_2x2_infrastructure", 20 ],
-            [ "roof_2x2_infrastructure_1", 20 ],
-            [ "roof_2x2_infrastructure_2", 20 ],
-            [ "roof_2x2_infrastructure_2", 20 ]
+            [ "null", 25 ],
+            [ "roof_2x2_infrastructure", 25 ],
+            [ "roof_2x2_infrastructure_1", 25 ],
+            [ "roof_2x2_infrastructure_2", 25 ]
           ],
-          "x": [ 2, 5 ],
-          "y": [ 5, 8 ]
+          "x": [ 3, 16 ],
+          "y": [ 6, 9 ]
         },
         {
           "chunks": [
-            [ "null", 20 ],
-            [ "roof_2x2_infrastructure", 20 ],
-            [ "roof_2x2_infrastructure_1", 20 ],
-            [ "roof_2x2_infrastructure_2", 20 ],
-            [ "roof_2x2_infrastructure_2", 20 ]
+            [ "null", 25 ],
+            [ "roof_2x2_infrastructure", 25 ],
+            [ "roof_2x2_infrastructure_1", 25 ],
+            [ "roof_2x2_infrastructure_2", 25 ]
           ],
-          "x": [ 14, 17 ],
-          "y": [ 5, 8 ]
-        },
-        {
-          "chunks": [
-            [ "null", 20 ],
-            [ "roof_2x2_infrastructure", 20 ],
-            [ "roof_2x2_infrastructure_1", 20 ],
-            [ "roof_2x2_infrastructure_2", 20 ],
-            [ "roof_2x2_infrastructure_2", 20 ]
-          ],
-          "x": [ 2, 5 ],
-          "y": [ 14, 17 ]
-        },
-        {
-          "chunks": [
-            [ "null", 20 ],
-            [ "roof_2x2_infrastructure", 20 ],
-            [ "roof_2x2_infrastructure_1", 20 ],
-            [ "roof_2x2_infrastructure_2", 20 ],
-            [ "roof_2x2_infrastructure_2", 20 ]
-          ],
-          "x": [ 14, 17 ],
-          "y": [ 14, 17 ]
+          "x": [ 3, 16 ],
+          "y": [ 13, 16 ]
         }
       ]
     }
@@ -827,7 +803,29 @@
         "  --------------------  ",
         "                        "
       ],
-      "terrain": { "_": "t_flat_roof", "-": "t_gutter", "o": "t_gutter_drop" }
+      "terrain": { "_": "t_flat_roof", "-": "t_gutter", "o": "t_gutter_drop" },
+      "place_nested": [
+        {
+          "chunks": [
+            [ "null", 25 ],
+            [ "roof_2x2_infrastructure", 25 ],
+            [ "roof_2x2_infrastructure_1", 25 ],
+            [ "roof_2x2_infrastructure_2", 25 ]
+          ],
+          "x": [ 4, 18 ],
+          "y": [ 3, 9 ]
+        },
+        {
+          "chunks": [
+            [ "null", 25 ],
+            [ "roof_2x2_infrastructure", 25 ],
+            [ "roof_2x2_infrastructure_1", 25 ],
+            [ "roof_2x2_infrastructure_2", 25 ]
+          ],
+          "x": [ 4, 18 ],
+          "y": [ 13, 19 ]
+        }
+      ]
     }
   },
   {
@@ -1013,7 +1011,37 @@
         "  -o--------------------",
         "                        "
       ],
-      "terrain": { "_": "t_flat_roof", "-": "t_gutter", "o": "t_gutter_drop" }
+      "terrain": { "_": "t_flat_roof", "-": "t_gutter", "o": "t_gutter_drop" },
+      "place_nested": [
+        {
+          "chunks": [
+            [ "null", 25 ],
+            [ "roof_2x2_infrastructure", 25 ],
+            [ "roof_2x2_infrastructure_1", 25 ],
+            [ "roof_2x2_infrastructure_2", 25 ],
+            [ "roof_2x2_utilities", 25 ],
+            [ "roof_2x2_utilities_b", 25 ],
+            [ "roof_2x2_utilities_c", 25 ],
+            [ "roof_2x2_utilities_d", 25 ]
+          ],
+          "x": [ 4, 21 ],
+          "y": [ 3, 9 ]
+        },
+        {
+          "chunks": [
+            [ "null", 25 ],
+            [ "roof_2x2_infrastructure", 25 ],
+            [ "roof_2x2_infrastructure_1", 25 ],
+            [ "roof_2x2_infrastructure_2", 25 ],
+            [ "roof_2x2_utilities", 25 ],
+            [ "roof_2x2_utilities_b", 25 ],
+            [ "roof_2x2_utilities_c", 25 ],
+            [ "roof_2x2_utilities_d", 25 ]
+          ],
+          "x": [ 4, 21 ],
+          "y": [ 13, 19 ]
+        }
+      ]
     }
   },
   {
@@ -1098,7 +1126,37 @@
         "                        ",
         "                        "
       ],
-      "terrain": { "_": "t_flat_roof", "-": "t_gutter", "o": "t_gutter_drop" }
+      "terrain": { "_": "t_flat_roof", "-": "t_gutter", "o": "t_gutter_drop" },
+      "place_nested": [
+        {
+          "chunks": [
+            [ "null", 25 ],
+            [ "roof_2x2_infrastructure", 25 ],
+            [ "roof_2x2_infrastructure_1", 25 ],
+            [ "roof_2x2_infrastructure_2", 25 ],
+            [ "roof_2x2_utilities", 25 ],
+            [ "roof_2x2_utilities_b", 25 ],
+            [ "roof_2x2_utilities_c", 25 ],
+            [ "roof_2x2_utilities_d", 25 ]
+          ],
+          "x": [ 4, 18 ],
+          "y": [ 4, 9 ]
+        },
+        {
+          "chunks": [
+            [ "null", 25 ],
+            [ "roof_2x2_infrastructure", 25 ],
+            [ "roof_2x2_infrastructure_1", 25 ],
+            [ "roof_2x2_infrastructure_2", 25 ],
+            [ "roof_2x2_utilities", 25 ],
+            [ "roof_2x2_utilities_b", 25 ],
+            [ "roof_2x2_utilities_c", 25 ],
+            [ "roof_2x2_utilities_d", 25 ]
+          ],
+          "x": [ 4, 18 ],
+          "y": [ 13, 18 ]
+        }
+      ]
     }
   },
   {
@@ -1197,7 +1255,37 @@
         "  -__________________-  ",
         "  -__________________-  "
       ],
-      "terrain": { "_": "t_flat_roof", "-": "t_gutter", "o": "t_gutter_drop" }
+      "terrain": { "_": "t_flat_roof", "-": "t_gutter", "o": "t_gutter_drop" },
+      "place_nested": [
+        {
+          "chunks": [
+            [ "null", 25 ],
+            [ "roof_2x2_infrastructure", 25 ],
+            [ "roof_2x2_infrastructure_1", 25 ],
+            [ "roof_2x2_infrastructure_2", 25 ],
+            [ "roof_2x2_utilities", 25 ],
+            [ "roof_2x2_utilities_b", 25 ],
+            [ "roof_2x2_utilities_c", 25 ],
+            [ "roof_2x2_utilities_d", 25 ]
+          ],
+          "x": [ 4, 18 ],
+          "y": [ 4, 8 ]
+        },
+        {
+          "chunks": [
+            [ "null", 25 ],
+            [ "roof_2x2_infrastructure", 25 ],
+            [ "roof_2x2_infrastructure_1", 25 ],
+            [ "roof_2x2_infrastructure_2", 25 ],
+            [ "roof_2x2_utilities", 25 ],
+            [ "roof_2x2_utilities_b", 25 ],
+            [ "roof_2x2_utilities_c", 25 ],
+            [ "roof_2x2_utilities_d", 25 ]
+          ],
+          "x": [ 4, 18 ],
+          "y": [ 17, 21 ]
+        }
+      ]
     }
   },
   {
