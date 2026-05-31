@@ -2400,6 +2400,14 @@ void options_manager::add_options_performance()
                                "0 = Tier-0 only (default, cheapest).  1 = Tier-0 and Tier-1 monsters also "
                                "run group-morale/swarm checks. " ),
              0, 1, 0 );
+        add( "ACTIVITY_SKIP_MONSTER_LOD_GATE", page_id,
+             translate_marker( "Activity Skip Monster Gate" ),
+             translate_marker( "Highest real monster LOD tier allowed to run activity-skip AI.  "
+                               "Allowed monsters act one LOD tier less detailed than normal.  "
+                               "0 lets only Tier-0 monsters act as Tier-1.  "
+                               "1 lets Tier-0 and Tier-1 monsters act as Tier-1 and Tier-2, "
+                               "which is the default.  2 also lets Tier-2 monsters run macro AI." ),
+             0, 2, 1 );
     } );
 
     get_option( "LOD_ACTION_BUDGET" ).setPrerequisite( "MONSTER_LOD_ENABLED" );
@@ -2409,6 +2417,7 @@ void options_manager::add_options_performance()
     get_option( "LOD_DEMOTION_COOLDOWN" ).setPrerequisite( "MONSTER_LOD_ENABLED" );
     get_option( "LOD_COARSE_SCENT_INTERVAL" ).setPrerequisite( "MONSTER_LOD_ENABLED" );
     get_option( "LOD_GROUP_MORALE_MAX_TIER" ).setPrerequisite( "MONSTER_LOD_ENABLED" );
+    get_option( "ACTIVITY_SKIP_MONSTER_LOD_GATE" ).setPrerequisite( "MONSTER_LOD_ENABLED" );
 
     add_empty_line();
 
@@ -4292,6 +4301,7 @@ void options_manager::cache_to_globals()
     lod_macro_interval        = ::get_option<int>( "LOD_MACRO_INTERVAL" );
     lod_coarse_scent_interval = ::get_option<int>( "LOD_COARSE_SCENT_INTERVAL" );
     lod_group_morale_max_tier = ::get_option<int>( "LOD_GROUP_MORALE_MAX_TIER" );
+    activity_skip_monster_lod_gate = ::get_option<int>( "ACTIVITY_SKIP_MONSTER_LOD_GATE" );
 
     // Temporary fix for #8726: force out-of-bubble fire spread off while the
     // corresponding options are commented out above.
