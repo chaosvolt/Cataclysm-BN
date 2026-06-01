@@ -3358,7 +3358,7 @@
     "warmth": 30,
     "material_thickness": 8,
     "environmental_protection": 2,
-    "flags": [ "VARSIZE", "STURDY", "NATURE_CAMO", "OUTER", "HOOD" ]
+    "flags": [ "VARSIZE", "STURDY", "NATURE_CAMO", "OUTER", "HOOD", "HELMET_COMPAT" ]
   },
   {
     "id": "urban_ghillie",
@@ -3379,6 +3379,6 @@
     "warmth": 30,
     "material_thickness": 8,
     "environmental_protection": 2,
-    "flags": [ "VARSIZE", "STURDY", "URBAN_CAMO", "OUTER", "HOOD" ]
+    "flags": [ "VARSIZE", "STURDY", "URBAN_CAMO", "OUTER", "HOOD", "HELMET_COMPAT" ]
   }
 ]
