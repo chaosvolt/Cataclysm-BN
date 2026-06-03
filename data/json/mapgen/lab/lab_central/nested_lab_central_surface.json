@@ -2,6 +2,23 @@
   {
     "type": "mapgen",
     "method": "json",
+    "nested_mapgen_id": "central_lab_crate_1x1",
+    "object": {
+      "mapgensize": [ 1, 1 ],
+      "rows": [ "C" ],
+      "furniture": { "C": "f_crate_c" },
+      "items": {
+        "C": [
+          { "item": "supplies_reagents_lab", "chance": 75 },
+          { "item": "supplies_mechanics_milspec", "chance": 50 },
+          { "item": "crate_ship_cargo", "chance": 25 }
+        ]
+      }
+    }
+  },
+  {
+    "type": "mapgen",
+    "method": "json",
     "nested_mapgen_id": "central_lab_surface_utility_6x6",
     "object": {
       "mapgensize": [ 6, 6 ],
@@ -167,6 +184,254 @@
       ],
       "terrain": { "1": "t_switchgear_s", "2": "t_current_trans", "3": "t_station_disc" },
       "furniture": { "S": "f_solar_unit" }
+    }
+  },
+  {
+    "type": "mapgen",
+    "method": "json",
+    "nested_mapgen_id": "central_lab_surface_security_center_22x5",
+    "object": {
+      "mapgensize": [ 22, 5 ],
+      "rows": [
+        "hd ddd ddd  ddd ddd dd",
+        "dd  h   h    h   h  hd",
+        "                      ",
+        "dd  h   h    h   h  hd",
+        "hd ddd ddd  ddd ddd dd"
+      ],
+      "furniture": { "d": "f_desk", "h": "f_chair" },
+      "items": { "d": { "item": "office", "chance": 50, "repeat": 4 } }
+    }
+  },
+  {
+    "type": "mapgen",
+    "method": "json",
+    "nested_mapgen_id": "central_lab_surface_security_center_22x5",
+    "object": {
+      "mapgensize": [ 22, 5 ],
+      "rows": [
+        "  dd6dd6dd  dd6dd6dd  ",
+        "    h  h      h  h    ",
+        "                      ",
+        "    h  h      h  h    ",
+        "  dd6dd6dd  dd6dd6dd  "
+      ],
+      "terrain": { "6": "t_console_broken" },
+      "furniture": { "d": "f_desk", "h": "f_chair" },
+      "items": { "d": { "item": "office", "chance": 50, "repeat": 4 } }
+    }
+  },
+  {
+    "type": "mapgen",
+    "method": "json",
+    "nested_mapgen_id": "central_lab_surface_security_center_22x5",
+    "object": {
+      "mapgensize": [ 22, 5 ],
+      "rows": [
+        "                      ",
+        "d  d  BB      BB  d  d",
+        "dh dh BB      BB hd hd",
+        "d  d  BB      BB  d  d",
+        "                      "
+      ],
+      "furniture": { "B": "f_bookcase", "d": "f_desk", "h": "f_chair" },
+      "items": { "B": { "item": "lab_bookshelves", "chance": 25, "repeat": 3 }, "d": { "item": "office", "chance": 50, "repeat": 4 } }
+    }
+  },
+  {
+    "type": "mapgen",
+    "method": "json",
+    "nested_mapgen_id": "central_lab_surface_security_center_22x5",
+    "object": {
+      "mapgensize": [ 22, 5 ],
+      "rows": [
+        "7                    7",
+        "7h  dd BSS  SSB dd  h7",
+        "7   dh BSS  SSB hd   7",
+        "7h  dd BSS  SSB dd  h7",
+        "7                    7"
+      ],
+      "furniture": { "7": "f_control_station", "B": "f_bookcase", "d": "f_desk", "h": "f_chair", "S": "f_server" },
+      "items": { "B": { "item": "lab_bookshelves", "chance": 25, "repeat": 3 }, "d": { "item": "office", "chance": 50, "repeat": 4 } }
+    }
+  },
+  {
+    "type": "mapgen",
+    "method": "json",
+    "nested_mapgen_id": "central_lab_surface_security_center_22x5",
+    "object": {
+      "mapgensize": [ 22, 5 ],
+      "rows": [
+        "   hhh          hhh   ",
+        "p heeeh p    p heeeh p",
+        "p heeeh p    p heeeh p",
+        "p heeeh p    p heeeh p",
+        "   hhh          hhh   "
+      ],
+      "furniture": { "e": "f_table", "h": "f_chair", "p": [ "f_indoor_plant", "f_indoor_plant_y" ] }
+    }
+  },
+  {
+    "type": "mapgen",
+    "method": "json",
+    "nested_mapgen_id": "central_lab_surface_security_center_22x5",
+    "object": {
+      "mapgensize": [ 22, 5 ],
+      "rows": [
+        " FFFFFFFF    FFFFFFFF ",
+        " FFFFFFFF    FFFFFFFF ",
+        "                      ",
+        " FFFFFFFF    FFFFFFFF ",
+        " FFFFFFFF    FFFFFFFF "
+      ],
+      "furniture": { "F": "f_filing_cabinet" },
+      "items": { "F": { "item": "file_room", "chance": 75, "repeat": 6 } }
+    }
+  },
+  {
+    "type": "mapgen",
+    "method": "json",
+    "nested_mapgen_id": "central_lab_surface_security_center_22x5",
+    "object": {
+      "mapgensize": [ 22, 5 ],
+      "rows": [
+        " SSSSSSSS    SSSSSSSS ",
+        " SSSSSSSS    SSSSSSSS ",
+        "                      ",
+        " SSSSSSSS    SSSSSSSS ",
+        " SSSSSSSS    SSSSSSSS "
+      ],
+      "furniture": { "S": "f_server" }
+    }
+  },
+  {
+    "type": "mapgen",
+    "method": "json",
+    "nested_mapgen_id": "central_lab_surface_security_center_22x5",
+    "object": {
+      "mapgensize": [ 22, 5 ],
+      "rows": [
+        "   CCCCC      CCCCC   ",
+        "   CCCCC      CCCCC   ",
+        "   CCCCC      CCCCC   ",
+        "   CCCCC      CCCCC   ",
+        "   CCCCC      CCCCC   "
+      ],
+      "nested": { "C": { "chunks": [ "null", "central_lab_crate_1x1" ] } }
+    }
+  },
+  {
+    "type": "mapgen",
+    "method": "json",
+    "nested_mapgen_id": "central_lab_surface_security_wall_7x1",
+    "object": { "mapgensize": [ 7, 1 ], "rows": [ "|||||||" ], "terrain": { "|": "t_strconc_wall" } }
+  },
+  {
+    "type": "mapgen",
+    "method": "json",
+    "nested_mapgen_id": "central_lab_surface_security_wall_7x1",
+    "object": { "mapgensize": [ 7, 1 ], "rows": [ "|WWWWW|" ], "terrain": { "|": "t_strconc_wall", "W": "t_ballistic_glass" } }
+  },
+  {
+    "type": "mapgen",
+    "method": "json",
+    "nested_mapgen_id": "central_lab_surface_security_edge_20x17",
+    "object": {
+      "mapgensize": [ 20, 17 ],
+      "rows": [
+        "||+|+||||||||||+|+||",
+        "       Wd  dW       ",
+        "h      W6h 6W      h",
+        "h      W6 h6W      h",
+        "h      Wd  dW      h",
+        "e      ||++||      e",
+        "h      |    |      h",
+        "h      |    |      h",
+        "h      +    +      h",
+        "       +    +       ",
+        "       |    |       ",
+        "      &|LLLL|&      ",
+        "|=====||||||||=====|",
+        "                    ",
+        "                    ",
+        "                    ",
+        "                    "
+      ],
+      "terrain": {
+        "|": "t_strconc_wall",
+        "+": "t_door_metal_interior_locked",
+        "=": "t_door_metal_locked",
+        "&": "t_gates_mech_control",
+        "6": "t_console_broken",
+        "W": "t_ballistic_glass"
+      },
+      "furniture": { "d": "f_desk", "e": "f_table", "h": "f_chair", "L": "f_locker" },
+      "items": { "d": { "item": "office", "chance": 50, "repeat": 4 }, "e": { "item": "magazines", "chance": 50, "repeat": 4 } }
+    }
+  },
+  {
+    "type": "mapgen",
+    "method": "json",
+    "nested_mapgen_id": "central_lab_surface_security_edge_20x17",
+    "object": {
+      "mapgensize": [ 20, 17 ],
+      "rows": [
+        "||+|+|||WWWW|||+|+||",
+        "       |d66d|       ",
+        "he   eh|  h |he   eh",
+        " h   h |    | h   h ",
+        "       |    |       ",
+        " h   h ||++|| h   h ",
+        "he   eh|    |he   eh",
+        "       |    |       ",
+        "       +    +       ",
+        "       +    +       ",
+        "       |    |       ",
+        "      &|LLLL|&      ",
+        "|=====|||++|||=====|",
+        "                    ",
+        "                    ",
+        "                    ",
+        "                    "
+      ],
+      "terrain": {
+        "|": "t_strconc_wall",
+        "+": "t_door_metal_interior_locked",
+        "=": "t_door_metal_locked",
+        "&": "t_gates_mech_control",
+        "6": "t_console_broken",
+        "W": "t_ballistic_glass"
+      },
+      "furniture": { "d": "f_desk", "e": "f_table", "h": "f_chair", "L": "f_locker" },
+      "items": { "d": { "item": "office", "chance": 50, "repeat": 4 } }
+    }
+  },
+  {
+    "type": "mapgen",
+    "method": "json",
+    "nested_mapgen_id": "central_lab_surface_security_connection_w_2x4",
+    "object": {
+      "mapgensize": [ 2, 4 ],
+      "rows": [
+        "||",
+        "= ",
+        "= ",
+        "|7"
+      ],
+      "terrain": { "|": "t_strconc_wall", "=": "t_door_metal_locked", " ": "t_metal_floor", "7": "t_card_science" }
+    }
+  },
+  {
+    "type": "mapgen",
+    "method": "json",
+    "nested_mapgen_id": "central_lab_surface_security_connection_s_4x2",
+    "object": {
+      "mapgensize": [ 4, 2 ],
+      "rows": [
+        "|  7",
+        "|==|"
+      ],
+      "terrain": { "|": "t_strconc_wall", "=": "t_door_metal_locked", " ": "t_metal_floor", "7": "t_card_science" }
     }
   },
   {

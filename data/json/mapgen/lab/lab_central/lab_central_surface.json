@@ -364,26 +364,26 @@
       "rows": [
         "----------|++|----------",
         "|||||||||||  |||||||||||",
+        "u                      u",
         "                        ",
         "                        ",
         "                        ",
         "                        ",
         "                        ",
-        "                        ",
-        "                        ",
-        "    ||||||||||||||||    ",
-        "    |eeee|    |eeee|    ",
-        "    |eeee| << |eeee|    ",
-        "    |eeee| << |eeee|    ",
-        "    |Eeee|    |eeeE|    ",
-        "    ||++|||++|||++||    ",
-        "                        ",
-        "                        ",
+        "u                      u",
+        "|++||||||||||||||||||++|",
+        "   u|eeee|    |eeee|u   ",
+        "   h|eeee| << |eeee|h   ",
+        "   h|eeee| << |eeee|h   ",
+        "   u|Eeee|    |eeeE|u   ",
+        "|++|||++|||++|||++|||++|",
+        "u                      u",
         "                        ",
         "                        ",
         "                        ",
         "                        ",
         "                        ",
+        "u                      u",
         "||                    ||",
         "-|                    |-"
       ],
@@ -393,8 +393,14 @@
         "+": "t_door_metal_interior_locked",
         "e": "t_elevator",
         "E": "t_elevator_control",
+        "u": [ "t_metal_floor", "t_metal_floor_olight" ],
         "<": "t_stairs_up"
-      }
+      },
+      "furniture": { "h": "f_chair" },
+      "place_nested": [
+        { "chunks": [ "central_lab_surface_security_center_22x5" ], "x": 1, "y": 3 },
+        { "chunks": [ "central_lab_surface_security_center_22x5" ], "x": 1, "y": 16 }
+      ]
     }
   },
   {
@@ -413,18 +419,18 @@
         "-|                    |-",
         "-|                    |-",
         "-|                    |-",
-        "-|                    |-",
-        "-|                    |-",
-        "-|                    |-",
-        "-|                    |-",
-        "-|                    |-",
-        "-|                    |-",
-        "-|                    |-",
-        "-|                    |-",
-        "-|              &     |-",
-        "-|    ||========||    |-",
-        "-|    |__________|    |-",
-        "-|    |__________|    |-",
+        "||                    ||",
+        "                        ",
+        "                        ",
+        "||                    ||",
+        "-|C                  C|-",
+        "-|C                  C|-",
+        "-|C                  C|-",
+        "-|C                  C|-",
+        "-|C             &    C|-",
+        "-|C   ||========||   C|-",
+        "-|C   |__________|   C|-",
+        "-|CCCC|__________|CCCC|-",
         "|||||||__________|||||||",
         "SSSSSSSSSSSSSSSSSSSSSSSS",
         "SSSSSSSSSSSSSSSSSSSSSSSS"
@@ -436,7 +442,23 @@
         "&": "t_gates_mech_control",
         "_": "t_strconc_floor_no_roof",
         "S": "t_sidewalk"
-      }
+      },
+      "nested": { "C": { "chunks": [ "null", "central_lab_crate_1x1" ] } },
+      "place_nested": [
+        { "chunks": [ "central_lab_surface_security_edge_20x17" ], "x": 2, "y": 0 },
+        {
+          "chunks": [ "central_lab_surface_security_wall_7x1" ],
+          "x": 2,
+          "y": 0,
+          "neighbors": { "south": [ "central_lab_surface_utilities" ] }
+        },
+        {
+          "chunks": [ "central_lab_surface_security_wall_7x1" ],
+          "x": 15,
+          "y": 0,
+          "neighbors": { "south": [ "central_lab_surface_cafeteria" ] }
+        }
+      ]
     }
   },
   {
@@ -478,7 +500,127 @@
         "+": "t_door_metal_interior_locked",
         "S": "t_sidewalk",
         "W": "t_ballistic_glass"
-      }
+      },
+      "place_nested": [
+        { "chunks": [ "central_lab_surface_security_corner_n_3x2" ], "x": 4, "y": 3 },
+        { "chunks": [ "central_lab_surface_security_corner_n_3x2" ], "x": 16, "y": 3 },
+        { "chunks": [ "central_lab_surface_security_corner_e_2x3" ], "x": 19, "y": 5 },
+        { "chunks": [ "central_lab_surface_security_corner_e_2x3" ], "x": 19, "y": 17 },
+        {
+          "chunks": [ "central_lab_surface_security_connection_w_2x4" ],
+          "x": 0,
+          "y": 11,
+          "neighbors": { "west": [ "central_lab_surface_security_edge" ] }
+        },
+        {
+          "chunks": [ "central_lab_surface_security_connection_s_4x2" ],
+          "x": 9,
+          "y": 22,
+          "neighbors": { "south": [ "central_lab_surface_security_edge" ] }
+        }
+      ]
+    }
+  },
+  {
+    "type": "mapgen",
+    "method": "json",
+    "nested_mapgen_id": "central_lab_surface_security_corner_n_3x2",
+    "object": { "mapgensize": [ 3, 2 ], "rows": [
+        "hhh",
+        "   "
+      ], "furniture": { "h": "f_chair" } }
+  },
+  {
+    "type": "mapgen",
+    "method": "json",
+    "nested_mapgen_id": "central_lab_surface_security_corner_n_3x2",
+    "object": {
+      "mapgensize": [ 3, 2 ],
+      "rows": [
+        "BBB",
+        "   "
+      ],
+      "furniture": { "B": "f_bookcase" },
+      "items": { "B": { "item": "lab_bookshelves", "chance": 25, "repeat": 3 } }
+    }
+  },
+  {
+    "type": "mapgen",
+    "method": "json",
+    "nested_mapgen_id": "central_lab_surface_security_corner_n_3x2",
+    "object": {
+      "mapgensize": [ 3, 2 ],
+      "rows": [
+        "heh",
+        "heh"
+      ],
+      "furniture": { "e": "f_table", "h": "f_chair" }
+    }
+  },
+  {
+    "type": "mapgen",
+    "method": "json",
+    "nested_mapgen_id": "central_lab_surface_security_corner_n_3x2",
+    "object": {
+      "mapgensize": [ 3, 2 ],
+      "rows": [
+        "eee",
+        "hhh"
+      ],
+      "furniture": { "e": "f_table", "h": "f_chair" }
+    }
+  },
+  {
+    "type": "mapgen",
+    "method": "json",
+    "nested_mapgen_id": "central_lab_surface_security_corner_e_2x3",
+    "object": { "mapgensize": [ 2, 3 ], "rows": [
+        " h",
+        " h",
+        " h"
+      ], "furniture": { "h": "f_chair" } }
+  },
+  {
+    "type": "mapgen",
+    "method": "json",
+    "nested_mapgen_id": "central_lab_surface_security_corner_e_2x3",
+    "object": {
+      "mapgensize": [ 2, 3 ],
+      "rows": [
+        " B",
+        " B",
+        " B"
+      ],
+      "furniture": { "B": "f_bookcase" },
+      "items": { "B": { "item": "lab_bookshelves", "chance": 25, "repeat": 3 } }
+    }
+  },
+  {
+    "type": "mapgen",
+    "method": "json",
+    "nested_mapgen_id": "central_lab_surface_security_corner_e_2x3",
+    "object": {
+      "mapgensize": [ 2, 3 ],
+      "rows": [
+        "hh",
+        "ee",
+        "hh"
+      ],
+      "furniture": { "e": "f_table", "h": "f_chair" }
+    }
+  },
+  {
+    "type": "mapgen",
+    "method": "json",
+    "nested_mapgen_id": "central_lab_surface_security_corner_e_2x3",
+    "object": {
+      "mapgensize": [ 2, 3 ],
+      "rows": [
+        "he",
+        "he",
+        "he"
+      ],
+      "furniture": { "e": "f_table", "h": "f_chair" }
     }
   },
   {
@@ -519,7 +661,7 @@
         "+": "t_door_metal_interior_locked",
         "=": "t_door_metal_locked",
         "6": "t_console_broken",
-        "u": "t_metal_floor_olight",
+        "u": [ "t_metal_floor", "t_metal_floor_olight" ],
         "r": "t_card_science",
         "S": "t_sidewalk",
         "W": "t_ballistic_glass",
@@ -784,23 +926,6 @@
         { "vehicle": "military_cargo_truck", "x": [ 7, 10 ], "y": 7, "chance": 50, "rotation": 0 },
         { "vehicle": "forklift", "x": [ 9, 12 ], "y": [ 15, 17 ], "chance": 75, "rotation": 180 }
       ]
-    }
-  },
-  {
-    "type": "mapgen",
-    "method": "json",
-    "nested_mapgen_id": "central_lab_crate_1x1",
-    "object": {
-      "mapgensize": [ 1, 1 ],
-      "rows": [ "C" ],
-      "furniture": { "C": "f_crate_c" },
-      "items": {
-        "C": [
-          { "item": "supplies_reagents_lab", "chance": 75 },
-          { "item": "supplies_mechanics_milspec", "chance": 50 },
-          { "item": "crate_ship_cargo", "chance": 25 }
-        ]
-      }
     }
   },
   {
