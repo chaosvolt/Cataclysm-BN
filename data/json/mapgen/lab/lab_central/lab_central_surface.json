@@ -619,20 +619,13 @@
         "E": "t_elevator_control",
         ">": "t_stairs_down"
       },
-
       "place_nested": [
         {
-          "chunks": [
-            [ "null", 25 ],
-            [ "roof_4x4_utility", 25 ],
-            [ "roof_4x4_utility_1", 25 ],
-            [ "solar_panels_4X4", 25 ]
-          ],
+          "chunks": [ [ "null", 25 ], [ "roof_4x4_utility", 25 ], [ "roof_4x4_utility_1", 25 ], [ "solar_panels_4X4", 25 ] ],
           "x": [ 1, 19 ],
           "y": [ 1, 4 ]
         }
       ]
-
     }
   },
   {
@@ -670,12 +663,7 @@
       "terrain": { "_": "t_metal_floor_no_roof", "-": "t_strconc_floor_no_roof" },
       "place_nested": [
         {
-          "chunks": [
-            [ "null", 25 ],
-            [ "roof_4x4_utility", 25 ],
-            [ "roof_4x4_utility_1", 25 ],
-            [ "solar_panels_4X4", 25 ]
-          ],
+          "chunks": [ [ "null", 25 ], [ "roof_4x4_utility", 25 ], [ "roof_4x4_utility_1", 25 ], [ "solar_panels_4X4", 25 ] ],
           "x": [ 1, 19 ],
           "y": [ 1, 13 ]
         }
@@ -717,12 +705,7 @@
       "terrain": { "_": "t_metal_floor_no_roof", "-": "t_strconc_floor_no_roof" },
       "place_nested": [
         {
-          "chunks": [
-            [ "null", 25 ],
-            [ "roof_4x4_utility", 25 ],
-            [ "roof_4x4_utility_1", 25 ],
-            [ "solar_panels_4X4", 25 ]
-          ],
+          "chunks": [ [ "null", 25 ], [ "roof_4x4_utility", 25 ], [ "roof_4x4_utility_1", 25 ], [ "solar_panels_4X4", 25 ] ],
           "x": [ 1, 19 ],
           "y": [ 4, 19 ]
         }
@@ -800,12 +783,7 @@
       "terrain": { "_": "t_metal_floor_no_roof", "-": "t_strconc_floor_no_roof" },
       "place_nested": [
         {
-          "chunks": [
-            [ "null", 25 ],
-            [ "roof_4x4_utility", 25 ],
-            [ "roof_4x4_utility_1", 25 ],
-            [ "solar_panels_4X4", 25 ]
-          ],
+          "chunks": [ [ "null", 25 ], [ "roof_4x4_utility", 25 ], [ "roof_4x4_utility_1", 25 ], [ "solar_panels_4X4", 25 ] ],
           "x": [ 1, 14 ],
           "y": [ 6, 19 ]
         }
