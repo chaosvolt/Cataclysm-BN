@@ -1024,6 +1024,7 @@
     "phase": "liquid",
     "container": "bottle_plastic_small",
     "stim": -7,
+    "fun": 8,
     "addiction_potential": 20,
     "addiction_type": "sleeping pill",
     "use_action": "FLUSLEEP"
