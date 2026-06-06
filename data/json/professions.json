@@ -1,6 +1,32 @@
 [
   {
     "type": "item_group",
+    "id": "profession_carry_bonus",
+    "//": "A randomly-selected gun from guns_pistol_common, one representative each from the 10 most common ammotypes used, in the appropriate holster.",
+    "subtype": "distribution",
+    "ammo": 100,
+    "magazine": 100,
+    "entries": [
+      { "collection": [ { "item": "glock_17", "container-item": "bholster" }, { "item": "legpouch_large", "contents-item": [ "glock17_17", "glock17_17" ] } ], "prob": 55 },
+      { "collection": [ { "item": "glock_22", "container-item": "bholster" }, { "item": "legpouch_large", "contents-item": [ "glock40mag", "glock40mag" ] } ], "prob": 30 },
+      { "collection": [ { "item": "m1911", "container-item": "holster" }, { "item": "legpouch_large", "contents-item": [ "m1911mag", "m1911mag" ] } ], "prob": 30 },
+      { "collection": [ { "item": "p320_357sig", "container-item": "bholster" }, { "item": "legpouch_large", "contents-item": [ "p320mag_13rd_357sig", "p320mag_13rd_357sig" ] } ], "prob": 40 },
+      { "collection": [ { "item": "ruger_lcr_22", "container-item": "bholster" }, { "item": "legpouch_large", "contents-item": [ "22_speedloader8", "22_speedloader8" ] } ], "prob": 35 },
+      { "collection": [ { "item": "ruger_lcr_38", "container-item": "bholster" }, { "item": "legpouch_large", "contents-group": "speedloaders_38_carry" } ], "prob": 20 },
+      { "collection": [ { "item": "sw_619", "container-item": "holster" }, { "item": "legpouch_large", "contents-item": [ "38_speedloader", "38_speedloader" ] } ], "prob": 25 },
+      { "collection": [ { "item": "sw629", "container-item": "holster" }, { "item": "legpouch_large", "contents-item": [ "44_speedloader6", "44_speedloader6" ] } ], "prob": 30 },
+      { "collection": [ { "item": "taurus_spectrum", "container-item": "bholster" }, { "item": "legpouch_large", "contents-item": [ "taurus_spectrum_mag", "taurus_spectrum_mag" ] } ], "prob": 10 },
+      { "collection": [ { "item": "walther_ppk", "container-item": "bholster" }, { "item": "legpouch_large", "contents-item": [ "ppkmag", "ppkmag" ] } ], "prob": 15 }
+    ]
+  },
+  {
+    "type": "item_group",
+    "subtype": "collection",
+    "id": "speedloaders_38_carry",
+    "entries": [ { "item": "38_speedloader6", "ammo-item": "38_special", "charges": 6 }, { "item": "38_speedloader6", "ammo-item": "38_special", "charges": 6 } ]
+  },
+  {
+    "type": "item_group",
     "subtype": "collection",
     "id": "army_grenadier_mods",
     "entries": [
@@ -604,6 +630,11 @@
     "type": "profession_item_substitutions",
     "item": "can_beans",
     "sub": [ { "present": [ "MEATARIAN" ], "new": [ "can_spam" ] } ]
+  },
+  {
+    "type": "profession_item_substitutions",
+    "item_group": "profession_carry_bonus",
+    "bonus": { "present": [ "CARRY_PERMIT" ] }
   },
   {
     "type": "profession_item_substitutions",

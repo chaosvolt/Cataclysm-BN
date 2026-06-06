@@ -7074,5 +7074,15 @@
     "valid": false,
     "purifiable": false,
     "profession": true
+  },
+  {
+    "type": "mutation",
+    "id": "CARRY_PERMIT",
+    "name": { "str": "Carry Permit" },
+    "points": 1,
+    "//": "Not a starting trait because some scenarios are things like prison, lab escape, or military scenarios where you'd either not be allowed to run around strapped or be assigned something else.",
+    "description": "You prepared for trouble as best as you could, though it might not be enough for the end of the world.  In addition to any weapons your profession might start with, you start with a randomly-selected common pistol and some spare mags.",
+    "valid": false,
+    "purifiable": false
   }
 ]

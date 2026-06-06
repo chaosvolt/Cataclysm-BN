@@ -683,6 +683,7 @@ json_item_substitution::trait_requirements::trait_requirements( const JsonObject
 void json_item_substitution::load( const JsonObject &jo )
 {
     const bool item_mode = jo.has_string( "item" );
+    const bool itemgroup_mode = jo.has_string( "item_group" );
     const std::string title = jo.get_string( item_mode ? "item" : "trait" );
 
     auto check_duplicate_item = [&]( const itype_id & it ) {
@@ -710,6 +711,11 @@ void json_item_substitution::load( const JsonObject &jo )
                 s.infos.emplace_back( info );
             }
             substitutions[itype_id( title )].push_back( s );
+        }
+    } else if( itemgroup_mode ) {
+        if( jo.has_member( "bonus" ) ) {
+            bonuses.emplace_back( item_group::load_item_group( jo.get_member( "item_group" ), "collection" ),
+                                  trait_requirements( jo.get_object( "bonus" ) ) );
         }
     } else {
         for( const JsonObject sub : jo.get_array( "sub" ) ) {
