@@ -389,7 +389,8 @@
         "|....|",
         "||||||"
       ],
-      "terrain": { "|": "t_strconc_wall", "+": "t_door_metal_lab_c", ".": "t_metal_floor" }
+      "terrain": { "|": "t_strconc_wall", "+": "t_door_metal_lab_c", ".": "t_metal_floor" },
+      "place_nested": [ { "chunks": [ "central_lab_mini_room_4x4", "central_lab_mini_room_ns_4x4" ], "x": 1, "y": 1 } ]
     }
   },
   {
@@ -406,7 +407,8 @@
         "|....|",
         "||++||"
       ],
-      "terrain": { "|": "t_strconc_wall", "+": "t_door_metal_lab_c", ".": "t_metal_floor" }
+      "terrain": { "|": "t_strconc_wall", "+": "t_door_metal_lab_c", ".": "t_metal_floor" },
+      "place_nested": [ { "chunks": [ "central_lab_mini_room_4x4", "central_lab_mini_room_ns_4x4" ], "x": 1, "y": 1 } ]
     }
   },
   {
@@ -423,7 +425,8 @@
         "|....|",
         "||||||"
       ],
-      "terrain": { "|": "t_strconc_wall", "+": "t_door_metal_lab_c", ".": "t_metal_floor" }
+      "terrain": { "|": "t_strconc_wall", "+": "t_door_metal_lab_c", ".": "t_metal_floor" },
+      "place_nested": [ { "chunks": [ "central_lab_mini_room_4x4", "central_lab_mini_room_ew_4x4" ], "x": 1, "y": 1 } ]
     }
   },
   {
@@ -440,7 +443,119 @@
         "|....|",
         "||||||"
       ],
-      "terrain": { "|": "t_strconc_wall", "+": "t_door_metal_lab_c", ".": "t_metal_floor" }
+      "terrain": { "|": "t_strconc_wall", "+": "t_door_metal_lab_c", ".": "t_metal_floor" },
+      "place_nested": [ { "chunks": [ "central_lab_mini_room_4x4", "central_lab_mini_room_ew_4x4" ], "x": 1, "y": 1 } ]
+    }
+  },
+  {
+    "type": "mapgen",
+    "method": "json",
+    "nested_mapgen_id": "central_lab_mini_room_4x4",
+    "object": {
+      "mapgensize": [ 4, 4 ],
+      "rows": [
+        "CCCC",
+        "CCCC",
+        "CCCC",
+        "CCCC"
+      ],
+      "nested": { "C": { "chunks": [ "null", "central_lab_crate_1x1" ] } }
+    }
+  },
+  {
+    "type": "mapgen",
+    "method": "json",
+    "nested_mapgen_id": "central_lab_mini_room_4x4",
+    "object": {
+      "mapgensize": [ 4, 4 ],
+      "rows": [
+        "????",
+        "????",
+        "????",
+        "????"
+      ],
+      "terrain": {
+        "?": [
+          [ "t_metal_floor", 5 ],
+          "t_console_broken",
+          "t_machinery_light",
+          "t_machinery_heavy",
+          "t_machinery_old",
+          "t_machinery_electronic"
+        ]
+      }
+    }
+  },
+  {
+    "type": "mapgen",
+    "method": "json",
+    "nested_mapgen_id": "central_lab_mini_room_ns_4x4",
+    "object": {
+      "mapgensize": [ 4, 4 ],
+      "rows": [
+        "u  L",
+        "S bL",
+        "Y bL",
+        "u  L"
+      ],
+      "terrain": { "u": [ "t_metal_floor", "t_metal_floor_olight" ] },
+      "furniture": { "b": "f_bench", "t": "f_locker", "S": "f_shower", "Y": "f_eyewash" },
+      "items": { "L": [ { "item": "cleaning", "chance": 50, "repeat": 4 }, { "item": "rad_gear", "chance": 50, "repeat": 2 } ] },
+      "place_loot": [ { "item": "eyedrops", "x": 0, "y": 2, "chance": 75, "repeat": 2 } ]
+    }
+  },
+  {
+    "type": "mapgen",
+    "method": "json",
+    "nested_mapgen_id": "central_lab_mini_room_ns_4x4",
+    "object": {
+      "mapgensize": [ 4, 4 ],
+      "rows": [
+        "u  u",
+        "   s",
+        "T  t",
+        "u  u"
+      ],
+      "terrain": { "u": [ "t_metal_floor", "t_metal_floor_olight" ] },
+      "furniture": { "s": "f_sink", "t": "f_trashcan" },
+      "toilets": { "T": {  } },
+      "items": { "s": { "item": "cleaning", "chance": 50, "repeat": 2 }, "t": { "item": "trash_cart", "chance": 25, "repeat": 3 } }
+    }
+  },
+  {
+    "type": "mapgen",
+    "method": "json",
+    "nested_mapgen_id": "central_lab_mini_room_ew_4x4",
+    "object": {
+      "mapgensize": [ 4, 4 ],
+      "rows": [
+        "uYSu",
+        "    ",
+        " b  ",
+        "LLLL"
+      ],
+      "terrain": { "u": [ "t_metal_floor", "t_metal_floor_olight" ] },
+      "furniture": { "b": "f_bench", "t": "f_locker", "S": "f_shower", "Y": "f_eyewash" },
+      "items": { "L": [ { "item": "cleaning", "chance": 50, "repeat": 4 }, { "item": "rad_gear", "chance": 50, "repeat": 2 } ] },
+      "place_loot": [ { "item": "eyedrops", "x": 1, "y": 0, "chance": 75, "repeat": 2 } ]
+    }
+  },
+  {
+    "type": "mapgen",
+    "method": "json",
+    "nested_mapgen_id": "central_lab_mini_room_ew_4x4",
+    "object": {
+      "mapgensize": [ 4, 4 ],
+      "rows": [
+        "uT u",
+        "    ",
+        "    ",
+        "utsu"
+      ],
+      "terrain": { "u": [ "t_metal_floor", "t_metal_floor_olight" ] },
+      "furniture": { "s": "f_sink", "t": "f_trashcan" },
+      "toilets": { "T": {  } },
+      "items": { "s": { "item": "cleaning", "chance": 50, "repeat": 2 }, "t": { "item": "trash_cart", "chance": 25, "repeat": 3 } }
     }
   }
 ]
