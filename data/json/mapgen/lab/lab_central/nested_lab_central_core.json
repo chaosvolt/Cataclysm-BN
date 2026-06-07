@@ -469,6 +469,22 @@
     "object": {
       "mapgensize": [ 4, 4 ],
       "rows": [
+        "u  u",
+        " VV ",
+        " VV ",
+        "u  u"
+      ],
+      "terrain": { "u": [ "t_metal_floor", "t_metal_floor_olight" ] },
+      "furniture": { "V": "f_cloning_vat" }
+    }
+  },
+  {
+    "type": "mapgen",
+    "method": "json",
+    "nested_mapgen_id": "central_lab_mini_room_4x4",
+    "object": {
+      "mapgensize": [ 4, 4 ],
+      "rows": [
         "????",
         "????",
         "????",
