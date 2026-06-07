@@ -996,7 +996,8 @@
       { "level": 1, "name": "tailor" }
     ],
     "forbids_bionics": true,
-    "traits": [ "PROF_CHURL", "ILLITERATE", "ANTIJUNK", "STRONGSTOMACH", "UNSTYLISH", "SPIRITUAL" ]
+    "traits": [ "PROF_CHURL", "ILLITERATE", "ANTIJUNK", "STRONGSTOMACH", "UNSTYLISH", "SPIRITUAL" ],
+    "forbidden_traits": [ "CARRY_PERMIT" ]
   },
   {
     "type": "profession",
@@ -1017,6 +1018,8 @@
       { "level": 1, "name": "dodge" }
     ],
     "traits": [ "ILLITERATE", "ANTIJUNK", "STRONGSTOMACH", "UNSTYLISH" ],
+    "//": "Unga bunga why fire stick hurty?",
+    "forbidden_traits": [ "CARRY_PERMIT" ],
     "items": {
       "both": {
         "items": [ "loincloth_fur", "cloak_fur", "backpack_leather", "boots_fur", "waterskin", "clay_pot", "fire_drill" ],
@@ -1063,7 +1066,8 @@
       }
     },
     "skills": [ { "level": 3, "name": "survival" }, { "level": 2, "name": "swimming" }, { "level": 1, "name": "cooking" } ],
-    "traits": [ "ANTIJUNK", "STRONGSTOMACH", "UNSTYLISH" ]
+    "traits": [ "ANTIJUNK", "STRONGSTOMACH", "UNSTYLISH" ],
+    "forbidden_traits": [ "CARRY_PERMIT" ]
   },
   {
     "type": "profession",
@@ -1100,7 +1104,8 @@
     "vehicle": "covered_wagon",
     "pets": [ { "name": "mon_cow", "amount": 2 } ],
     "skills": [ { "level": 2, "name": "survival" }, { "level": 1, "name": "swimming" }, { "level": 2, "name": "cooking" } ],
-    "traits": [ "NOMAD", "ANTIJUNK", "STRONGSTOMACH", "UNSTYLISH" ]
+    "traits": [ "NOMAD", "ANTIJUNK", "STRONGSTOMACH", "UNSTYLISH" ],
+    "forbidden_traits": [ "CARRY_PERMIT" ]
   },
   {
     "type": "profession",
@@ -1146,6 +1151,8 @@
       { "level": 1, "name": "cooking" }
     ],
     "traits": [ "OUTDOORSMAN", "ANTIJUNK", "STRONGSTOMACH", "UNSTYLISH" ],
+    "//2": "Technically they might be recent enough to have a recognizable modern carry permit but it wouldn't be most of the guns in the default selection.",
+    "forbidden_traits": [ "CARRY_PERMIT" ],
     "flags": [ "VEH_GROUNDED" ]
   },
   {
@@ -1496,6 +1503,8 @@
       "LEG_TENTACLES",
       "COLDBLOOD"
     ],
+    "//": "You're an undead pirate, your permit probably expired post-mortem :3",
+    "forbidden_traits": [ "CARRY_PERMIT" ],
     "skills": [ { "level": 2, "name": "swimming" }, { "level": 2, "name": "cutting" }, { "level": 2, "name": "pistol" } ],
     "items": {
       "both": {
@@ -1518,6 +1527,7 @@
     "starting_cash": 0,
     "points": 1,
     "traits": [ "UNSTABLE", "SLIME_HANDS", "PER_SLIME", "VISCOUS", "AMORPHOUS", "FRESHWATEROSMOSIS", "THRESH_SLIME" ],
+    "forbidden_traits": [ "CARRY_PERMIT" ],
     "skills": [ { "level": 2, "name": "swimming" }, { "level": 2, "name": "dodge" } ],
     "flags": [ "SCEN_ONLY" ]
   },
@@ -2028,6 +2038,8 @@
     "age": { "min": 20, "max": 40 },
     "points": 8,
     "traits": [ "PROF_MILITARY" ],
+    "//": "Forbidden because would need to swap them for a power armor compatible holster.",
+    "forbidden_traits": [ "CARRY_PERMIT" ],
     "skills": [
       { "level": 1, "name": "swimming" },
       { "level": 1, "name": "firstaid" },
@@ -3456,6 +3468,8 @@
     "description": "You were a high school student, but the tests you'll face now will have much higher stakes.  There might even be something useful in one of these books you've been lugging around all year.",
     "points": 1,
     "age": { "min": 14, "max": 18 },
+    "//": "Minor, also implied to have been in class recently.",
+    "forbidden_traits": [ "CARRY_PERMIT" ],
     "items": {
       "both": {
         "items": [
@@ -3486,6 +3500,8 @@
     "points": 2,
     "age": { "min": 14, "max": 18 },
     "traits": [ "LOVES_BOOKS" ],
+    "//2": "Minor, also implied to have been in class recently.",
+    "forbidden_traits": [ "CARRY_PERMIT" ],
     "items": {
       "both": {
         "items": [ "pants", "tshirt", "socks", "sneakers", "backpack", "wristwatch", "smart_phone" ],
@@ -4474,7 +4490,9 @@
       "both": [ "striped_shirt", "striped_pants", "sneakers", "socks", "glass_shiv" ],
       "male": [ "briefs" ],
       "female": [ "bra", "panties" ]
-    }
+    },
+    "//": "You were literally in prison.",
+    "forbidden_traits": [ "CARRY_PERMIT" ]
   },
   {
     "type": "profession",
@@ -4484,6 +4502,8 @@
     "points": 0,
     "skills": [ { "level": 1, "name": "melee" } ],
     "traits": [ "KILLER" ],
+    "//": "You were literally in prison.",
+    "forbidden_traits": [ "CARRY_PERMIT" ],
     "items": {
       "both": [ "striped_shirt", "striped_pants", "sneakers", "socks", "glass_shiv" ],
       "male": [ "briefs" ],
@@ -5302,6 +5322,8 @@
       "male": [ "boxer_shorts" ],
       "female": [ "sports_bra", "boy_shorts" ]
     },
+    "//": "Forbidden because they already start with two leg pouches, so the one from the trait wouldn't spawn.",
+    "forbidden_traits": [ "CARRY_PERMIT" ],
     "flags": [ "SCEN_ONLY" ]
   },
   {
@@ -5928,7 +5950,9 @@
       },
       "male": [ "briefs" ],
       "female": [ "boy_shorts" ]
-    }
+    },
+    "//": "Implied to be a minor per the description.",
+    "forbidden_traits": [ "CARRY_PERMIT" ]
   },
   {
     "type": "profession",
@@ -5957,7 +5981,9 @@
       },
       "male": [ "briefs" ],
       "female": [ "boy_shorts" ]
-    }
+    },
+    "//": "Implied to be a minor per the description.",
+    "forbidden_traits": [ "CARRY_PERMIT" ]
   },
   {
     "type": "profession",
@@ -5995,7 +6021,9 @@
       },
       "male": [ "briefs" ],
       "female": [ "boy_shorts" ]
-    }
+    },
+    "//": "Minor.",
+    "forbidden_traits": [ "CARRY_PERMIT" ]
   },
   {
     "type": "profession",
@@ -6027,7 +6055,9 @@
       },
       "male": [ "briefs" ],
       "female": [ "boy_shorts" ]
-    }
+    },
+    "//": "Minor.",
+    "forbidden_traits": [ "CARRY_PERMIT" ]
   },
   {
     "type": "profession",
@@ -6056,7 +6086,9 @@
       ],
       "male": [ "briefs" ],
       "female": [ "panties" ]
-    }
+    },
+    "//": "Minor.",
+    "forbidden_traits": [ "CARRY_PERMIT" ]
   },
   {
     "type": "profession",
@@ -6069,7 +6101,9 @@
       "both": { "items": [ "tshirt", "jacket_light", "smart_phone", "jeans", "socks_ankle", "lowtops", "slingpack", "juice" ] },
       "male": [ "briefs" ],
       "female": [ "boy_shorts" ]
-    }
+    },
+    "//": "Implied to be a minor given its position here among the other student professions.",
+    "forbidden_traits": [ "CARRY_PERMIT" ]
   },
   {
     "type": "profession",
@@ -6095,7 +6129,9 @@
       },
       "male": [ "briefs" ],
       "female": [ "panties" ]
-    }
+    },
+    "//": "Minor.",
+    "forbidden_traits": [ "CARRY_PERMIT" ]
   },
   {
     "type": "profession",
@@ -6121,7 +6157,9 @@
       },
       "male": [ "briefs" ],
       "female": [ "panties" ]
-    }
+    },
+    "//": "Minor.",
+    "forbidden_traits": [ "CARRY_PERMIT" ]
   },
   {
     "type": "profession",
@@ -6385,7 +6423,9 @@
     "id": "naked",
     "name": "Naked and Afraid",
     "description": "You were out filming a reality TV show in the woods and the cast and crew all seemed to have turned into zombies.  Looks like it's for real now…",
-    "points": -1
+    "points": -1,
+    "//": "Naked means naked, suffer. :3",
+    "forbidden_traits": [ "CARRY_PERMIT" ]
   },
   {
     "type": "profession",
@@ -7788,6 +7828,8 @@
     "starting_cash": 0,
     "skills": [ { "level": 1, "name": "swimming" }, { "level": 2, "name": "melee" }, { "level": 2, "name": "cutting" } ],
     "traits": [ "PROF_KNIGHT", "ANTIJUNK" ],
+    "//": "But my liege, my handgonne permit is only 700 years out of date!",
+    "forbidden_traits": [ "CARRY_PERMIT" ],
     "items": {
       "both": {
         "items": [ "breeches", "chainmail_hauberk", "socks", "chainmail_feet", "helmet_plate", "chainmail_hands", "shield_leather" ],
@@ -7838,6 +7880,8 @@
     },
     "vehicle": "airship",
     "points": 7,
+    "//": "Skyfarer, guns likely should be restricted to early 1900s for the vibe.",
+    "forbidden_traits": [ "CARRY_PERMIT" ],
     "flags": [ "SCEN_ONLY", "VEH_GROUNDED" ]
   },
   {
@@ -7871,6 +7915,8 @@
       "male": [ "boxer_shorts" ],
       "female": [ "sports_bra", "boy_shorts" ]
     },
+    "//": "Skyfarer, guns likely should be restricted to early 1900s for the vibe.",
+    "forbidden_traits": [ "CARRY_PERMIT" ],
     "flags": [ "SCEN_ONLY", "VEH_GROUNDED" ]
   },
   {
@@ -7902,6 +7948,8 @@
       "male": [ "boxer_shorts" ],
       "female": [ "sports_bra", "boy_shorts" ]
     },
+    "//": "Skyfarer, guns likely should be restricted to early 1900s for the vibe.",
+    "forbidden_traits": [ "CARRY_PERMIT" ],
     "flags": [ "SCEN_ONLY", "VEH_GROUNDED" ]
   },
   {
