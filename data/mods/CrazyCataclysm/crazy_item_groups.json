@@ -44,7 +44,7 @@
   {
     "type": "item_group",
     "id": "guns_pistol_common_display",
-    "items": [ { "group": "yeet_cannon", "prob": 12, "charges-min": 0, "charges-max": 0 } ]
+    "items": [ { "item": "yeet_cannon", "prob": 12, "charges-min": 0, "charges-max": 0 } ]
   },
   {
     "id": "nested_yeet_cannon",
