@@ -2,17 +2,87 @@
   {
     "type": "item_group",
     "id": "profession_carry_bonus",
-    "//": "A randomly-selected gun from guns_pistol_common, one representative each from the 10 most common ammotypes used, in the appropriate holster.",
+    "//": "A randomly-selected gun from guns_pistol_common in the appropriate holster, paired with two of the default magazines or speedloaders (or an ammo pouch with enough loose ammo for two reloads, in the case of guns lacking any speedloaders).",
     "subtype": "distribution",
     "ammo": 100,
     "magazine": 100,
     "entries": [
       {
         "collection": [
+          { "item": "90two", "container-item": "holster" },
+          { "item": "legpouch_large", "contents-item": [ "m9mag", "m9mag" ] }
+        ],
+        "prob": 15
+      },
+      {
+        "collection": [
+          { "item": "90two40", "container-item": "holster" },
+          { "item": "legpouch_large", "contents-item": [ "90two40mag", "90two40mag" ] }
+        ],
+        "prob": 10
+      },
+      {
+        "collection": [
+          { "item": "bfr", "container-item": "holster" },
+          { "item": "ammo_satchel_leg", "contents-group": "ammopouch_4570_carry" }
+        ],
+        "prob": 20
+      },
+      {
+        "collection": [
+          { "item": "colt_python", "container-item": "holster" },
+          { "item": "legpouch_large", "contents-item": [ "38_speedloader", "38_speedloader" ] }
+        ],
+        "prob": 15
+      },
+      {
+        "collection": [
+          { "item": "cz75", "container-item": "holster" },
+          { "item": "legpouch_large", "contents-item": [ "cz75mag_12rd", "cz75mag_12rd" ] }
+        ],
+        "prob": 10
+      },
+      {
+        "collection": [
+          { "item": "deagle_44", "container-item": "holster" },
+          { "item": "legpouch_large", "contents-item": [ "deaglemag", "deaglemag" ] }
+        ],
+        "prob": 10
+      },
+      {
+        "collection": [
+          { "item": "fn1910", "container-item": "bholster" },
+          { "item": "legpouch_large", "contents-item": [ "fn1910mag", "fn1910mag" ] }
+        ],
+        "prob": 5
+      },
+      {
+        "collection": [
           { "item": "glock_17", "container-item": "bholster" },
           { "item": "legpouch_large", "contents-item": [ "glock17_17", "glock17_17" ] }
         ],
         "prob": 55
+      },
+      {
+        "collection": [
+          { "item": "glock_19", "container-item": "bholster" },
+          { "item": "legpouch_large", "contents-item": [ "glockmag", "glockmag" ] }
+        ],
+        "prob": 40
+      },
+      {
+        "collection": [
+          { "item": "glock_20", "container-item": "bholster" },
+          { "item": "legpouch_large", "contents-item": [ "glock20mag", "glock20mag" ] }
+        ],
+        "prob": 20
+      },
+      {
+        "collection": [
+          { "item": "glock_21", "container-item": "bholster" },
+          { "item": "legpouch_large", "contents-item": [ "glock_21mag", "glock_21mag" ] }
+        ],
+        "prob": 15
       },
       {
         "collection": [
@@ -23,10 +93,105 @@
       },
       {
         "collection": [
+          { "item": "glock_31", "container-item": "bholster" },
+          { "item": "legpouch_large", "contents-group": "mags_glock_31_carry" }
+        ],
+        "prob": 15
+      },
+      {
+        "collection": [
+          { "item": "hi_power_40", "container-item": "bholster" },
+          { "item": "legpouch_large", "contents-item": [ "bhp40mag", "bhp40mag" ] }
+        ],
+        "prob": 10
+      },
+      {
+        "collection": [
+          { "item": "hi_power_9mm", "container-item": "bholster" },
+          { "item": "legpouch_large", "contents-item": [ "bhp9mag_13rd", "bhp9mag_13rd" ] }
+        ],
+        "prob": 10
+      },
+      {
+        "collection": [
+          { "item": "hptc9", "container-item": "holster" },
+          { "item": "legpouch_large", "contents-item": [ "hptc9mag_8rd", "hptc9mag_8rd" ] }
+        ],
+        "prob": 15
+      },
+      {
+        "collection": [
+          { "item": "hptcf380", "container-item": "holster" },
+          { "item": "legpouch_large", "contents-item": [ "hptcf380mag_8rd", "hptcf380mag_8rd" ] }
+        ],
+        "prob": 10
+      },
+      {
+        "collection": [
+          { "item": "hptjcp", "container-item": "holster" },
+          { "item": "legpouch_large", "contents-item": [ "hptjcpmag", "hptjcpmag" ] }
+        ],
+        "prob": 10
+      },
+      {
+        "collection": [
+          { "item": "hptjhp", "container-item": "holster" },
+          { "item": "legpouch_large", "contents-item": [ "hptjhpmag", "hptjhpmag" ] }
+        ],
+        "prob": 10
+      },
+      {
+        "collection": [
+          { "item": "j22", "container-item": "bholster" },
+          { "item": "legpouch_large", "contents-item": [ "j22mag", "j22mag" ] }
+        ],
+        "prob": 10
+      },
+      {
+        "collection": [
+          { "item": "kp32", "container-item": "bholster" },
+          { "item": "shoulder_pouch", "contents-item": [ "kp32mag", "kp32mag" ] }
+        ],
+        "prob": 10
+      },
+      {
+        "collection": [
+          { "item": "kp3at", "container-item": "bholster" },
+          { "item": "shoulder_pouch", "contents-item": [ "kp3atmag", "kp3atmag" ] }
+        ],
+        "prob": 15
+      },
+      {
+        "collection": [
+          { "item": "kpf9", "container-item": "bholster" },
+          { "item": "legpouch_large", "contents-item": [ "kpf9mag", "kpf9mag" ] }
+        ],
+        "prob": 15
+      },
+      {
+        "collection": [
           { "item": "m1911", "container-item": "holster" },
           { "item": "legpouch_large", "contents-item": [ "m1911mag", "m1911mag" ] }
         ],
         "prob": 30
+      },
+      {
+        "collection": [ { "item": "m9", "container-item": "holster" }, { "item": "legpouch_large", "contents-item": [ "m9mag", "m9mag" ] } ],
+        "prob": 25
+      },
+      {
+        "collection": [
+          { "item": "model_10_revolver", "container-item": "bholster" },
+          { "item": "legpouch_large", "contents-group": "speedloaders_38_carry" }
+        ],
+        "prob": 20
+      },
+      {
+        "collection": [
+          { "item": "p226_357sig", "container-item": "holster" },
+          { "item": "legpouch_large", "contents-item": [ "p226mag_12rd_357sig", "p226mag_12rd_357sig" ] }
+        ],
+        "prob": 35
       },
       {
         "collection": [
@@ -34,6 +199,20 @@
           { "item": "legpouch_large", "contents-item": [ "p320mag_13rd_357sig", "p320mag_13rd_357sig" ] }
         ],
         "prob": 40
+      },
+      {
+        "collection": [
+          { "item": "px4_40", "container-item": "holster" },
+          { "item": "legpouch_large", "contents-item": [ "px4_40mag", "px4_40mag" ] }
+        ],
+        "prob": 5
+      },
+      {
+        "collection": [
+          { "item": "px4", "container-item": "holster" },
+          { "item": "legpouch_large", "contents-item": [ "px4mag", "px4mag" ] }
+        ],
+        "prob": 5
       },
       {
         "collection": [
@@ -46,6 +225,41 @@
         "collection": [
           { "item": "ruger_lcr_38", "container-item": "bholster" },
           { "item": "legpouch_large", "contents-group": "speedloaders_38_carry" }
+        ],
+        "prob": 20
+      },
+      {
+        "collection": [
+          { "item": "ruger_redhawk", "container-item": "holster" },
+          { "item": "legpouch_large", "contents-item": [ "44_speedloader6", "44_speedloader6" ] }
+        ],
+        "prob": 25
+      },
+      {
+        "collection": [
+          { "item": "rugerlcp", "container-item": "bholster" },
+          { "item": "legpouch_large", "contents-item": [ "rugerlcpmag", "rugerlcpmag" ] }
+        ],
+        "prob": 35
+      },
+      {
+        "collection": [
+          { "item": "sig_mosquito", "container-item": "bholster" },
+          { "item": "legpouch_large", "contents-item": [ "mosquitomag", "mosquitomag" ] }
+        ],
+        "prob": 15
+      },
+      {
+        "collection": [
+          { "item": "sw_22", "container-item": "bholster" },
+          { "item": "legpouch_large", "contents-item": [ "sw22mag", "sw22mag" ] }
+        ],
+        "prob": 15
+      },
+      {
+        "collection": [
+          { "item": "sw_610", "container-item": "holster" },
+          { "item": "legpouch_large", "contents-item": [ "40_speedloader6", "40_speedloader6" ] }
         ],
         "prob": 20
       },
@@ -65,8 +279,50 @@
       },
       {
         "collection": [
+          { "item": "taurus_judge", "container-item": "XL_holster" },
+          { "item": "ammo_satchel_leg", "contents-group": "ammopouch_410_carry" }
+        ],
+        "prob": 25
+      },
+      {
+        "collection": [
           { "item": "taurus_spectrum", "container-item": "bholster" },
           { "item": "legpouch_large", "contents-item": [ "taurus_spectrum_mag", "taurus_spectrum_mag" ] }
+        ],
+        "prob": 10
+      },
+      {
+        "collection": [
+          { "item": "usp_45", "container-item": "bholster" },
+          { "item": "legpouch_large", "contents-item": [ "usp45mag", "usp45mag" ] }
+        ],
+        "prob": 15
+      },
+      {
+        "collection": [
+          { "item": "usp_9mm", "container-item": "bholster" },
+          { "item": "legpouch_large", "contents-item": [ "usp9mag", "usp9mag" ] }
+        ],
+        "prob": 20
+      },
+      {
+        "collection": [
+          { "item": "walther_ccp", "container-item": "bholster" },
+          { "item": "legpouch_large", "contents-item": [ "ccpmag", "ccpmag" ] }
+        ],
+        "prob": 15
+      },
+      {
+        "collection": [
+          { "item": "walther_p22", "container-item": "bholster" },
+          { "item": "legpouch_large", "contents-item": [ "wp22mag", "wp22mag" ] }
+        ],
+        "prob": 15
+      },
+      {
+        "collection": [
+          { "item": "walther_p38", "container-item": "holster" },
+          { "item": "legpouch_large", "contents-item": [ "p38mag", "p38mag" ] }
         ],
         "prob": 10
       },
@@ -76,7 +332,49 @@
           { "item": "legpouch_large", "contents-item": [ "ppkmag", "ppkmag" ] }
         ],
         "prob": 15
+      },
+      {
+        "collection": [
+          { "item": "walther_ppq_40", "container-item": "bholster" },
+          { "item": "legpouch_large", "contents-item": [ "ppq40mag_10rd", "ppq40mag_10rd" ] }
+        ],
+        "prob": 10
+      },
+      {
+        "collection": [
+          { "item": "walther_ppq_45", "container-item": "bholster" },
+          { "item": "legpouch_large", "contents-item": [ "ppq45mag", "ppq45mag" ] }
+        ],
+        "prob": 10
+      },
+      {
+        "collection": [
+          { "item": "walther_ppq_9mm", "container-item": "bholster" },
+          { "item": "legpouch_large", "contents-item": [ "ppq9mag_10rd", "ppq9mag_10rd" ] }
+        ],
+        "prob": 15
       }
+    ]
+  },
+  {
+    "type": "item_group",
+    "subtype": "collection",
+    "id": "ammopouch_4570_carry",
+    "entries": [ { "item": "4570_sp", "charges": 10 } ]
+  },
+  {
+    "type": "item_group",
+    "subtype": "collection",
+    "id": "ammopouch_410_carry",
+    "entries": [ { "item": "410shot_000", "charges": 10 } ]
+  },
+  {
+    "type": "item_group",
+    "subtype": "collection",
+    "id": "mags_glock_31_carry",
+    "entries": [
+      { "item": "glock40mag", "ammo-item": "357sig_jhp", "charges": 15 },
+      { "item": "glock40mag", "ammo-item": "357sig_jhp", "charges": 15 }
     ]
   },
   {
@@ -8276,7 +8574,7 @@
     "type": "profession",
     "id": "RNG_SURVIVOR",
     "name": "RANDOMISED: Melee survivor",
-    "description": "You've looted a random assortment of intact armor and a pristine weapon from the overly hungry folk, but will it be enough?  (Note: What you see in character creator IS NOT what you get in game!)",
+    "description": "You've looted a random assortment of intact armor and a pristine weapon from the overly hungry folk, but will it be enough?  (Note: What you see in character creation does not reflect what it will select at game start.)",
     "skills": [ { "level": 3, "name": "swimming" }, { "level": 3, "name": "dodge" }, { "level": 3, "name": "melee" } ],
     "points": 5,
     "items": {

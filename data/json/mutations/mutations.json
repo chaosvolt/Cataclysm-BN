@@ -7081,7 +7081,7 @@
     "name": { "str": "Carry Permit" },
     "points": 1,
     "starting_trait": true,
-    "description": "You prepared for trouble as best as you could, though it might not be enough for the end of the world.  In addition to any weapons your profession might start with, you start with a randomly-selected common pistol and some spare mags.",
+    "description": "You prepared for trouble as best as you could, though it might not be enough for the end of the world.  In addition to any weapons your profession might start with, you start with a randomly-selected common pistol and some spare mags.  (Note: What you see in character creation does not reflect what it will select at game start.)",
     "cancels": [ "BRAWLER", "GUNSHY" ],
     "valid": false,
     "purifiable": false
