@@ -186,6 +186,7 @@ static const activity_id ACT_WAIT( "ACT_WAIT" );
 static const activity_id ACT_WAIT_NPC( "ACT_WAIT_NPC" );
 static const activity_id ACT_WAIT_STAMINA( "ACT_WAIT_STAMINA" );
 static const activity_id ACT_WAIT_WEATHER( "ACT_WAIT_WEATHER" );
+static const activity_id ACT_WASH_SELF( "ACT_WASH_SELF" );
 static const activity_id ACT_WEAR( "ACT_WEAR" );
 
 static const efftype_id effect_ai_waiting( "ai_waiting" );
