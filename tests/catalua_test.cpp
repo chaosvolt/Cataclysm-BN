@@ -221,6 +221,8 @@ TEST_CASE( "lua_npc_move_to_binding_moves_real_npc", "[lua][npc]" )
 
     CHECK( test_data.get<bool>( "moved" ) );
     CHECK( moving_npc.bub_pos() == destination );
+}
+
 TEST_CASE( "lua_place_monster_pins_upgrade_time", "[lua][monster]" )
 {
     const auto restore_turn = restore_on_out_of_scope<time_point>( calendar::turn );
