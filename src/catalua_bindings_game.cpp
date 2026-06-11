@@ -14,6 +14,7 @@
 #include "creature_tracker.h"
 #include "distribution_grid.h"
 #include "game.h"
+#include "iexamine.h"
 #include "lightmap.h"
 #include "map.h"
 #include "catalua_log.h"
@@ -21,6 +22,7 @@
 #include "npc.h"
 #include "monster.h"
 #include "overmapbuffer.h"
+#include "weather.h"
 #include "line.h"
 #include "lua_action_menu.h"
 
@@ -64,6 +66,10 @@ void cata::detail::reg_game_api( sol::state &lua )
 
     luna::set_fx( lib, "get_avatar", &get_avatar );
     luna::set_fx( lib, "get_map", &get_map );
+    luna::set_fx( lib, "bub_to_abs", []( const tripoint_bub_ms & p ) -> tripoint_abs_ms { return bub_to_abs( p ); } );
+    luna::set_fx( lib, "bub_to_abs", []( const tripoint_bub_sm & p ) -> tripoint_abs_sm { return bub_to_abs( p ); } );
+    luna::set_fx( lib, "abs_to_bub", []( const tripoint_abs_ms & p ) -> tripoint_bub_ms { return abs_to_bub( p ); } );
+    luna::set_fx( lib, "abs_to_bub", []( const tripoint_abs_sm & p ) -> tripoint_bub_sm { return abs_to_bub( p ); } );
     luna::set_fx( lib, "get_distribution_grid_tracker", &get_distribution_grid_tracker );
     luna::set_fx( lib, "light_ambient_lit", []() -> float { return LIGHT_AMBIENT_LIT; } );
     luna::set_fx( lib, "add_msg", sol::overload(
@@ -76,6 +82,9 @@ void cata::detail::reg_game_api( sol::state &lua )
     luna::set_fx( lib, "current_turn", []() -> time_point { return calendar::turn; } );
     luna::set_fx( lib, "turn_zero", []() -> time_point { return calendar::turn_zero; } );
     luna::set_fx( lib, "before_time_starts", []() -> time_point { return calendar::before_time_starts; } );
+    luna::set_fx( lib, "bodytemp_cold", []() -> int { return BODYTEMP_COLD; } );
+    luna::set_fx( lib, "bodytemp_norm", []() -> int { return BODYTEMP_NORM; } );
+    luna::set_fx( lib, "bodytemp_hot", []() -> int { return BODYTEMP_HOT; } );
     luna::set_fx( lib, "rng", sol::resolve<int( int, int )>( &rng ) );
     DOC( "Get recent player message log entries. Returns array of { time=string, text=string }." );
     luna::set_fx( lib, "get_messages", []( sol::this_state lua_this, const int count ) {
@@ -170,18 +179,47 @@ void cata::detail::reg_game_api( sol::state &lua )
         return item::spawn( itype, calendar::turn, count );
     } );
 
-    luna::set_fx( lib, "get_creature_at",
-                  []( const tripoint_bub_ms & p, sol::optional<bool> allow_hallucination ) -> Creature * { return g->critter_at<Creature>( p, allow_hallucination.value_or( false ) ); } );
-    luna::set_fx( lib, "get_monster_at",
-                  []( const tripoint_bub_ms & p, sol::optional<bool> allow_hallucination ) -> monster * { return g->critter_at<monster>( p, allow_hallucination.value_or( false ) ); } );
-    luna::set_fx( lib, "place_monster_at", []( const mtype_id & id, const tripoint_bub_ms & p ) { return g->place_critter_at( id, p ); } );
-    luna::set_fx( lib, "place_monster_around", []( const mtype_id & id, const tripoint_bub_ms & p,
-    const int radius ) { return g->place_critter_around( id, p, radius ); } );
-    luna::set_fx( lib, "spawn_hallucination", []( const tripoint_bub_ms & p ) -> bool { return g->spawn_hallucination( p ); } );
-    luna::set_fx( lib, "get_character_at",
-                  []( const tripoint_bub_ms & p, sol::optional<bool> allow_hallucination ) -> Character * { return g->critter_at<Character>( p, allow_hallucination.value_or( false ) ); } );
-    luna::set_fx( lib, "get_npc_at",
-                  []( const tripoint_bub_ms & p, sol::optional<bool> allow_hallucination ) -> npc * { return g->critter_at<npc>( p, allow_hallucination.value_or( false ) ); } );
+    luna::set_fx( lib, "get_creature_at", sol::overload(
+    []( const tripoint_bub_ms & p, sol::optional<bool> allow_hallucination ) -> Creature * {
+        return g->critter_at<Creature>( p, allow_hallucination.value_or( false ) );
+    },
+    []( const tripoint & p, sol::optional<bool> allow_hallucination ) -> Creature * {
+        return g->critter_at<Creature>( tripoint_bub_ms( p ), allow_hallucination.value_or( false ) );
+    } ) );
+    luna::set_fx( lib, "get_monster_at", sol::overload(
+    []( const tripoint_bub_ms & p, sol::optional<bool> allow_hallucination ) -> monster * {
+        return g->critter_at<monster>( p, allow_hallucination.value_or( false ) );
+    },
+    []( const tripoint & p, sol::optional<bool> allow_hallucination ) -> monster * {
+        return g->critter_at<monster>( tripoint_bub_ms( p ), allow_hallucination.value_or( false ) );
+    } ) );
+    luna::set_fx( lib, "place_monster_at", sol::overload(
+    []( const mtype_id & id, const tripoint_bub_ms & p ) { return g->place_critter_at( id, p ); },
+    []( const mtype_id & id, const tripoint & p ) { return g->place_critter_at( id, tripoint_bub_ms( p ) ); } ) );
+    luna::set_fx( lib, "place_monster_around", sol::overload(
+    []( const mtype_id & id, const tripoint_bub_ms & p, const int radius ) {
+        return g->place_critter_around( id, p, radius );
+    },
+    []( const mtype_id & id, const tripoint & p, const int radius ) {
+        return g->place_critter_around( id, tripoint_bub_ms( p ), radius );
+    } ) );
+    luna::set_fx( lib, "spawn_hallucination", sol::overload(
+                      []( const tripoint_bub_ms & p ) -> bool { return g->spawn_hallucination( p ); },
+                      []( const tripoint & p ) -> bool { return g->spawn_hallucination( tripoint_bub_ms( p ) ); } ) );
+    luna::set_fx( lib, "get_character_at", sol::overload(
+    []( const tripoint_bub_ms & p, sol::optional<bool> allow_hallucination ) -> Character * {
+        return g->critter_at<Character>( p, allow_hallucination.value_or( false ) );
+    },
+    []( const tripoint & p, sol::optional<bool> allow_hallucination ) -> Character * {
+        return g->critter_at<Character>( tripoint_bub_ms( p ), allow_hallucination.value_or( false ) );
+    } ) );
+    luna::set_fx( lib, "get_npc_at", sol::overload(
+    []( const tripoint_bub_ms & p, sol::optional<bool> allow_hallucination ) -> npc * {
+        return g->critter_at<npc>( p, allow_hallucination.value_or( false ) );
+    },
+    []( const tripoint & p, sol::optional<bool> allow_hallucination ) -> npc * {
+        return g->critter_at<npc>( tripoint_bub_ms( p ), allow_hallucination.value_or( false ) );
+    } ) );
 
     luna::set_fx( lib, "choose_adjacent",
                   []( const std::string & message,
@@ -359,6 +397,11 @@ void cata::detail::reg_game_api( sol::state &lua )
 
     DOC( "Get the global overmap buffer" );
     luna::set_fx( lib, "get_overmap_buffer", []() -> overmapbuffer & { return get_active_overmapbuffer(); } );
+    DOC( "Run a built-in examine action at a position." );
+    luna::set_fx( lib, "call_builtin_examine",
+    []( const std::string & examine_id, player & who, const tripoint_bub_ms & pos ) -> void {
+        iexamine_function_from_string( examine_id )( who, pos );
+    } );
 
     DOC( "Get direction from a relative tripoint coordinate delta." );
     luna::set_fx( lib, "direction_from", &direction_from_relative_delta );
@@ -368,6 +411,25 @@ void cata::detail::reg_game_api( sol::state &lua )
 
     DOC( "Get the six cardinal overmap-terrain direction offsets (N, S, E, W, Up, Down)." );
     luna::set_fx( lib, "six_cardinal_directions", &overmap_terrain_cardinal_directions );
+
+    DOC( "Get the player's pet monsters" );
+    luna::set_fx( lib, "get_player_pets", []( sol::this_state s ) -> sol::table {
+        sol::state_view lua( s );
+        auto out = lua.create_table();
+        auto rng = g->all_monsters();
+        auto idx = 1;
+        if( rng.items )
+        {
+            std::ranges::for_each(
+                *rng.items
+            | std::views::transform( []( const weak_ptr_fast<monster> &wp ) { return wp.lock(); } )
+            | std::views::filter( []( const shared_ptr_fast<monster> &sp ) -> bool {
+                return sp && !sp->is_dead() && sp->is_pet();
+            } ),
+            [&out, &idx]( const shared_ptr_fast<monster> &sp ) { out[idx++] = sp.get(); } );
+        }
+        return out;
+    } );
 
     luna::finalize_lib( lib );
 }
