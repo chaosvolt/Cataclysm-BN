@@ -322,7 +322,6 @@ bool trapfunc::tripwire( const tripoint_bub_ms &p, Creature *c, item * )
                 z->setpos( g->u.bub_pos() );
             }
             g->u.moves -= 150;
-            g->update_map( g->u );
         } else {
             z->stumble();
         }
@@ -340,9 +339,6 @@ bool trapfunc::tripwire( const tripoint_bub_ms &p, Creature *c, item * )
             n->setpos( random_entry( valid ) );
         }
         n->moves -= 150;
-        if( c == &g->u ) {
-            g->update_map( g->u );
-        }
         if( !n->is_mounted() ) {
             ///\EFFECT_DEX decreases chance of taking damage from a tripwire trap
             if( rng( 5, 20 ) > n->dex_cur ) {
@@ -1134,9 +1130,6 @@ static bool sinkhole_safety_roll( player *p, const itype_id &itemname, const int
         p->add_msg_player_or_npc( m_good, _( "You pull yourself to safety!" ),
                                   _( "<npcname> steps on a sinkhole, but manages to pull themselves to safety." ) );
         p->setpos( random_entry( safe ) );
-        if( p == &g->u ) {
-            g->update_map( *p );
-        }
 
         return true;
     }
@@ -1198,37 +1191,6 @@ bool trapfunc::ledge( const tripoint_bub_ms &p, Creature *c, item * )
     monster *m = dynamic_cast<monster *>( c );
     if( m != nullptr && m->flies() ) {
         return false;
-    }
-    if( !g->m.has_zlevels() ) {
-        if( c == &g->u ) {
-            if( !character_funcs::can_fly( get_avatar() ) ) {
-                add_msg( m_warning, _( "You fall down a level!" ) );
-                g->vertical_move( -1, true );
-                if( get_avatar().has_trait( trait_WINGS_BIRD ) || ( one_in( 2 ) &&
-                        get_avatar().has_trait( trait_WINGS_BUTTERFLY ) ) ) {
-                    add_msg( _( "You flap your wings and flutter down gracefully." ) );
-                } else if( get_avatar().has_trait( trait_WEB_RAPPEL ) ) {
-                    add_msg( _( "You quickly spin a line of silk and rappel down." ) );
-                } else if( get_avatar().has_active_bionic( bio_shock_absorber ) ) {
-                    add_msg( m_info,
-                             _( "You hit the ground hard, but your shock absorbers handle the impact admirably!" ) );
-                } else {
-                    get_avatar().impact( 20, p );
-                }
-            }
-        } else {
-            c->add_msg_if_npc( _( "<npcname> falls down a level!" ) );
-            auto dest = c->bub_pos();
-            dest.z()--;
-            c->impact( 20, dest );
-            c->setpos( dest );
-            if( m != nullptr ) {
-                g->despawn_monster( *m );
-            }
-        }
-        // Unlikely you'd want a single-use ledge, but could allow for skylights breaking and spawning glass.
-        g->m.tr_at( p ).trigger_aftermath( g->m, p );
-        return true;
     }
 
     int height = 0;

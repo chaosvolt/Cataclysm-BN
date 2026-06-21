@@ -201,6 +201,12 @@
   },
   {
     "type": "effect_type",
+    "id": "pet_bonding",
+    "name": [ "Pet Bonding" ],
+    "desc": [ "AI tag used for bonding with pet critters.  This is a bug if you have it." ]
+  },
+  {
+    "type": "effect_type",
     "id": "paid",
     "name": [ "Paid" ],
     "desc": [ "AI tag used for paid critters.  This is a bug if you have it." ]
@@ -1788,8 +1794,9 @@
     "name": [ "Grabbed" ],
     "desc": [ "You have been grabbed by an attack.\nYou are being held in place, and dodging is harder." ],
     "rating": "bad",
-    "max_duration": "2 s",
-    "max_intensity": 2,
+    "max_duration": "1 d",
+    "max_intensity": 15,
+    "flags": [ "GRAB" ],
     "base_mods": { "speed_mod": [ -15 ] },
     "scaling_mods": { "speed_mod": [ -5 ] },
     "show_in_info": true
@@ -1799,8 +1806,9 @@
     "id": "grabbing",
     "name": [ "Grabbing" ],
     "desc": [ "Grabbing another creature and holding them in place." ],
-    "max_duration": "2 s",
+    "max_duration": "1 d",
     "max_intensity": 15,
+    "flags": [ "GRAB_FILTER" ],
     "show_in_info": true
   },
   {

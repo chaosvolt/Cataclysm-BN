@@ -76,7 +76,7 @@ struct spawn_point {
 template<int sx, int sy>
 struct maptile_soa {
     protected:
-        maptile_soa( const tripoint_abs_sm &position );
+        maptile_soa( const tripoint_abs_sm &position, const dimension_id &dim );
     public:
         ter_id             ter[sx][sy];  // Terrain on each square
         furn_id            frn[sx][sy];  // Furniture on each square
@@ -92,10 +92,13 @@ struct maptile_soa {
 class submap : maptile_soa<SEEX, SEEY>
 {
     public:
-        submap( const tripoint_abs_sm &position );
+        submap( const tripoint_abs_sm &position, const dimension_id &dim );
         ~submap();
 
-        const tripoint_abs_sm position() const { return pos; }
+        const dimension_id get_dimension() const { return dim_; }
+        const tripoint_abs_sm position() const { return pos_; }
+        auto set_dimension( const dimension_id &dim ) -> void;
+        auto set_position( const tripoint_abs_sm &position ) -> void;
 
         trap_id get_trap( const point_sm_ms &p ) const {
             return trp[p.x()][p.y()];
@@ -145,11 +148,13 @@ class submap : maptile_soa<SEEX, SEEY>
 
         void set_ter( const point_sm_ms &p, ter_id terr ) {
             is_uniform = false;
+            emitter_cache = std::nullopt;
             ter[p.x()][p.y()] = terr;
         }
 
         void set_all_ter( const ter_id &terr ) {
             std::fill_n( &ter[0][0], elements, terr );
+            emitter_cache = std::nullopt;
         }
 
         int get_radiation( const point_sm_ms &p ) const {
@@ -164,6 +169,8 @@ class submap : maptile_soa<SEEX, SEEY>
         uint8_t get_lum( const point_sm_ms &p ) const {
             return lum[p.x()][p.y()];
         }
+
+        auto static_emitter_tiles() const -> const std::vector<point_sm_ms> &;
 
         void set_lum( const point_sm_ms &p, uint8_t luminance ) {
             is_uniform = false;
@@ -265,7 +272,7 @@ class submap : maptile_soa<SEEX, SEEY>
 
         void store( JsonOut &jsout ) const;
         void load( JsonIn &jsin, const std::string &member_name, int version,
-                   const tripoint_abs_ms offset );
+                   const tripoint_abs_ms offset, const dimension_id &dim );
 
         // If is_uniform is true, this submap is a solid block of terrain
         // Uniform submaps aren't saved/loaded, because regenerating them is faster
@@ -291,11 +298,11 @@ class submap : maptile_soa<SEEX, SEEY>
         // sparse ones, and multiple masks can be ANDed cheaply to combine conditions.
         // Deferred because it is a broader refactor touching all cache consumers.
 
-        /** Positions of EMITTER furniture on this submap.
+        /** Positions of terrain/furniture with emitted light on this submap.
          *  std::nullopt = dirty (needs rebuild by scanning all tiles).
          *  Empty vector = no emitters present.
-         *  Rebuilt lazily; invalidated by set_furn / set_all_furn. */
-        std::optional<std::vector<point_sm_ms>> emitter_cache;
+         *  Rebuilt lazily; invalidated by set_ter/set_all_ter/set_furn/set_all_furn. */
+        mutable std::optional<std::vector<point_sm_ms>> emitter_cache;
         // Serialized as "turn_last_touched" (absolute turn number).
         // Initialized to calendar::turn_zero; legacy saves that predate
         // serialization will receive the maximum-capped catchup on first load.
@@ -357,7 +364,8 @@ class submap : maptile_soa<SEEX, SEEY>
 
     private:
         static const data_vars::data_set EMPTY_VARS;
-        tripoint_abs_sm pos;
+        dimension_id dim_;
+        tripoint_abs_sm pos_;
         std::unordered_map<point_sm_ms, data_vars::data_set> ter_vars;
         std::unordered_map<point_sm_ms, data_vars::data_set> frn_vars;
 

@@ -17,6 +17,7 @@
 #include <optional>
 #include <ostream>
 #include <point.h>
+#include <ranges>
 #include <set>
 #include <submap.h>
 #include <tuple>
@@ -44,7 +45,9 @@
 #include "map.h"
 #include "map_iterator.h"
 #include "mapbuffer.h"
+#include "mapbuffer_registry.h"
 #include "mapgen.h"
+#include "mapgen_constructor.h"
 #include "mapgen_functions.h"
 #include "math_defines.h"
 #include "messages.h"
@@ -2785,14 +2788,14 @@ void overmap_special::load( const JsonObject &jo, const std::string &src )
     }
 }
 
-auto overmap_special::can_spawn_in_dimension( const std::string &dim_id,
+auto overmap_special::can_spawn_in_dimension( const dimension_id &dim_id,
         bool dim_inherits_base ) const -> bool
 {
     if( dimensions_.empty() ) {
         // No filter: allowed in primary ("") and in dims with inherit_base_mapgen.
-        return dim_id.empty() || dim_inherits_base;
+        return dim_id.is_empty() || dim_inherits_base;
     }
-    return std::ranges::find( dimensions_, dim_id ) != dimensions_.end();
+    return std::ranges::find( dimensions_, dim_id.str() ) != dimensions_.end();
 }
 
 void overmap_special::finalize()
@@ -2879,7 +2882,7 @@ void overmap_special::check() const
 }
 
 // *** BEGIN overmap FUNCTIONS ***
-overmap::overmap( const point_abs_om &p, const std::string &dim_id )
+overmap::overmap( const point_abs_om &p, const dimension_id &dim_id )
     : loc( p )
     , dimension_id_( dim_id )
 {
@@ -2913,8 +2916,8 @@ overmap::overmap( const point_abs_om &p, const std::string &dim_id )
 overmap::overmap( overmap && )  noexcept = default;
 overmap::~overmap() = default;
 
-void overmap::populate( const std::string &dim_id,
-                        overmap_special_batch &enabled_specials )
+auto overmap::populate( const dimension_id &dim_id,
+                        overmap_special_batch &enabled_specials ) -> void
 {
     try {
         open( dim_id, enabled_specials );
@@ -2923,7 +2926,7 @@ void overmap::populate( const std::string &dim_id,
     }
 }
 
-void overmap::populate( const std::string &dim_id )
+auto overmap::populate( const dimension_id &dim_id ) -> void
 {
     overmap_special_batch enabled_specials = overmap_specials::get_default_batch( loc );
     const overmap_feature_flag_settings &overmap_feature_flag = settings->overmap_feature_flag;
@@ -3405,7 +3408,7 @@ void overmap::generate( const overmap *north, const overmap *east,
         // world_type explicitly disables generation.
         if( dim->pocket_info.has_value() ) {
             dbg( DL::Info ) << "overmap::generate skipped for bounded dimension '"
-                            << dim->dimension_id << "'";
+                            << dim->id.str() << "'";
             return;
         }
         if( dim->world_type.is_valid() && !dim->world_type.obj().generate_overmap ) {
@@ -5973,10 +5976,12 @@ void overmap::spawn_ores( const tripoint_abs_omt &p )
         * begin edited editmap code TODO: Should probably just make this a
         * function, if there is one, I couldnt find it. Bascially "regenerates" an OM tile.
         */
-        tinymap tmp;
         map &here = get_map();
         owning_omb.ter_set( p, oter_id( "omt_ore_vein_" + chosen + directions[rand() % 4] ) );
-        tmp.generate( target_sub, calendar::turn );
+        mapbuffer generated_buffer;
+        generated_buffer.set_dimension_id( dimension_id_ );
+        mapgen_constructor generated_map( generated_buffer );
+        generated_map.generate( p, calendar::turn );
 
         here.set_transparency_cache_dirty( p.z() );
         here.set_outside_cache_dirty( p.z() );
@@ -5988,33 +5993,32 @@ void overmap::spawn_ores( const tripoint_abs_omt &p )
         here.clear_vehicle_cache();
         here.clear_vehicle_list( p.z() );
 
-        for( int x = 0; x < 2; x++ ) {
-            for( int y = 0; y < 2; y++ ) {
-                // Apply previewed mapgen to map. Since this is a function for testing, we try avoid triggering
-                // functions that would alter the results
-                const auto dest_pos = target_sub + point_rel_sm( x, y );
-                const auto src_pos = tripoint_bub_sm{ x, y, p.z() };
+        for( const auto offset : point_range<point_omt_sm>( point_omt_sm::zero(), point_omt_sm( 1, 1 ) ) ) {
+            const auto dest_pos = target_sub + offset.raw();
 
-                submap *destsm = MAPBUFFER_REGISTRY.get( dimension_id_ ).lookup_submap( dest_pos );
-                submap *srcsm = tmp.get_submap_at_grid( src_pos );
+            submap *destsm = MAPBUFFER_REGISTRY.get( dimension_id_ ).lookup_submap( dest_pos );
+            submap *srcsm = generated_buffer.lookup_submap_in_memory( dest_pos );
+            if( destsm == nullptr || srcsm == nullptr ) {
+                continue;
+            }
 
-                submap::swap( *destsm,  *srcsm );
+            submap::swap( *destsm,  *srcsm );
 
-                for( auto &veh : destsm->vehicles ) {
-                    veh->abs_sm_pos = dest_pos;
-                }
+            for( auto &veh : destsm->vehicles ) {
+                veh->abs_sm_pos = dest_pos;
+            }
 
-                if( !destsm->spawns.empty() ) {                              // trigger spawnpoints
-                    here.spawn_monsters( true );
-                }
+            if( !destsm->spawns.empty() ) {                              // trigger spawnpoints
+                here.spawn_monsters( true );
             }
         }
 
         // Since we cleared the vehicle cache of the whole z-level (not just the generate map), we add it back here
-        for( int x = 0; x < here.getmapsize(); x++ ) {
-            for( int y = 0; y < here.getmapsize(); y++ ) {
+        for( const auto x : std::views::iota( 0, here.getmapsize() ) ) {
+            for( const auto y : std::views::iota( 0, here.getmapsize() ) ) {
                 const auto dest_pos = tripoint_bub_sm( x, y, p.z() );
-                const submap *destsm = here.get_submap_at_grid( dest_pos );
+                const submap *destsm = here.get_mapbuffer().lookup_submap_in_memory(
+                                           map_local_to_abs( here, dest_pos ) );
                 here.update_vehicle_list( destsm, p.z() ); // update real map's vcaches
             }
         }
@@ -6438,18 +6442,18 @@ void overmap::place_radios()
     }
 }
 
-void overmap::open( const std::string &dim_id,
-                    overmap_special_batch &enabled_specials )
+auto overmap::open( const dimension_id &dim_id,
+                    overmap_special_batch &enabled_specials ) -> void
 {
     const auto ter_reader = [&]( std::istream & fin ) {
         overmap::unserialize( fin, string_format( "overmap terrain %d.%d", loc.x(), loc.y() ) );
     };
 
-    if( g->get_active_world()->read_overmap( dim_id, loc, ter_reader ) ) {
+    if( g->get_active_world()->read_overmap( dim_id.str(), loc, ter_reader ) ) {
         const auto plr_reader = [&]( std::istream & fin ) {
             overmap::unserialize_view( fin, string_format( "overmap visibility %d.%d", loc.x(), loc.y() ) );
         };
-        g->get_active_world()->read_overmap_player_visibility( dim_id, loc, plr_reader );
+        g->get_active_world()->read_overmap_player_visibility( dim_id.str(), loc, plr_reader );
     } else { // No map exists!  Prepare neighbors, and generate one.
         auto &owning_omb = get_overmapbuffer( dim_id );
         std::vector<const overmap *> pointers;
@@ -6468,13 +6472,14 @@ void overmap::open( const std::string &dim_id,
 }
 
 // Note: this may throw io errors from std::ofstream
-void overmap::save( const std::string &dim_id ) const
+auto overmap::save( const dimension_id &dim_id ) const -> void
 {
-    g->get_active_world()->write_overmap_player_visibility( dim_id, loc, [&]( std::ostream & stream ) {
+    g->get_active_world()->write_overmap_player_visibility( dim_id.str(),
+    loc, [&]( std::ostream & stream ) {
         serialize_view( stream );
     } );
 
-    g->get_active_world()->write_overmap( dim_id, loc, [&]( std::ostream & stream ) {
+    g->get_active_world()->write_overmap( dim_id.str(), loc, [&]( std::ostream & stream ) {
         serialize( stream );
     } );
 }

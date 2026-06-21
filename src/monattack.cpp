@@ -15,6 +15,7 @@
 #include <utility>
 #include <vector>
 
+#include "action_time_scale.h"
 #include "avatar.h"
 #include "ballistics.h"
 #include "bionics.h"
@@ -328,6 +329,23 @@ static std::unique_ptr<npc> make_fake_npc( monster *z, int str, int dex, int int
     return tmp;
 }
 
+namespace
+{
+constexpr auto shriek_stun_hearing_protection_threshold = 40;
+
+auto has_shriek_stun_hearing_protection( const Creature &target ) -> bool
+{
+    if( target.is_immune_effect( effect_deaf ) ) {
+        return true;
+    }
+
+    const auto *const character = target.as_character();
+    return character != nullptr && character->get_char_hearing_protection() +
+           character->get_char_hearing_protection( true ) >= shriek_stun_hearing_protection_threshold;
+}
+
+} // namespace
+
 bool mattack::none( monster * )
 {
     return true;
@@ -544,7 +562,7 @@ bool mattack::shriek_stun( monster *z )
         if( target == nullptr ) {
             continue;
         }
-        if( one_in( dist / 2 ) && !( target->is_immune_effect( effect_deaf ) ) ) {
+        if( one_in( dist / 2 ) && !has_shriek_stun_hearing_protection( *target ) ) {
             target->add_effect( effect_dazed, rng( 1_minutes, 2_minutes ), bodypart_str_id::NULL_ID(),
                                 rng( 1, ( 15 - dist ) / 3 ) );
         }
@@ -2856,11 +2874,6 @@ bool mattack::ranged_pull( monster *z )
             if( foe->in_vehicle ) {
                 here.unboard_vehicle( foe->bub_pos() );
             }
-
-            if( target->is_player() && ( pt.x() < g_half_mapsize_x || pt.y() < g_half_mapsize_y ||
-                                         pt.x() >= g_half_mapsize_x + SEEX || pt.y() >= g_half_mapsize_y + SEEY ) ) {
-                g->update_map( pt.x(), pt.y() );
-            }
         }
 
         target->setpos( pt );
@@ -3001,11 +3014,6 @@ bool mattack::grab_drag( monster *z )
         z->move_to( target_square );
         if( !g->is_empty( zpt ) ) { //Cancel the grab if the space is occupied by something
             return false;
-        }
-        if( target->is_player() && ( zpt.x() < g_half_mapsize_x ||
-                                     zpt.y() < g_half_mapsize_y ||
-                                     zpt.x() >= g_half_mapsize_x + SEEX || zpt.y() >= g_half_mapsize_y + SEEY ) ) {
-            g->update_map( zpt.x(), zpt.y() );
         }
         if( foe != nullptr ) {
             if( foe->in_vehicle ) {
@@ -3371,7 +3379,7 @@ bool mattack::check_money_left( monster *z )
     } else {
         const time_duration time_left = z->get_effect_dur( effect_paid );
         if( time_left < 1_minutes ) {
-            if( calendar::once_every( 20_seconds ) ) {
+            if( action_time_scale::once_every_this_tick( 20_seconds ) ) {
                 const SpeechBubble &speech_time_low = get_speech( "mon_grocerybot_running_out_of_friendship" );
                 se.volume = speech_time_low.volume;
                 se.description = speech_time_low.text.translated();
@@ -3380,7 +3388,7 @@ bool mattack::check_money_left( monster *z )
         }
     }
     if( z->friendly == -1 && !z->has_effect( effect_paid ) ) {
-        if( calendar::once_every( 3_hours ) ) {
+        if( action_time_scale::once_every_this_tick( 3_hours ) ) {
             const SpeechBubble &speech_override_start = get_speech( "mon_grocerybot_hacked" );
             se.volume = speech_override_start.volume;
             se.description = speech_override_start.text.translated();
@@ -3931,7 +3939,7 @@ bool mattack::searchlight( monster *z )
     }
 
     //battery charge from the generator is enough for some time of work
-    if( calendar::once_every( 10_minutes ) ) {
+    if( action_time_scale::once_every_this_tick( 10_minutes ) ) {
 
         bool generator_ok = false;
 
@@ -4133,8 +4141,7 @@ void mattack::flame( monster *z, Creature *target )
             // TODO: Z
             if( here.hit_with_fire( tripoint_bub_ms( i.xy(), z->bub_pos().z() ) ) ) {
                 if( g->u.sees( i ) ) {
-                    add_msg( _( "The tongue of flame hits the %s!" ),
-                             here.tername( i.xy() ) );
+                    add_msg( _( "The tongue of flame hits the %s!" ), here.tername( i ) );
                 }
                 return;
             }
@@ -4162,19 +4169,17 @@ void mattack::flame( monster *z, Creature *target )
             } else {
                 intervening.y() = prev_point.y();
             }
-            if( here.hit_with_fire( tripoint_bub_ms( intervening.xy(), z->bub_pos().z() ) ) ) {
+            if( here.hit_with_fire( intervening ) ) {
                 if( g->u.sees( i ) ) {
-                    add_msg( _( "The tongue of flame hits the %s!" ),
-                             here.tername( intervening.xy() ) );
+                    add_msg( _( "The tongue of flame hits the %s!" ), here.tername( intervening ) );
                 }
                 return;
             }
         }
         // break out of attack if flame hits a wall
-        if( here.hit_with_fire( tripoint_bub_ms( i.xy(), z->bub_pos().z() ) ) ) {
+        if( here.hit_with_fire( i ) ) {
             if( g->u.sees( i ) ) {
-                add_msg( _( "The tongue of flame hits the %s!" ),
-                         here.tername( i.xy() ) );
+                add_msg( _( "The tongue of flame hits the %s!" ), here.tername( i ) );
             }
             return;
         }
@@ -4466,7 +4471,7 @@ bool mattack::generator( monster *z )
     se.monfaction = z->faction.id();
     se.faction = faction_id( "no_faction" );
     sounds::sound( se );
-    if( calendar::once_every( 1_minutes ) && z->get_hp() < z->get_hp_max() ) {
+    if( action_time_scale::once_every_this_tick( 1_minutes ) && z->get_hp() < z->get_hp_max() ) {
         z->heal( 1 );
     }
 
@@ -5197,8 +5202,10 @@ bool mattack::thrown_by_judo( monster *z )
         ///\EFFECT_DEX increases chance judo-throwing a monster
 
         ///\EFFECT_UNARMED increases chance of judo-throwing monster, vs their melee skill
-        if( ( ( foe->dex_cur + foe->get_skill_level( skill_unarmed ) ) > ( z->type->melee_skill + rng( 0,
-                3 ) ) ) ) {
+        const auto unarmed_skill = foe->get_skill_level( skill_unarmed );
+        const auto size_penalty = static_cast<int>( z->type->size ) * 2;
+        if( ( foe->dex_cur + unarmed_skill ) > ( z->type->melee_skill + size_penalty + rng( 0,
+                3 ) ) ) {
             target->add_msg_if_player( m_good, _( "but you grab its arm and flip it to the ground!" ) );
 
             // most of the time, when not isolated
@@ -5213,10 +5220,9 @@ bool mattack::thrown_by_judo( monster *z )
                 foe->check_dead_state();
             }
             // Monster is down,
-            z->add_effect( effect_downed, 5_turns );
-            const int min_damage = 10 + foe->get_skill_level( skill_unarmed );
-            const int max_damage = 20 + foe->get_skill_level( skill_unarmed );
-            // Deal moderate damage
+            z->add_effect( effect_downed, 3_turns );
+            const auto min_damage = 3 + unarmed_skill / 2;
+            const auto max_damage = 8 + unarmed_skill;
             const auto damage = rng( min_damage, max_damage );
             z->apply_damage( foe, bodypart_id( "torso" ), damage );
             z->check_dead_state();
@@ -5241,7 +5247,7 @@ bool mattack::riotbot( monster *z )
 
     player *foe = dynamic_cast<player *>( target );
 
-    if( calendar::once_every( 1_minutes ) ) {
+    if( action_time_scale::once_every_this_tick( 1_minutes ) ) {
         for( const tripoint_bub_ms &dest : here.points_in_radius( z->bub_pos(), 4 ) ) {
             if( here.passable( dest ) &&
                 here.clear_path( z->bub_pos(), dest, 3, 1, 100 ) ) {
@@ -5259,7 +5265,7 @@ bool mattack::riotbot( monster *z )
         ( foe->primary_weapon().typeId() == itype_e_handcuffs || !foe->has_two_arms() ) ) {
         z->anger = 0;
 
-        if( calendar::once_every( 25_turns ) ) {
+        if( action_time_scale::once_every_this_tick( 25_turns ) ) {
             se.volume = 70;
             se.category = sounds::sound_t::electronic_speech;
             se.description = _( "Halt and submit to arrest, citizen!  The police will be here any moment." );
@@ -5404,7 +5410,7 @@ bool mattack::riotbot( monster *z )
         return true;
     }
 
-    if( calendar::once_every( 5_turns ) ) {
+    if( action_time_scale::once_every_this_tick( 5_turns ) ) {
         se.volume = 80;
         se.category = sounds::sound_t::electronic_speech;
         se.description = _( "Empty your hands and hold your position, citizen!" );

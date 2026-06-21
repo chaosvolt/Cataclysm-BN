@@ -61,9 +61,11 @@
 #include "language.h"
 #include "magic.h"
 #include "map.h"
+#include "mapbuffer_registry.h"
 #include "map_extras.h"
 #include "map_iterator.h"
 #include "mapgen.h"
+#include "mapgen_constructor.h"
 #include "mapgendata.h"
 #include "martialarts.h"
 #include "memory_fast.h"
@@ -527,13 +529,11 @@ void spawn_nested_mapgen()
             return;
         }
 
-        map &here = get_map();
-        const tripoint_abs_ms abs_ms = here.bub_to_abs( *where );
+        const auto abs_ms = bub_to_abs( *where );
         const tripoint_abs_omt abs_omt = project_to<coords::omt>( abs_ms );
-        const tripoint_abs_sm abs_sub = project_to<coords::sm>( abs_ms );
 
-        map target_map;
-        target_map.load( abs_sub, true );
+        mapgen_constructor target_map( MAPBUFFER_REGISTRY.get( get_map().get_bound_dimension() ) );
+        target_map.load( abs_omt );
         const auto local_ms = project_remain<coords::omt>( abs_ms ).remainder;
         mapgendata md( abs_omt, target_map, 0.0f, calendar::turn, nullptr,
                        get_overmapbuffer( target_map.get_bound_dimension() ) );
@@ -544,7 +544,7 @@ void spawn_nested_mapgen()
         const auto nested_offset = point_rel_ms( local_ms.x(), local_ms.y() );
         ( *ptr )->nest( md, nested_offset );
         g->load_npcs();
-        here.invalidate_map_cache( g->get_levz() );
+        get_map().invalidate_map_cache( g->get_levz() );
     }
 }
 
@@ -996,7 +996,7 @@ void character_edit_menu( Character &c )
 
             const auto &vits = vitamin::all();
             for( const auto &v : vits ) {
-                smenu.addentry( -1, true, 0, "%s: %d", v.second.name(), p.vitamin_get( v.first ) );
+                smenu.addentry( -1, true, 0, "%s: %d", v.name(), p.vitamin_get( v.id ) );
             }
 
             smenu.query();
@@ -1038,8 +1038,8 @@ void character_edit_menu( Character &c )
                         smenu.ret < static_cast<int>( vits.size() + non_vitamin_entries ) ) {
                         auto iter = std::next( vits.begin(), smenu.ret - non_vitamin_entries );
                         if( query_int( value, _( "Set %s to?  Currently: %d" ),
-                                       iter->second.name(), p.vitamin_get( iter->first ) ) ) {
-                            p.vitamin_set( iter->first, value );
+                                       iter->name(), p.vitamin_get( iter->id ) ) ) {
+                            p.vitamin_set( iter->id, value );
                         }
                     }
             }
@@ -1112,7 +1112,6 @@ void character_edit_menu( Character &c )
                     if( p.is_mounted() ) {
                         p.mounted_creature->setpos( *newpos );
                     }
-                    g->update_map( g->u );
                 }
             }
         }
@@ -2157,11 +2156,9 @@ void debug()
             if( mx_choice >= 0 && mx_choice < static_cast<int>( mx_str.size() ) ) {
                 const tripoint_abs_omt where_omt( ui::omap::choose_point() );
                 if( where_omt != overmap::invalid_tripoint ) {
-                    tripoint_abs_sm where_sm = project_to<coords::sm>( where_omt );
-                    tinymap mx_map;
-                    // TODO: fix point types
-                    mx_map.load( where_sm, false );
-                    MapExtras::apply_function( mx_str[mx_choice], mx_map, where_sm );
+                    mapgen_constructor mx_map( MAPBUFFER_REGISTRY.get( m.get_bound_dimension() ) );
+                    mx_map.load( where_omt );
+                    MapExtras::apply_function( mx_str[mx_choice], mx_map, where_omt );
                     g->load_npcs();
                     m.invalidate_map_cache( g->get_levz() );
                 }
@@ -2327,9 +2324,7 @@ void debug()
         }
         case DEBUG_DUMP_TILES: {
 #if defined(TILES) && defined(DYNAMIC_ATLAS)
-            tilecontext->current_tileset()->texture_atlas()->readback_load();
             tilecontext->current_tileset()->texture_atlas()->readback_dump( PATH_INFO::config_dir() );
-            tilecontext->current_tileset()->texture_atlas()->readback_clear();
 #endif
             break;
         }
