@@ -4074,12 +4074,23 @@ SkillLevel &Character::get_skill_level_object( const skill_id &ident )
 
 int Character::get_skill_level( const skill_id &ident ) const
 {
-    return _skills->get_skill_level( ident );
+    int skill_level = _skills->get_skill_level( ident );
+    auto ench_id = enchantment_value_id( "SKILL_LEVEL_" + to_upper_case( ident.str() ) );
+    if( ench_id.is_valid() ) {
+        skill_level += bonus_from_enchantments( skill_level, ench_id );
+    }
+    return skill_level;
 }
 
 int Character::get_skill_level( const skill_id &ident, const item &context ) const
 {
-    return _skills->get_skill_level( ident, context );
+    int skill_level = _skills->get_skill_level( ident, context );
+    const auto id = context.is_null() ? ident : context.contextualize_skill( ident );
+    auto ench_id = enchantment_value_id( "SKILL_LEVEL_" + to_upper_case( id.str() ) );
+    if( ench_id.is_valid() ) {
+        skill_level += bonus_from_enchantments( skill_level, ench_id );
+    }
+    return skill_level;
 }
 
 void Character::set_skill_level( const skill_id &ident, const int level )
@@ -4140,6 +4151,11 @@ int Character::rust_rate() const
 
 void Character::practice( const skill_id &id, int amount, int cap, bool suppress_warning )
 {
+    auto ench_id = enchantment_value_id( "SKILL_EXP_" + to_upper_case( id.str() ) );
+    if( ench_id.is_valid() ) {
+        amount += bonus_from_enchantments( amount, ench_id );
+    }
+
     SkillLevel &level = get_skill_level_object( id );
     const Skill &skill = id.obj();
     std::string skill_name = skill.name();
