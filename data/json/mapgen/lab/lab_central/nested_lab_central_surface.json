@@ -3,6 +3,7 @@
     "type": "mapgen",
     "method": "json",
     "nested_mapgen_id": "central_lab_crate_1x1",
+    "//": "Place a single crate, used for randomization of storage areas.",
     "object": {
       "mapgensize": [ 1, 1 ],
       "rows": [ "C" ],
@@ -20,6 +21,7 @@
     "type": "mapgen",
     "method": "json",
     "nested_mapgen_id": "central_lab_surface_utility_6x6",
+    "//": "These chunks fill out the space of the utilities area with random machinery for flavor.",
     "object": {
       "mapgensize": [ 6, 6 ],
       "rows": [
@@ -190,6 +192,7 @@
     "type": "mapgen",
     "method": "json",
     "nested_mapgen_id": "central_lab_surface_security_center_22x5",
+    "//": "These populate the two main rooms in the center of the security building with assorted work and/or storage spaces.",
     "object": {
       "mapgensize": [ 22, 5 ],
       "rows": [
@@ -324,6 +327,7 @@
     "type": "mapgen",
     "method": "json",
     "nested_mapgen_id": "central_lab_surface_security_wall_7x1",
+    "//": "These two wall variants are used to limit access paths to the part of the security center directly in front of the stairs leading down, while other edge pieces have free access to the other half of the center tile where roof access can be found.",
     "object": { "mapgensize": [ 7, 1 ], "rows": [ "|||||||" ], "terrain": { "|": "t_strconc_wall" } }
   },
   {
@@ -336,6 +340,7 @@
     "type": "mapgen",
     "method": "json",
     "nested_mapgen_id": "central_lab_surface_security_edge_20x17",
+    "//": "Two flavor variations on security checkpoints that control access from the loading zones in the edges to the center of the security building, and/or the checkpoints separating the two halves of the center tile itself.",
     "object": {
       "mapgensize": [ 20, 17 ],
       "rows": [
@@ -410,6 +415,7 @@
     "type": "mapgen",
     "method": "json",
     "nested_mapgen_id": "central_lab_surface_security_corner_n_3x2",
+    "//": "These are small flavor variations for waiting room furnishings surrounding the security building's reception areas.",
     "object": { "mapgensize": [ 3, 2 ], "rows": [
         "hhh",
         "   "
@@ -512,6 +518,7 @@
     "type": "mapgen",
     "method": "json",
     "nested_mapgen_id": "central_lab_surface_security_corner_13x13",
+    "//": "Simple reception desks and/or seucurity centers for the corner sections of the security building, where personnel actually enter from.",
     "object": {
       "mapgensize": [ 13, 13 ],
       "rows": [
@@ -613,6 +620,7 @@
     "type": "mapgen",
     "method": "json",
     "nested_mapgen_id": "central_lab_surface_security_connection_w_2x4",
+    "//": "These are used to control access from the corner pieces of the security building to the edge pieces, leading deeper into the facility.  They're conditional to avoid embedded an unusable door in the walls of the stairway bunker.",
     "object": {
       "mapgensize": [ 2, 4 ],
       "rows": [
@@ -641,6 +649,7 @@
     "type": "mapgen",
     "method": "json",
     "nested_mapgen_id": "central_lab_surface_medcenter_h_3x3",
+    "//": "Flavor variations on exam rooms in the medical center, divided into vertical vs horizontal to keep different areas clear for the doorway.",
     "object": {
       "mapgensize": [ 3, 3 ],
       "rows": [
@@ -841,6 +850,7 @@
     "type": "mapgen",
     "method": "json",
     "nested_mapgen_id": "central_lab_surface_plaza_16x16",
+    "//": "These are different variations of the small outdoor plaza/park in front of the security building, providing flavor and making the outside feel less cramped.",
     "object": {
       "mapgensize": [ 16, 16 ],
       "rows": [
@@ -994,6 +1004,7 @@
     "type": "mapgen",
     "method": "json",
     "nested_mapgen_id": "central_lab_surface_dorm_17x6",
+    "//": "Flavor variations on the individual door rooms in the dormitory building.  Doorway will always be on the right edge, since we can mirror the OMT for the other half of the dorm building.",
     "object": {
       "mapgensize": [ 17, 6 ],
       "rows": [
@@ -1171,6 +1182,7 @@
     "type": "mapgen",
     "method": "json",
     "nested_mapgen_id": "central_lab_surface_office_17x6",
+    "//": "Flavor variations of office rooms in the office building, with some containing potentially useful books.  Designed to keep the specific tiles clear that may potentially contain the doorways.",
     "object": {
       "mapgensize": [ 17, 6 ],
       "rows": [
