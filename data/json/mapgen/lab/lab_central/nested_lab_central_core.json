@@ -579,7 +579,7 @@
     "type": "mapgen",
     "method": "json",
     "nested_mapgen_id": "central_lab_mini_room_ew_4x4",
-    "": "Todo: add more variants to 4x4 rooms: small medical exam room with possible autodoc, small autoclave room with recyling utilities for implied corpse disposal",
+    "//": "Todo: add more variants to 4x4 rooms: small medical exam room with possible autodoc, small autoclave room with recyling utilities for implied corpse disposal",
     "object": {
       "mapgensize": [ 4, 4 ],
       "rows": [
@@ -620,7 +620,7 @@
     "type": "mapgen",
     "method": "json",
     "nested_mapgen_id": "central_lab_mini_room_7x7",
-    "": "Todo: add more variations of 7x7 rooms: small office room, mundane workstation area with random lab chemicals and/or sample fridges, generator room with potential electrical anomaly, small reinforced glass cell containing a random nether monster, mini-anomaly with dimensional fatigue/fire vent/lava",
+    "//": "Todo: add more variations of 7x7 rooms: small office room, mundane workstation area with random lab chemicals and/or sample fridges, generator room with potential electrical anomaly, small reinforced glass cell containing a random nether monster, mini-anomaly with dimensional fatigue/fire vent/lava",
     "object": {
       "mapgensize": [ 7, 7 ],
       "rows": [
