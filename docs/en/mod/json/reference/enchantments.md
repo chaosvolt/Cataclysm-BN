@@ -281,12 +281,12 @@ stamina gain rate modified by mouth encumbrance. The final value cannot go below
 
 ##### THIRST
 
-Thirst gain rate. This modifier ignores `add` field. `base_value` here is character's base thirst
+Thirst gain rate. `base_value` here is character's base thirst
 gain rate. The final value cannot go below 0.
 
 ##### FATIGUE
 
-Fatigue gain rate. This modifier ignores `add` field. `base_value` here is character's base fatigue
+Fatigue gain rate. `base_value` here is character's base fatigue
 gain rate. The final value cannot go below 0.
 
 ##### MENDING_MULT
@@ -331,7 +331,31 @@ There is no limit
 
 Additional speed change for COLDBLOOD4 characters
 `base_value` is the mutation value or 0
-NOTE: There is no limit, this is subject to future changes
+There is no current limit
+
+##### SLEEP_PAIN_THRESHOLD
+
+Additional pain required for being woken up
+`base_value` is the base sleep pain value
+Minimum value is 1
+
+##### SLEEP_DB_RESIST
+
+Modifier to the amount of noise above environemental required to be woken up
+`base_value` is 20
+There is no minimum nor maximum value
+
+##### CLIMATE_CONTROL
+
+Moves temperature felt by the player towards a point.
+`base_value` is the current temperature felt by the player
+It will increase or decrease based off if it is below or above normal temperature ( including mutations )
+It has two children:
+
+- `CLIMATE_CONTROL_COOLING`
+- `CLIMATE_CONTROL_HEATING`
+
+That would only heat or cool respectively
 
 ##### LIE
 
@@ -380,6 +404,27 @@ There is no limit
 Additional dodges per turn before dodge penalty kicks in. `base_value` here is character's base
 dodges per turn before penalty (usually 1). The final value can go below 0, which results in penalty
 to dodge roll.
+
+##### BLISTER_COUNT
+
+Effective heat armor modifier to gaining the blister effect. `base_value` is the number of blisters.
+The final value can go below 0, which would never blister the character. Or it could go higher and always blister the character.
+
+##### LUMINATION
+
+Lumination around the player when active. You cannot add nor multiply this enchantment, only max value works.
+The final value will not go below 0, and the maximum value is uncapped.
+
+##### NIGHT_VISION
+
+Night vision value for the player. `EFFECT_NIGHT_VISION` or `GNV_EFFECT` is 10.0 while `GNVE_EFFECT` is 18.0
+Only `max` works, and it will take the highest of enchantment and other night vision effects
+
+##### CLAIRVOYANCE
+
+Clairvoyance value for the player. `CLAIRVOYANCE_SUPER` is 40.0 while `CLAIRVOYANCE_PLUS` is 8.0
+And `CLAIRVOYANCE` is 3
+Only `max` works, and it will take the highest of enchantment and other clairvoyance effects
 
 ##### ARMOR_X
 
@@ -499,8 +544,9 @@ value, in addition to the global `ITEM_ARMOR`:
 {
   "id": "RANGED_DAMAGE", // Id of the enchantment
   "type": "enchantment_value", // Needed Type
-  "can_add": true, // Weather adding to the enchantment value will do anything
-  "can_mult": true, // Weather multiplying to the enchantment value will do anything
+  "can_add": true, // Weather adding to the enchantment value will do anything; Default true
+  "can_mult": true, // Weather multiplying to the enchantment value will do anything; Default true
+  "can_max": false, // Weather getting the maximum value of this type will do anything; Default false
   "suffixes": [ // All the suffixes. These appear as in this case RANGED_DAMAGE_XXX
     "BASH",     // In addition suffixes will also reference the parent type when in use
     "CUT",
