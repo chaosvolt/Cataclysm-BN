@@ -577,10 +577,7 @@
         { "trap": "tr_dissector", "x": 12, "y": 19 },
         { "trap": "tr_dissector", "x": 13, "y": 19 }
       ],
-      "items": {
-        "d": { "item": "office", "chance": 50, "repeat": 4 },
-        "L": { "item": "gear_labsecurity", "chance": 50, "repeat": 2 }
-      }
+      "items": { "d": { "item": "office", "chance": 50, "repeat": 4 }, "L": { "item": "gear_labsecurity", "chance": 50, "repeat": 2 } }
     }
   },
   {
