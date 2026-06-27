@@ -4,7 +4,103 @@
     "method": "json",
     "nested_mapgen_id": "central_lab_layout_a_20x20",
     "//": "These chunks determine the overall layout of each individual cell of the core lab, dividing the space up in different ways and spawning rooms inside of different sizes.  This variant spawns the interesting stuff directly since it's just one big room, while other variants below are more deeply nested.",
-    "//2": "Todo: Potential room variants include: reception desk/checkpoint identical to security building corners, weapons testing range, random experimental vehicle spawned with mechanics workstations and a broken elevator, heavily ruined and irradiated reactor room, large storage area with classic sealed storage rooms containing spicier than normal goodies, ruined leftovers of an unidentified room with uncontained nether outbreak and portal",
+    "object": {
+      "mapgensize": [ 20, 20 ],
+      "rows": [
+        "ehhhhh        hhhhhe",
+        "h                  h",
+        "h                  h",
+        "h  ccccccggcccccc  h",
+        "h  ch h      h hc  h",
+        "h  c            c  h",
+        "   ch          hc   ",
+        "   c     FF     c   ",
+        "   c  d  SS  d  c   ",
+        "   g  6  SS hd  g   ",
+        "   g  dh SS  6  g   ",
+        "   c  d  SS  d  c   ",
+        "   c     FF     c   ",
+        "   ch          hc   ",
+        "h  c            c  h",
+        "h  ch h      h hc  h",
+        "h  ccccccggcccccc  h",
+        "h                  h",
+        "h                  h",
+        "ehhhhh        hhhhhe"
+      ],
+      "terrain": { "6": "t_console_broken" },
+      "furniture": {
+        "c": "f_counter",
+        "d": "f_table",
+        "e": "f_table",
+        "F": "f_filing_cabinet",
+        "g": "f_counter_gate_c",
+        "h": "f_chair",
+        "S": "f_server"
+      },
+      "items": {
+        "e": { "item": "magazines", "chance": 50, "repeat": 4 },
+        "d": { "item": "office", "chance": 50, "repeat": 4 },
+        "F": { "item": "file_room", "chance": 75, "repeat": 6 }
+      }
+    }
+  },
+  {
+    "type": "mapgen",
+    "method": "json",
+    "nested_mapgen_id": "central_lab_layout_a_20x20",
+    "//": "These chunks determine the overall layout of each individual cell of the core lab, dividing the space up in different ways and spawning rooms inside of different sizes.  This variant spawns the interesting stuff directly since it's just one big room, while other variants below are more deeply nested.",
+    "object": {
+      "mapgensize": [ 20, 20 ],
+      "rows": [
+        "  ehhhhe    ehhhhe  ",
+        "                    ",
+        "e                  e",
+        "h  ||||||++||||||  h",
+        "h  |Vvt     bb L|  h",
+        "h  |           L|  h",
+        "h  |ccs     bb L|  h",
+        "e  ||||||  ||||||  e",
+        "   Wdh  |  |  hdW   ",
+        "   Wd   +  +   dW   ",
+        "   Wd   +  +   dW   ",
+        "   Wdh  |  |  hdW   ",
+        "e  ||||||  ||||||  e",
+        "h  |L bb     scc|  h",
+        "h  |L           |  h",
+        "h  |L bb     tvV|  h",
+        "h  ||||||++||||||  h",
+        "e                  e",
+        "                    ",
+        "  ehhhhe    ehhhhe  "
+      ],
+      "terrain": { "|": "t_strconc_wall", "+": "t_door_metal_interior_locked", "W": "t_ballistic_glass" },
+      "furniture": {
+        "b": "f_bench",
+        "c": "f_counter",
+        "d": "f_desk",
+        "e": "f_table",
+        "h": "f_chair",
+        "L": "f_locker",
+        "s": "f_sink",
+        "t": "f_trashcan",
+        "V": "f_vending_c",
+        "v": "f_vending_c"
+      },
+      "items": {
+        "e": { "item": "magazines", "chance": 50, "repeat": 4 },
+        "L": { "item": "gear_labsecurity", "chance": 50, "repeat": 2 },
+        "t": { "item": "trash_cart", "chance": 50, "repeat": 6 },
+        "V": { "item": "vending_food", "chance": 80 },
+        "v": { "item": "vending_drink", "chance": 80 }
+      }
+    }
+  },
+  {
+    "type": "mapgen",
+    "method": "json",
+    "nested_mapgen_id": "central_lab_layout_a_20x20",
+    "//": "Todo: Potential room variants include: weapons testing range, random experimental vehicle spawned with mechanics workstations and a broken elevator, heavily ruined and irradiated reactor room, large storage area with classic sealed storage rooms containing spicier than normal goodies, ruined leftovers of an unidentified room with uncontained nether outbreak and portal",
     "object": { "mapgensize": [ 20, 20 ] }
   },
   {

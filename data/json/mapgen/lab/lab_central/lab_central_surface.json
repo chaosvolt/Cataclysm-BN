@@ -536,12 +536,12 @@
         "------------------------",
         "-||||||||||||||||||||||-",
         "-|       | bb |       |-",
-        "-|l b    +    +    b l|-",
-        "-|l b    |    |    b l|-",
-        "-|l b    ||==||    b l|-",
-        "-|l b    |    |    b l|-",
-        "-|l b    | >> |    b l|-",
-        "-|l b    | >> |    b l|-",
+        "-|L b    +    +    b L|-",
+        "-|L b    |    |    b L|-",
+        "-|L b    ||==||    b L|-",
+        "-|L b    |    |    b L|-",
+        "-|L b    | >> |    b L|-",
+        "-|L b    | >> |    b L|-",
         "-|       |    |       |-",
         "-||||+|||||++|||||+||||-",
         "-|       |u  u|       |-",
@@ -566,7 +566,7 @@
         "W": "t_ballistic_glass",
         ">": "t_stairs_down"
       },
-      "furniture": { "b": "f_bench", "d": "f_desk", "h": "f_chair", "l": "f_locker", "7": "f_control_station" },
+      "furniture": { "b": "f_bench", "d": "f_desk", "h": "f_chair", "L": "f_locker", "7": "f_control_station" },
       "place_traps": [
         { "trap": "tr_dissector", "x": 10, "y": 15 },
         { "trap": "tr_dissector", "x": 11, "y": 15 },
@@ -576,7 +576,11 @@
         { "trap": "tr_dissector", "x": 11, "y": 19 },
         { "trap": "tr_dissector", "x": 12, "y": 19 },
         { "trap": "tr_dissector", "x": 13, "y": 19 }
-      ]
+      ],
+      "items": {
+        "d": { "item": "office", "chance": 50, "repeat": 4 },
+        "L": { "item": "gear_labsecurity", "chance": 50, "repeat": 2 }
+      }
     }
   },
   {

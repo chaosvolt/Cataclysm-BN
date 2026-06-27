@@ -371,7 +371,11 @@
         "W": "t_ballistic_glass"
       },
       "furniture": { "d": "f_desk", "e": "f_table", "h": "f_chair", "L": "f_locker" },
-      "items": { "d": { "item": "office", "chance": 50, "repeat": 4 }, "e": { "item": "magazines", "chance": 50, "repeat": 4 } }
+      "items": {
+        "d": { "item": "office", "chance": 50, "repeat": 4 },
+        "e": { "item": "magazines", "chance": 50, "repeat": 4 },
+        "L": { "item": "gear_labsecurity", "chance": 50, "repeat": 2 }
+      }
     }
   },
   {
@@ -408,7 +412,7 @@
         "W": "t_ballistic_glass"
       },
       "furniture": { "d": "f_desk", "e": "f_table", "h": "f_chair", "L": "f_locker" },
-      "items": { "d": { "item": "office", "chance": 50, "repeat": 4 } }
+      "items": { "d": { "item": "office", "chance": 50, "repeat": 4 }, "L": { "item": "gear_labsecurity", "chance": 50, "repeat": 2 } }
     }
   },
   {
@@ -518,7 +522,7 @@
     "type": "mapgen",
     "method": "json",
     "nested_mapgen_id": "central_lab_surface_security_corner_13x13",
-    "//": "Simple reception desks and/or seucurity centers for the corner sections of the security building, where personnel actually enter from.",
+    "//": "Simple reception desks and/or security centers for the corner sections of the security building, where personnel actually enter from.",
     "object": {
       "mapgensize": [ 13, 13 ],
       "rows": [
@@ -587,7 +591,7 @@
       ],
       "terrain": { "|": "t_strconc_wall", "+": "t_door_metal_interior_locked", "W": "t_ballistic_glass" },
       "furniture": { "d": "f_desk", "h": "f_chair", "L": "f_locker" },
-      "items": { "d": { "item": "office", "chance": 50, "repeat": 4 } }
+      "items": { "d": { "item": "office", "chance": 50, "repeat": 4 }, "L": { "item": "gear_labsecurity", "chance": 50, "repeat": 2 } }
     }
   },
   {
@@ -613,7 +617,7 @@
       ],
       "terrain": { "|": "t_strconc_wall", "+": "t_door_metal_interior_locked", "W": "t_ballistic_glass" },
       "furniture": { "d": "f_desk", "h": "f_chair", "L": "f_locker" },
-      "items": { "d": { "item": "office", "chance": 50, "repeat": 4 } }
+      "items": { "d": { "item": "office", "chance": 50, "repeat": 4 }, "L": { "item": "gear_labsecurity", "chance": 50, "repeat": 2 } }
     }
   },
   {
