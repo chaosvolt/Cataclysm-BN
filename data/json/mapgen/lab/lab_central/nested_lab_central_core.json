@@ -165,12 +165,16 @@
         "                    ",
         "        u  u        "
       ],
-      "terrain": { "6": "t_console_broken", "$": "t_elevator_control_off", "E": "t_elevator", "I": "t_column", "u": [ "t_metal_floor", "t_metal_floor_olight" ] },
+      "terrain": {
+        "6": "t_console_broken",
+        "$": "t_elevator_control_off",
+        "E": "t_elevator",
+        "I": "t_column",
+        "u": [ "t_metal_floor", "t_metal_floor_olight" ]
+      },
       "furniture": { "c": "f_charger", "j": "f_cable_connector", "r": "f_utility_shelf" },
       "items": { "c": { "item": "gas_charging_rack", "chance": 25 }, "r": { "item": "mechanics", "chance": 50, "repeat": 3 } },
-      "place_vehicles": [
-        { "vehicle": "experimental_military_vehicles", "x": 6, "y": 7, "chance": 75, "rotation": 270 }
-      ]
+      "place_vehicles": [ { "vehicle": "experimental_military_vehicles", "x": 6, "y": 7, "chance": 75, "rotation": 270 } ]
     }
   },
   {
