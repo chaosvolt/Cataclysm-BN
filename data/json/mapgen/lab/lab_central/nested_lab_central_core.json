@@ -100,8 +100,139 @@
     "type": "mapgen",
     "method": "json",
     "nested_mapgen_id": "central_lab_layout_a_20x20",
-    "//": "Todo: Potential room variants include: weapons testing range, random experimental vehicle spawned with mechanics workstations and a broken elevator, heavily ruined and irradiated reactor room, large storage area with classic sealed storage rooms containing spicier than normal goodies, ruined leftovers of an unidentified room with uncontained nether outbreak and portal",
-    "object": { "mapgensize": [ 20, 20 ] }
+    "object": {
+      "mapgensize": [ 20, 20 ],
+      "rows": [
+        "                    ",
+        "                    ",
+        "  ||||||||||||||||  ",
+        "  |--------------|  ",
+        "  |-||||||||||||-|  ",
+        "  |-|##########|-|  ",
+        "  |-| TTTTTTTT |-|  ",
+        "  |-|          |-|  ",
+        "  |-|          |-|  ",
+        "  |-|          |-|  ",
+        "  |-|          |-|  ",
+        "  |-|          |-|  ",
+        "  |-|          |-|  ",
+        "  |-|u        u|-|  ",
+        "  ||||7cccccc|||||  ",
+        "  |r =        +  +  ",
+        "  |r =        +  +  ",
+        "  |||||WWWWWW|||||  ",
+        "                    ",
+        "                    "
+      ],
+      "terrain": {
+        "|": "t_strconc_wall",
+        "-": "t_wall_metal",
+        "+": "t_door_metal_interior_locked",
+        "=": "t_door_metal_locked",
+        "7": "t_card_science",
+        "u": [ "t_metal_floor", "t_metal_floor_olight" ],
+        "W": "t_ballistic_glass"
+      },
+      "furniture": { "#": "f_sandbag_half", "c": "f_counter", "r": "f_rack", "T": "f_target" },
+      "items": { "c": { "item": "ear_protection", "chance": 25 }, "r": { "item": "energy_weapon_armory", "chance": 50, "repeat": 2 } }
+    }
+  },
+  {
+    "type": "mapgen",
+    "method": "json",
+    "nested_mapgen_id": "central_lab_layout_a_20x20",
+    "object": {
+      "mapgensize": [ 20, 20 ],
+      "rows": [
+        "        u  u        ",
+        "                    ",
+        "  IEEEEEEEEEEEEEEI  ",
+        "   EEEEEEEEEEEEEE   ",
+        "   EEEEEEEEEEEEEE   ",
+        "   EEEEEEEEEEEEEE   ",
+        "   EEEEEEEEEEEEEE   ",
+        "   EEEEEEEEEEEEEE   ",
+        "u  EEEEEEEEEEEEEE  u",
+        "   EEEEEEEEEEEEEE   ",
+        "   EEEEEEEEEEEEEE   ",
+        "u rEEEEEEEEEEEEEEc u",
+        "  rEEEEEEEEEEEEEE6  ",
+        "  rEEEEEEEEEEEEEEj  ",
+        "  rEEEEEEEEEEEEEE   ",
+        "  rEEEEEEEEEEEEEE$  ",
+        "  rEEEEEEEEEEEEEE   ",
+        "  IEEEEEEEEEEEEEEI  ",
+        "                    ",
+        "        u  u        "
+      ],
+      "terrain": { "6": "t_console_broken", "$": "t_elevator_control_off", "E": "t_elevator", "I": "t_column", "u": [ "t_metal_floor", "t_metal_floor_olight" ] },
+      "furniture": { "c": "f_charger", "j": "f_cable_connector", "r": "f_utility_shelf" },
+      "items": { "c": { "item": "gas_charging_rack", "chance": 25 }, "r": { "item": "mechanics", "chance": 50, "repeat": 3 } },
+      "place_vehicles": [
+        { "vehicle": "experimental_military_vehicles", "x": 6, "y": 7, "chance": 75, "rotation": 270 }
+      ]
+    }
+  },
+  {
+    "type": "mapgen",
+    "method": "json",
+    "nested_mapgen_id": "central_lab_layout_a_20x20",
+    "object": {
+      "mapgensize": [ 20, 20 ],
+      "rows": [
+        "                    ",
+        "                    ",
+        "                    ",
+        "                    ",
+        "                    ",
+        "                    ",
+        "                    ",
+        "                    ",
+        "                    ",
+        "                    ",
+        "                    ",
+        "                    ",
+        "                    ",
+        "                    ",
+        "                    ",
+        "                    ",
+        "                    ",
+        "                    ",
+        "                    ",
+        "                    "
+      ]
+    }
+  },
+  {
+    "type": "mapgen",
+    "method": "json",
+    "nested_mapgen_id": "central_lab_layout_a_20x20",
+    "//": "Todo: Potential room variants include: random experimental vehicle spawned with mechanics workstations and a broken elevator, heavily ruined and irradiated reactor room, large storage area with classic sealed storage rooms containing spicier than normal goodies, ruined leftovers of an unidentified room with uncontained nether outbreak and portal",
+    "object": {
+      "mapgensize": [ 20, 20 ],
+      "rows": [
+        "                    ",
+        "                    ",
+        "                    ",
+        "                    ",
+        "                    ",
+        "                    ",
+        "                    ",
+        "                    ",
+        "                    ",
+        "                    ",
+        "                    ",
+        "                    ",
+        "                    ",
+        "                    ",
+        "                    ",
+        "                    ",
+        "                    ",
+        "                    ",
+        "                    ",
+        "                    "
+      ]
+    }
   },
   {
     "type": "mapgen",
