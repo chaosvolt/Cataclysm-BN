@@ -579,6 +579,15 @@ TEST_CASE("zombie_technician_pull_through_helicopter_windshield_is_blocked", "[m
     CHECK(you.primary_weapon().typeId() == pipe_id);
 }
 
+TEST_CASE("zombie_technician_pull_weakens_with_distance", "[monster][balance]") {
+    CHECK(mattack::pull_metal_weapon_success_chance(100, 0) == 100);
+    CHECK(mattack::pull_metal_weapon_success_chance(100, 1) == 100);
+    CHECK(mattack::pull_metal_weapon_success_chance(100, 2) == 100);
+    CHECK(mattack::pull_metal_weapon_success_chance(100, 4) == 25);
+    CHECK(mattack::pull_metal_weapon_success_chance(100, 12) == 2);
+    CHECK(mattack::pull_metal_weapon_success_chance(0, 1) == 0);
+}
+
 TEST_CASE("zombie_technician_pull_uses_physical_clear_path", "[monster][z-level]") {
     clear_all_state();
     clear_map();

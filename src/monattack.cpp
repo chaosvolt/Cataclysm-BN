@@ -852,6 +852,16 @@ bool mattack::shocking_reveal( monster *z )
     return true;
 }
 
+auto mattack::pull_metal_weapon_success_chance( const int base_success, const int distance ) -> int
+{
+    // Approximate magnetic force falloff: close pulls keep the old chance, then weaken by
+    // distance squared.
+    constexpr auto unattenuated_distance = 2;
+    const auto effective_distance = std::max( distance, unattenuated_distance );
+    return std::clamp( base_success * unattenuated_distance * unattenuated_distance /
+                       ( effective_distance * effective_distance ), 0, 100 );
+}
+
 bool mattack::pull_metal_weapon( monster *z )
 {
     ////////////////////////////////////////////////////////////////////////////////////////////////
@@ -900,6 +910,8 @@ bool mattack::pull_metal_weapon( monster *z )
                 ///\EFFECT_MELEE increases resistance to pull_metal_weapon special attack
                 success = std::max( 100 - ( 6 * ( foe->str_cur - 6 ) ) - ( 6 * wp_skill ), 0 );
             }
+            success = pull_metal_weapon_success_chance( success,
+                      rl_dist( z->bub_pos(), target->bub_pos() ) );
             auto m_type = foe == &g->u ? m_bad : m_neutral;
             if( rng( 1, 100 ) <= success ) {
                 target->add_msg_player_or_npc( m_type, _( "%s is pulled away from your hands!" ),
