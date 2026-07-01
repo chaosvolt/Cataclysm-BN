@@ -9,6 +9,19 @@ class mapbuffer;
 
 namespace map_funcs {
 
+struct physical_clear_path_opts {
+    const map& m;
+    tripoint_bub_ms from;
+    tripoint_bub_ms to;
+    int range = -1;
+    int cost_min = 1;
+    int cost_max = 100;
+    bool require_clear_path = true;
+};
+
+/// Checks whether a physical path is clear, including terrain floors and vehicle floors.
+auto physical_clear_path(const physical_clear_path_opts& opts) -> bool;
+
 /**
  * Checks both the neighborhoods of from and to for climbable surfaces,
  * returns move cost of climbing from `from` to `to`.

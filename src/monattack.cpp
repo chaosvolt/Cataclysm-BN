@@ -49,6 +49,7 @@
 #include "iuse_actor.h"
 #include "line.h"
 #include "map.h"
+#include "map/utils/map_functions.h"
 #include "map_iterator.h"
 #include "mapdata.h"
 #include "martialarts.h"
@@ -871,8 +872,14 @@ bool mattack::pull_metal_weapon( monster *z )
     }
 
     // Can't see/reach target, no attack
-    if( !z->sees( *target ) || !g->m.clear_path( z->bub_pos(), target->bub_pos(),
-            max_distance, 1, 100 ) ) {
+    if( !z->sees( *target ) || !map_funcs::physical_clear_path( {
+    .m = g->m,
+    .from = z->bub_pos(),
+        .to = target->bub_pos(),
+        .range = max_distance,
+        .cost_min = 1,
+        .cost_max = 100,
+    } ) ) {
         return false;
     }
     player *foe = dynamic_cast< player * >( target );

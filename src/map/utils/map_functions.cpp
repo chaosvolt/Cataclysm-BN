@@ -2,6 +2,7 @@
 
 #include "character.h"
 #include "game.h"
+#include "line.h"
 #include "map.h"
 #include "map_iterator.h"
 #include "mapbuffer.h"
@@ -9,6 +10,11 @@
 #include "messages.h"
 #include "monster.h"
 #include "sounds.h"
+#include "veh_type.h"
+#include "vpart_position.h"
+
+#include <algorithm>
+#include <cstdlib>
 
 static const mtype_id mon_mi_go_myrmidon("mon_mi_go_myrmidon");
 
@@ -52,9 +58,75 @@ auto finish_migo_nerve_cage_removal(
     }
 }
 
+auto has_vehicle_obstacle(const optional_vpart_position& vp) -> bool {
+    return vp && vp.obstacle_at_part().has_value();
+}
+
+auto has_vehicle_floor_or_obstacle(const optional_vpart_position& vp) -> bool {
+    return vp.part_with_feature(VPFLAG_BOARDABLE, true).has_value() || has_vehicle_obstacle(vp);
+}
+
+auto has_vehicle_ceiling(const optional_vpart_position& vp) -> bool {
+    return vp.part_with_feature(VPFLAG_ROOF, true).has_value();
+}
+
+auto vehicle_vertical_barrier_between(
+    const map& m, const tripoint_bub_ms& from, const tripoint_bub_ms& to) -> bool {
+    const auto upper_z = std::max(from.z(), to.z());
+    const auto lower_z = std::min(from.z(), to.z());
+    const auto upper_from = tripoint_bub_ms(from.xy(), upper_z);
+    const auto upper_to = tripoint_bub_ms(to.xy(), upper_z);
+    const auto lower_from = tripoint_bub_ms(from.xy(), lower_z);
+    const auto lower_to = tripoint_bub_ms(to.xy(), lower_z);
+    return has_vehicle_floor_or_obstacle(m.veh_at(upper_from))
+        || has_vehicle_ceiling(m.veh_at(lower_from))
+        || (from.xy() != to.xy()
+            && (has_vehicle_floor_or_obstacle(m.veh_at(upper_to))
+                || has_vehicle_ceiling(m.veh_at(lower_to))));
+}
+
+auto physical_floor_between(const map& m, const tripoint_bub_ms& from, const tripoint_bub_ms& to)
+    -> bool {
+    const auto z_delta = std::abs(from.z() - to.z());
+    if (z_delta == 0) { return false; }
+    if (z_delta > 1) { return true; }
+    return m.floor_between(from, to) || vehicle_vertical_barrier_between(m, from, to);
+}
+
+auto is_inside_vehicle(const optional_vpart_position& vp) -> bool { return vp && vp->is_inside(); }
+
+auto vehicle_enclosure_between(const map& m, const tripoint_bub_ms& from, const tripoint_bub_ms& to)
+    -> bool {
+    if (from == to || from.z() != to.z()) { return false; }
+
+    const auto from_vp = m.veh_at(from);
+    const auto to_vp = m.veh_at(to);
+    return is_inside_vehicle(from_vp) != is_inside_vehicle(to_vp) || has_vehicle_obstacle(from_vp)
+        || has_vehicle_obstacle(to_vp);
+}
+
+auto physical_barrier_between(const map& m, const tripoint_bub_ms& from, const tripoint_bub_ms& to)
+    -> bool {
+    return physical_floor_between(m, from, to) || vehicle_enclosure_between(m, from, to);
+}
+
 } // namespace
 
 namespace map_funcs {
+
+auto physical_clear_path(const physical_clear_path_opts& opts) -> bool {
+    if (opts.require_clear_path
+        && !opts.m.clear_path(opts.from, opts.to, opts.range, opts.cost_min, opts.cost_max)) {
+        return false;
+    }
+
+    auto previous = opts.from;
+    for (const auto& point : line_to(opts.from, opts.to)) {
+        if (physical_barrier_between(opts.m, previous, point)) { return false; }
+        previous = point;
+    }
+    return true;
+}
 
 auto climbing_cost(mapbuffer& buffer, const tripoint_abs_ms& from, const tripoint_abs_ms& to)
     -> std::optional<int> {
