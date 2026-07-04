@@ -15,11 +15,13 @@
 #include "debug.h"
 #include "enum_conversions.h"
 #include "generic_factory.h"
+#include "generic_readers.h"
 #include "harvest.h"
 #include "iexamine.h"
 #include "int_id.h"
 #include "item.h"
 #include "item_group.h"
+#include "item_group_readers.h"
 #include "json.h"
 #include "make_static.h"
 #include "output.h"
@@ -268,9 +270,7 @@ void map_bash_info::deserialize( JsonIn &jsin )
     assign( jo, "move_cost", fd_bash_move_cost );
     assign( jo, "msg_success", field_bash_msg_success );
 
-    if( jo.has_member( "items" ) ) {
-        drop_group = item_group::load_item_group( jo.get_member( "items" ), "collection" );
-    }
+    itemgroup_reader( "collection" )( jo, "items", drop_group, false );
 
     if( jo.has_array( "tent_centers" ) ) {
         load_map_bash_tent_centers( jo.get_array( "tent_centers" ), tent_centers );
@@ -333,11 +333,7 @@ void map_dig_info::deserialize( JsonIn &jsin )
     assign( jo, "result_ter", result_ter );
     assign( jo, "num_minutes", num_minutes );
     // Support for individual items specified or an itemgroup
-    if( jo.has_array( "items" ) ) {
-        result_items = item_group::load_item_group( jo.get_member( "items" ), "collection" );
-    } else if( jo.has_string( "items" ) ) {
-        assign( jo, "items", result_items );
-    }
+    itemgroup_reader( "collection" )( jo, "items", result_items, false );
 }
 
 map_deconstruct_info::map_deconstruct_info() : can_do( false ), deconstruct_above( false ),
@@ -358,7 +354,7 @@ bool map_deconstruct_info::load( const JsonObject &jsobj, const std::string &mem
     can_do = true;
     deconstruct_above = j.get_bool( "deconstruct_above", false );
 
-    drop_group = item_group::load_item_group( j.get_member( "items" ), "collection" );
+    itemgroup_reader( "collection" )( j, "items", drop_group, false );
     return true;
 }
 
@@ -424,16 +420,14 @@ bool pry_result::load( const JsonObject &jsobj, const std::string &member,
             break;
     }
 
-    if( j.has_member( "pry_items" ) ) {
-        pry_items = item_group::load_item_group( j.get_member( "pry_items" ), "collection" );
-    } else {
-        pry_items = item_group_id( "EMPTY_GROUP" );
+    const auto &empty_group = item_group_id( "EMPTY_GROUP" );
+
+    if( !itemgroup_reader( "collection" )( j, "pry_items", pry_items, false ) ) {
+        pry_items = empty_group;
     }
 
-    if( j.has_member( "break_items" ) ) {
-        break_items = item_group::load_item_group( j.get_member( "break_items" ), "collection" );
-    } else {
-        break_items = item_group_id( "EMPTY_GROUP" );
+    if( !itemgroup_reader( "collection" )( j, "break_items", break_items, false ) ) {
+        break_items = empty_group;
     }
 
     j.read( "sound", sound );
@@ -1395,7 +1389,7 @@ void ter_t::load( const JsonObject &jo, const std::string &src )
 
 static void check_bash_items( const map_bash_info &mbi, const std::string &id, bool is_terrain )
 {
-    if( !item_group::group_is_defined( mbi.drop_group ) ) {
+    if( !mbi.drop_group.is_valid() ) {
         debugmsg( "%s: bash result item group %s does not exist", id.c_str(), mbi.drop_group.c_str() );
     }
     if( mbi.str_max != -1 ) {
@@ -1420,7 +1414,7 @@ static void check_decon_items( const map_deconstruct_info &mbi, const std::strin
     if( !mbi.can_do ) {
         return;
     }
-    if( !item_group::group_is_defined( mbi.drop_group ) ) {
+    if( !mbi.drop_group.is_valid() ) {
         debugmsg( "%s: deconstruct result item group %s does not exist", id.c_str(),
                   mbi.drop_group.c_str() );
     }
@@ -1442,7 +1436,7 @@ static void check_pry_items( const pry_result &pry, const std::string &id,
     if( pry.pry_quality == -1 ) {
         return;
     }
-    if( !item_group::group_is_defined( pry.break_items ) ) {
+    if( !pry.break_items.is_valid() ) {
         debugmsg( "%s: pry breakage result item group %s does not exist", id.c_str(),
                   pry.break_items.c_str() );
     }

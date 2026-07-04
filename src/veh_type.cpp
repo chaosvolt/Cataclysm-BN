@@ -25,6 +25,7 @@
 #include "init.h"
 #include "item.h"
 #include "item_group.h"
+#include "item_group_readers.h"
 #include "itype.h"
 #include "json.h"
 #include "mapdata.h"
@@ -558,9 +559,8 @@ void vpart_info::load( const JsonObject &jo, const std::string &src )
         color_broken = color_from_string( jo.get_string( "broken_color" ) );
     }
 
-    if( jo.has_member( "breaks_into" ) ) {
-        breaks_into_group = item_group::load_item_group( jo.get_member( "breaks_into" ), "collection" );
-    }
+    optional( jo, was_loaded, "breaks_into", breaks_into_group, itemgroup_reader( "collection" ),
+              item_group::empty );
 
     auto qual = jo.get_array( "qualities" );
     if( !qual.empty() ) {
@@ -784,7 +784,7 @@ void vpart_info::check() const
         debugmsg( "vehicle part %s has negative removal time", id.c_str() );
     }
 
-    if( !item_group::group_is_defined( breaks_into_group ) ) {
+    if( !breaks_into_group.is_valid() ) {
         debugmsg( "Vehicle part %s breaks into non-existent item group %s.",
                   id.c_str(), breaks_into_group.c_str() );
     }

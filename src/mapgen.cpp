@@ -43,6 +43,7 @@
 #include "item.h"
 #include "item_factory.h"
 #include "item_group.h"
+#include "item_group_readers.h"
 #include "itype.h"
 #include "json.h"
 #include "line.h"
@@ -2071,8 +2072,7 @@ class jmapgen_item_group : public jmapgen_piece
         item_group_id group_id;
         jmapgen_int chance;
         jmapgen_item_group( const JsonObject &jsi ) : chance( jsi, "chance", 1, 1 ) {
-            JsonValue group = jsi.get_member( "item" );
-            group_id = item_group::load_item_group( group, "collection" );
+            itemgroup_reader( "collection" )( jsi, "item", group_id, false );
             repeat = jmapgen_int( jsi, "repeat", 1, 1 );
         }
         void check( const std::string &context, const mapgen_parameters & ) const override {
@@ -5825,7 +5825,7 @@ std::vector<item *> map::place_items( const item_group_id &loc, const int chance
         debugmsg( "map::place_items() called with an invalid chance (%d)", chance );
         return res;
     }
-    if( !item_group::group_is_defined( loc ) ) {
+    if( !loc.is_valid() ) {
         it = itype_id( loc.str() );
         if( !it.is_valid() ) {
             const tripoint_abs_omt omt( project_to<coords::omt>( get_avatar().abs_pos() ) );

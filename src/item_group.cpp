@@ -12,24 +12,28 @@
 #include "flag.h"
 #include "flat_set.h"
 #include "game_constants.h"
+#include "generic_factory.h"
+#include "generic_readers.h"
 #include "item.h"
 #include "item_factory.h"
+#include "item_group_readers.h"
 #include "itype.h"
 #include "iuse_actor.h"
 #include "json.h"
 #include "rng.h"
+#include "string_id.h"
 #include "type_id.h"
+#include "type_id_implement.h"
 #include "options.h"
 
-// FIXME: Somehow we cant get item_groups from their ids
-// Only can get Item_spawn_data
-// Either that or it is not clear how to access it from item_factory
-/** @relates string_id */
-template<>
-bool string_id<Item_group>::is_valid() const
+namespace
 {
-    return item_group::group_is_defined( *this );
+// This might appear to be more complicated then normal, but this basically implements
+// Purge and previous itemgroup copy logic in a generic factory
+generic_factory<Item_group> all_itemgroups( "Item Groups", "id", "alias", "purge", true );
 }
+
+IMPLEMENT_STRING_AND_INT_IDS( Item_group, all_itemgroups );
 
 std::vector<detached_ptr<item>> Item_spawn_data::create( const time_point &birthday ) const
 {
@@ -66,12 +70,12 @@ detached_ptr<item> Single_item_creator::create_single( const time_point &birthda
             return detached_ptr<item>();
         }
         rec.push_back( id );
-        Item_spawn_data *isd = item_controller->get_group( item_group_id( id ) );
-        if( isd == nullptr ) {
-            debugmsg( "unknown item spawn list %s", id.c_str() );
+        item_group_id igroup_id = item_group_id( id );
+        if( !igroup_id.is_valid() ) {
+            debugmsg( "unknown item spawn list %s", igroup_id.str() );
             return detached_ptr<item>();
         }
-        tmp = isd->create_single( birthday, rec );
+        tmp = igroup_id->create_single( birthday, rec );
         rec.erase( rec.end() - 1 );
     } else if( type == S_NONE ) {
         return detached_ptr<item>();
@@ -113,12 +117,12 @@ std::vector<detached_ptr<item>> Single_item_creator::create( const time_point &b
                 return result;
             }
             rec.push_back( id );
-            Item_spawn_data *isd = item_controller->get_group( item_group_id( id ) );
-            if( isd == nullptr ) {
-                debugmsg( "unknown item spawn list %s", id.c_str() );
+            const auto igroup_id = item_group_id( id );
+            if( !igroup_id.is_valid() ) {
+                debugmsg( "unknown item spawn list %s", igroup_id.str() );
                 return result;
             }
-            std::vector<detached_ptr<item>> tmplist = isd->create( birthday, rec );
+            std::vector<detached_ptr<item>> tmplist = igroup_id->create( birthday, rec );
             rec.erase( rec.end() - 1 );
             if( modifier ) {
                 for( auto &elem : tmplist ) {
@@ -132,200 +136,6 @@ std::vector<detached_ptr<item>> Single_item_creator::create( const time_point &b
     return result;
 }
 
-void Single_item_creator::check_consistency( const std::string &context ) const
-{
-    if( type == S_ITEM ) {
-        if( !itype_id( id ).is_valid() ) {
-            debugmsg( "item id %s is unknown (in %s)", id, context );
-        }
-    } else if( type == S_ITEM_GROUP ) {
-        // TODO: figure out a way to check for itemgroup recursion here
-        // Beyond the fact that your game wil ljust stall...
-        if( !item_group::group_is_defined( item_group_id( id ) ) ) {
-            debugmsg( "item group id %s is unknown (in %s)", id, context );
-        }
-    } else if( type == S_NONE ) {
-        // this is okay, it will be ignored
-    } else {
-        debugmsg( "Unknown type of Single_item_creator: %d", static_cast<int>( type ) );
-    }
-    if( modifier ) {
-        modifier->check_consistency( context );
-        for( auto &item : every_item_modified( false ) ) {
-            if( modifier && modifier->ammo != nullptr ) {
-                for( auto &ammo : modifier->ammo->every_item_modified() ) {
-                    if( item->is_tool() ) {
-                        if( item->magazine_integral() ) {
-                            if( !item->ammo_types().contains( ammo->ammo_type() ) &&
-                                !item->ammo_types().contains( ammo->ammo_default()->ammo->type ) ) {
-                                debugmsg( "Incompatible ammo: %s in ( %s %s )", ammo->type->get_id().str(),
-                                          item->type->get_id().str(), context );
-                            }
-                        } else if( !item->ammo_types().empty() ) {
-                            if( !item->ammo_types().contains( ammo->ammo_type() ) &&
-                                !item->ammo_types().contains( ammo->ammo_default()->ammo->type ) ) {
-                                debugmsg( "Incompatible ammo: %s in ( %s %s )", ammo->type->get_id().str(),
-                                          item->type->get_id().str(), context );
-                            }
-                        } else if( item->ammo_default() != ammo->type->get_id() ) {
-                            debugmsg( "Incompatible ammo: %s in ( %s %s )", ammo->type->get_id().str(),
-                                      item->type->get_id().str(), context );
-                        }
-                    }
-                    if( item->is_magazine() || item->is_gun() ) {
-                        if( item->magazine_integral() ) {
-                            if( !item->ammo_types().contains( ammo->ammo_type() ) ) {
-                                debugmsg( "Incompatible ammo: %s in ( %s %s )", ammo->type->get_id().str(),
-                                          item->type->get_id().str(), context );
-                            }
-                        } else if( !item->ammo_types().contains( ammo->ammo_type() ) ) {
-                            debugmsg( "Incompatible ammo: %s in ( %s %s )", ammo->type->get_id().str(),
-                                      item->type->get_id().str(), context );
-                        }
-                    }
-                    // Exception as can_reload_with does not work for containers
-                    // As it always returns true regardless of volume
-                    else if( item->is_container() ) {
-                        if( !item->is_reloadable_with( ammo->type->get_id() ) ) {
-                            debugmsg( "Incompatible contained item: %s in ( %s %s )", ammo->type->get_id().str(),
-                                      item->type->get_id().str(), context );
-                        }
-                        auto volume = ammo->volume();
-                        if( ammo->count_by_charges() ) {
-                            volume /= ammo->charges;
-                        }
-                        auto maxmult = std::max( modifier->charges.second, modifier->count.second );
-                        // If autofill put to 1
-                        if( maxmult == -1 ) {
-                            maxmult = 1;
-                        }
-                        if( item->get_container_capacity() < volume * maxmult ) {
-                            debugmsg( "Incompatible contained size: %s in ( %s %s )", ammo->type->get_id().str(),
-                                      item->type->get_id().str(), context );
-                        }
-                    }
-                }
-            }
-            if( modifier && modifier->container != nullptr ) {
-                for( auto &container : modifier->container->every_item_modified() ) {
-                    if( container->is_container() ) {
-                        if( container->is_container() && !container->type->container->watertight &&
-                            item->type->phase == LIQUID ) {
-                            debugmsg( "Liquid %s in solid container ( %s %s )", item->type->get_id().str(),
-                                      container->type->get_id().str(), context );
-                        }
-                        auto volume = item->volume();
-                        if( item->count_by_charges() ) {
-                            volume /= item->charges;
-                        }
-                        auto maxmult = std::max( modifier->charges.second, modifier->count.second );
-                        // If autofill put to 1
-                        if( maxmult == -1 ) {
-                            maxmult = 1;
-                        }
-                        if( container->get_container_capacity() < volume * maxmult ) {
-                            debugmsg( "Incompatible individual contents size: %s in ( %s %s )", item->type->get_id().str(),
-                                      container->type->get_id().str(), context );
-                        }
-                    } else if( container->is_holster() && !container->can_holster( *item ) ) {
-                        debugmsg( "Incorrect holstered object object: ( %s %s ) in %s", item->type->get_id().str(),
-                                  context, container->type->get_id().str() );
-                    } else if( container->is_bandolier() && !container->can_put_in_bandolier( *item ) ) {
-                        debugmsg( "Incorrect bandoliered object object: ( %s %s ) in %s", item->type->get_id().str(),
-                                  context, container->type->get_id().str() );
-                    } else if( container->is_tool() ) {
-                        if( container->magazine_integral() ) {
-                            if( !container->ammo_types().contains( item->ammo_type() ) &&
-                                !container->ammo_types().contains( item->ammo_default()->ammo->type ) ) {
-                                debugmsg( "Incompatible ammo: %s in ( %s %s )", item->type->get_id().str(),
-                                          container->type->get_id().str(), context );
-                            }
-                        } else if( !container->ammo_types().empty() ) {
-                            if( !container->ammo_types().contains( item->ammo_type() ) &&
-                                !container->ammo_types().contains( item->ammo_default()->ammo->type ) ) {
-                                debugmsg( "Incompatible ammo: %s in ( %s %s )", item->type->get_id().str(),
-                                          container->type->get_id().str(), context );
-                            }
-                        } else if( container->ammo_default() != item->type->get_id() ) {
-                            debugmsg( "Incompatible ammo: %s in ( %s %s )", item->type->get_id().str(),
-                                      container->type->get_id().str(), context );
-                        }
-                    }
-                }
-            }
-            if( modifier && modifier->contents != nullptr ) {
-                for( auto &contents : modifier->contents->every_item_modified() ) {
-                    // Exception as can_reload_with does not work for containers
-                    // As it always returns true regardless of volume
-                    if( item->is_container() ) {
-                        if( !item->is_reloadable_with( contents->type->get_id() ) ) {
-                            // Okay if we cant contain it first try nesting it
-                            // Then if still failing enter debugmsg
-                            contents = item::in_its_container( std::move( contents ) );
-                            if( !item->is_reloadable_with( contents->type->get_id() ) ) {
-                                debugmsg( "Incompatible contained item: %s in ( %s %s )", contents->type->get_id().str(),
-                                          item->type->get_id().str(), context );
-                            }
-                        }
-                        auto volume = contents->volume();
-                        if( contents->count_by_charges() ) {
-                            volume /= contents->charges;
-                        }
-                        auto maxmult = std::max( modifier->charges.second, modifier->count.second );
-                        // If autofill put to 1
-                        if( maxmult == -1 ) {
-                            maxmult = 1;
-                        }
-                        if( item->get_container_capacity() < volume * maxmult ) {
-                            debugmsg( "Incompatible contained size: %s in ( %s %s )", contents->type->get_id().str(),
-                                      item->type->get_id().str(), context );
-                        }
-                    } else if( item->is_holster() ) {
-                        // Need to keep these if statements seperate for ordering purposes
-                        if( !item->can_holster( *contents ) ) {
-                            debugmsg( "Incorrect holstered object object: ( %s %s ) in %s", contents->type->get_id().str(),
-                                      context, item->type->get_id().str() );
-                        }
-                    } else if( item->is_bandolier() ) {
-                        if( !item->can_put_in_bandolier( *contents ) ) {
-                            debugmsg( "Incorrect bandoliered object object: ( %s %s ) in %s", contents->type->get_id().str(),
-                                      context, item->type->get_id().str() );
-                        }
-                    } else if( item->is_gun() ) {
-                        if( !item->is_gunmod_compatible( *contents ).success() ) {
-                            debugmsg( "Incompatible gunmod: %s in ( %s %s )", contents->type->get_id().str(),
-                                      item->type->get_id().str(), context );
-                        }
-                    } else if( item->is_tool() ) {
-                        // TODO: Make a unified check in item
-                        // This is taken from iuse.cpp iuse::toolmod_attach
-                        if( contents->is_toolmod() ) {
-                            bool is_acceptable_ammo_mod = std::any_of( contents->type->mod->acceptable_ammo.begin(),
-                            contents->type->mod->acceptable_ammo.end(), [&]( const ammotype & at ) {
-                                return item->ammo_types( false ).count( at );
-                            } );
-                            if( ( contents->has_flag( flag_USE_UPS ) &&
-                                  ( item->has_flag( flag_IS_UPS ) || item->has_flag( flag_USE_UPS ) ) ) ||
-                                !item->toolmods().empty()  || !is_acceptable_ammo_mod ) {
-                                debugmsg( "Incompatible toolmod: %s in ( %s %s )", contents->type->get_id().str(),
-                                          item->type->get_id().str(), context );
-                            }
-                            if( item->magazine_current() ) {
-                                debugmsg( "Tried to put a toolmod in a magazine containing item %s in ( %s %s )",
-                                          contents->type->get_id().str(),
-                                          item->type->get_id().str(), context );
-                            }
-                        } else {
-                            debugmsg( "Tried to put %s in ( %s %s ) as a toolmod while it wasn't",
-                                      contents->type->get_id().str(),
-                                      item->type->get_id().str(), context );
-                        }
-                    }
-                }
-            }
-        }
-    }
-}
 
 bool Single_item_creator::remove_item( const itype_id &itemid )
 {
@@ -341,9 +151,9 @@ bool Single_item_creator::remove_item( const itype_id &itemid )
             return true;
         }
     } else if( type == S_ITEM_GROUP ) {
-        Item_spawn_data *isd = item_controller->get_group( item_group_id( id ) );
-        if( isd != nullptr ) {
-            isd->remove_item( itemid );
+        auto igroup_id = item_group_id( id );
+        if( igroup_id.is_valid() ) {
+            const_cast<Item_group &>( *igroup_id ).remove_item( itemid );
         }
     }
     return type == S_NONE;
@@ -367,9 +177,9 @@ bool Single_item_creator::replace_item( const itype_id &itemid, const itype_id &
             return true;
         }
     } else if( type == S_ITEM_GROUP ) {
-        Item_spawn_data *isd = item_controller->get_group( item_group_id( id ) );
-        if( isd != nullptr ) {
-            isd->replace_item( itemid, replacementid, "in itemgroup " + id );
+        auto igroup_id = item_group_id( id );
+        if( igroup_id.is_valid() ) {
+            const_cast<Item_group &>( *igroup_id ).replace_item( itemid, replacementid, "in itemgroup " + id );
         }
     }
     return type == S_NONE;
@@ -388,9 +198,9 @@ std::set<const itype *> Single_item_creator::every_item() const
             return { ptr };
         }
         case S_ITEM_GROUP: {
-            Item_spawn_data *isd = item_controller->get_group( item_group_id( id ) );
-            if( isd != nullptr ) {
-                return isd->every_item();
+            auto igroup_id = item_group_id( id );
+            if( igroup_id.is_valid() ) {
+                return igroup_id->every_item();
             }
             return {};
         }
@@ -418,16 +228,15 @@ std::vector<detached_ptr<item>> Single_item_creator::every_item_modified( bool m
             auto group_id = item_group_id( id );
             // Check consistency so we get the consistency errors not the
             // I failed to place it right errors
-            Item_spawn_data *isd = item_controller->get_group( group_id );
-            if( !isd ) {
+            if( !group_id.is_valid() ) {
                 debugmsg( "Invalid item group %s", id );
                 return {};
             }
-            if( isd && !isd->checked ) {
-                isd->check_consistency( "" );
-                isd->checked = true;
+            if( !group_id->checked ) {
+                group_id->check_consistency( "" );
+                const_cast<Item_group &>( *group_id ).checked = true;
             }
-            std::vector<detached_ptr<item>> item_group_items = isd->every_item_modified( true );
+            std::vector<detached_ptr<item>> item_group_items = group_id->every_item_modified( true );
             items.reserve( items.size() + item_group_items.size() );
             for( auto &itm : item_group_items ) {
                 if( modifier && modify ) {
@@ -620,25 +429,6 @@ detached_ptr<item> Item_modifier::modify( detached_ptr<item> &&new_item ) const
     return std::move( new_item );
 }
 
-void Item_modifier::check_consistency( const std::string &context ) const
-{
-    if( ammo != nullptr ) {
-        ammo->check_consistency( "ammo of " + context );
-    }
-    if( container != nullptr ) {
-        container->check_consistency( "container of " + context );
-    }
-    if( contents != nullptr ) {
-        contents->check_consistency( "contents of " + context );
-    }
-    if( with_ammo < 0 || with_ammo > 100 ) {
-        debugmsg( "Item modifier's ammo chance %d is out of range", with_ammo );
-    }
-    if( with_magazine < 0 || with_magazine > 100 ) {
-        debugmsg( "Item modifier's magazine chance %d is out of range", with_magazine );
-    }
-}
-
 bool Item_modifier::remove_item( const itype_id &itemid )
 {
     if( ammo != nullptr ) {
@@ -687,19 +477,152 @@ Item_group::Item_group( Type t, int probability, int ammo_chance, int magazine_c
     }
 }
 
+void Item_group::load( const JsonObject &jo, const std::string &src )
+{
+    std::string subtype;
+
+    optional( jo, was_loaded, "subtype", subtype, "distribution" );
+
+    load( jo, src, subtype );
+}
+
+void Item_group::load( const JsonObject &jo, const std::string &src, const std::string &subtype )
+{
+    if( subtype == "distribution" ) {
+        type = Item_group::G_DISTRIBUTION;
+    } else {
+        type = Item_group::G_COLLECTION;
+    }
+
+    optional( jo, was_loaded, "ammo", with_ammo, 0 );
+    optional( jo, was_loaded, "magazine", with_magazine, 0 );
+
+    // We can't use optional or such here due to the overall complexity
+    if( jo.has_member( "entries" ) ) {
+        for( const JsonObject subobj : jo.get_array( "entries" ) ) {
+            add_entry( subobj );
+        }
+    }
+
+    if( jo.has_member( "items" ) ) {
+        for( const JsonValue entry : jo.get_array( "items" ) ) {
+            if( entry.test_string() ) {
+                // Strings: itype, 100 weight
+                add_item_entry( itype_id( entry.get_string() ), 100 );
+            } else if( entry.test_array() ) {
+                // Arrays: 1st itype, 2cd weight, rest ignored
+                JsonArray subitem = entry.get_array();
+                add_item_entry( itype_id( subitem.get_string( 0 ) ), subitem.get_int( 1 ) );
+            } else {
+                // Fallback: Standard `entries` object
+                add_entry( entry.get_object() );
+            }
+        }
+    }
+
+    if( jo.has_member( "groups" ) ) {
+        for( const JsonValue entry : jo.get_array( "groups" ) ) {
+            if( entry.test_string() ) {
+                // Strings: item_group_id, 100 weight
+                add_group_entry( item_group_id( entry.get_string() ), 100 );
+            } else if( entry.test_array() ) {
+                // Arrays: 1st item_group_id, 2cd weight, rest ignored
+                JsonArray subitem = entry.get_array();
+                add_group_entry( item_group_id( subitem.get_string( 0 ) ), subitem.get_int( 1 ) );
+            } else {
+                // Fallback: Standard `entries` object
+                add_entry( entry.get_object() );
+            }
+        }
+    }
+    if( jo.has_member( "delete" ) ) {
+        for( const JsonObject obj : jo.get_array( "delete" ) ) {
+            if( obj.has_member( "item" ) ) {
+                remove_specific_item( obj.get_string( "item" ) );
+            } else if( obj.has_member( "group" ) ) {
+                remove_specific_group( obj.get_string( "group" ) );
+            }
+        }
+    }
+}
+
+void Item_group::add_entry( const JsonObject &obj )
+{
+    std::shared_ptr<Item_group> gptr;
+    int probability = obj.get_int( "prob", 100 );
+    JsonArray jarr;
+    if( obj.has_member( "collection" ) ) {
+        gptr = std::make_unique<Item_group>( Item_group::G_COLLECTION, probability, with_ammo,
+                                             with_magazine );
+        jarr = obj.get_array( "collection" );
+    } else if( obj.has_member( "distribution" ) ) {
+        gptr = std::make_unique<Item_group>( Item_group::G_COLLECTION, probability, with_ammo,
+                                             with_magazine );
+        jarr = obj.get_array( "distribution" );
+    }
+    if( gptr ) {
+        for( const JsonObject job2 : jarr ) {
+            gptr->add_entry( job2 );
+        }
+        add_entry( gptr );
+        return;
+    }
+
+    std::shared_ptr<Single_item_creator> sptr;
+    if( obj.has_member( "item" ) ) {
+        sptr = std::make_shared<Single_item_creator>(
+                   obj.get_string( "item" ), Single_item_creator::S_ITEM, probability );
+    } else if( obj.has_member( "group" ) ) {
+        sptr = std::make_shared<Single_item_creator>(
+                   obj.get_string( "group" ), Single_item_creator::S_ITEM_GROUP, probability );
+    }
+    if( !sptr ) {
+        return;
+    }
+
+    Item_modifier modifier;
+    bool use_modifier = false;
+    use_modifier |= optional( obj, false, "damage", modifier.damage, min_max_reader<int, int>() );
+    use_modifier |= optional( obj, false, "dirt", modifier.dirt, min_max_reader<int, int>() );
+    use_modifier |= optional( obj, false, "charges", modifier.charges, min_max_reader<int, int>() );
+    use_modifier |= optional( obj, false, "count", modifier.count, min_max_reader<int, int>() );
+    use_modifier |= optional( obj, false, "ammo", modifier.ammo, spawn_data_reader( false, with_ammo,
+                              with_magazine ) );
+    use_modifier |= optional( obj, false, "container", modifier.container, spawn_data_reader( false,
+                              with_ammo, with_magazine ) );
+    use_modifier |= optional( obj, false, "contents", modifier.contents, spawn_data_reader( true,
+                              with_ammo,
+                              with_magazine ) );
+    use_modifier |= optional( obj, false, "custom-flags", modifier.custom_flags,
+                              auto_flags_reader<flag_id>() );
+
+    if( obj.has_bool( "active" ) && obj.get_bool( "active" ) ) {
+        modifier.postprocess_fns.emplace_back( []( detached_ptr<item> &&it ) {
+            it->activate();
+            return std::move( it );
+        } );
+        use_modifier |= true;
+    }
+
+    if( use_modifier ) {
+        sptr->modifier.emplace( std::move( modifier ) );
+    }
+    add_entry( std::move( sptr ) );
+}
+
 void Item_group::add_item_entry( const itype_id &itemid, int probability )
 {
-    add_entry( std::make_unique<Single_item_creator>(
+    add_entry( std::make_shared<Single_item_creator>(
                    itemid.str(), Single_item_creator::S_ITEM, probability ) );
 }
 
 void Item_group::add_group_entry( const item_group_id &groupid, int probability )
 {
-    add_entry( std::make_unique<Single_item_creator>(
+    add_entry( std::make_shared<Single_item_creator>(
                    groupid.str(), Single_item_creator::S_ITEM_GROUP, probability ) );
 }
 
-void Item_group::add_entry( std::unique_ptr<Item_spawn_data> ptr )
+void Item_group::add_entry( std::shared_ptr<Item_spawn_data> ptr )
 {
     assert( ptr.get() != nullptr );
     if( ptr->probability <= 0 ) {
@@ -771,13 +694,6 @@ detached_ptr<item> Item_group::create_single( const time_point &birthday, Recurs
     return detached_ptr<item>();
 }
 
-void Item_group::check_consistency( const std::string &context ) const
-{
-    for( const auto &elem : items ) {
-        ( elem )->check_consistency( context );
-    }
-}
-
 bool Item_group::remove_item( const itype_id &itemid )
 {
     for( prop_list::iterator a = items.begin(); a != items.end(); ) {
@@ -799,7 +715,7 @@ bool Item_group::remove_specific_item( const std::string &itemid )
             ++a;
         } else if( b->type == Single_item_creator::Type::S_ITEM ) {
             if( itemid == b->id ) {
-                sum_prob -= ( *a )->probability;
+                sum_prob -= b->probability;
                 a = items.erase( a );
                 return true;
             }
@@ -819,7 +735,7 @@ bool Item_group::remove_specific_group( const std::string &itemid )
             ++a;
         } else if( b->type == Single_item_creator::Type::S_ITEM_GROUP ) {
             if( itemid == b->id ) {
-                sum_prob -= ( *a )->probability;
+                sum_prob -= b->probability;
                 a = items.erase( a );
                 return true;
             }
@@ -834,7 +750,7 @@ bool Item_group::remove_specific_group( const std::string &itemid )
 bool Item_group::replace_item( const itype_id &itemid, const itype_id &replacementid,
                                const std::string &context )
 {
-    for( const std::unique_ptr<Item_spawn_data> &elem : items ) {
+    for( const std::shared_ptr<Item_spawn_data> &elem : items ) {
         ( elem )->replace_item( itemid, replacementid, "item in " + context );
     }
     return items.empty();
@@ -842,7 +758,7 @@ bool Item_group::replace_item( const itype_id &itemid, const itype_id &replaceme
 
 bool Item_group::has_item( const itype_id &itemid ) const
 {
-    for( const std::unique_ptr<Item_spawn_data> &elem : items ) {
+    for( const std::shared_ptr<Item_spawn_data> &elem : items ) {
         if( ( elem )->has_item( itemid ) ) {
             return true;
         }
@@ -873,66 +789,48 @@ std::vector<detached_ptr<item>> Item_group::every_item_modified( bool /*modify*/
     return result;
 }
 
+void item_group::insert_itemgroup( Item_group group )
+{
+    all_itemgroups.insert( group );
+}
+
 std::vector<detached_ptr<item>> item_group::items_from( const item_group_id &group_id,
                              const time_point &birthday )
 {
-    const auto group = item_controller->get_group( group_id );
-    if( group == nullptr ) {
+    if( !group_id.is_valid() ) {
         return {};
     }
-    return group->create( birthday );
-}
-
-std::vector<detached_ptr<item>> item_group::items_from( const item_group_id &group_id )
-{
-    return items_from( group_id, calendar::start_of_cataclysm );
+    std::vector<std::string> lst;
+    return group_id->create( birthday, lst );
 }
 
 detached_ptr<item> item_group::item_from( const item_group_id &group_id,
         const time_point &birthday )
 {
-    const auto group = item_controller->get_group( group_id );
-    if( group == nullptr ) {
+    if( !group_id.is_valid() ) {
         return detached_ptr<item>();
     }
-    return group->create_single( birthday );
-}
-
-detached_ptr<item> item_group::item_from( const item_group_id &group_id )
-{
-    return item_from( group_id, calendar::start_of_cataclysm );
-}
-
-bool item_group::group_is_defined( const item_group_id &group_id )
-{
-    return item_controller->get_group( group_id ) != nullptr;
+    std::vector<std::string> lst;
+    return group_id->create_single( birthday, lst );
 }
 
 bool item_group::group_contains_item( const item_group_id &group_id, const itype_id &type_id )
 {
-    const auto group = item_controller->get_group( group_id );
-    if( group == nullptr ) {
+    if( !group_id.is_valid() ) {
         return false;
     }
-    return group->has_item( type_id );
+    return group_id->has_item( type_id );
 }
 
 std::set<const itype *> item_group::every_possible_item_from( const item_group_id &group_id )
 {
-    Item_spawn_data *group = item_controller->get_group( group_id );
-    if( group == nullptr ) {
+    if( !group_id.is_valid() ) {
         return {};
     }
-    return group->every_item();
+    return group_id->every_item();
 }
 
-void item_group::load_item_group( const JsonObject &jsobj, const item_group_id &group_id,
-                                  const std::string &subtype )
-{
-    item_controller->load_item_group( jsobj, group_id, subtype );
-}
-
-static item_group_id get_unique_group_id()
+item_group_id item_group::get_unique_group_id()
 {
     // This is just a hint what id to use next. Overflow of it is defined and if the group
     // name is already used, we simply go the next id.
@@ -943,40 +841,259 @@ static item_group_id get_unique_group_id()
     static const std::string unique_prefix = "\u01F7 ";
     while( true ) {
         const item_group_id new_group = item_group_id( unique_prefix + std::to_string( next_id++ ) );
-        if( !item_group::group_is_defined( new_group ) ) {
+        if( !new_group.is_valid() ) {
             return new_group;
         }
     }
 }
 
-item_group_id item_group::load_item_group( const JsonValue &value,
-        const std::string &default_subtype )
+void Item_group::load_item_groups( const JsonObject &jo, const std::string &src )
 {
-    if( value.test_string() ) {
-        return item_group_id( value.get_string() );
-    } else if( value.test_object() ) {
-        const item_group_id group = get_unique_group_id();
+    all_itemgroups.load( jo, src );
+    // An empty dummy group, it will not spawn anything. However, it makes that item group
+    // id valid, so it can be used all over the place without need to explicitly check for it.
+    auto g = Item_group( Item_group::G_COLLECTION, 100, 0, 0 );
+    g.id = item_group_id( "EMPTY_GROUP" );
+    item_group::insert_itemgroup( g );
+}
 
-        JsonObject jo = value.get_object();
-        const std::string subtype = jo.get_string( "subtype", default_subtype );
-        item_controller->load_item_group( jo, group, subtype );
+void Item_group::check_all()
+{
+    all_itemgroups.check();
+}
 
-        return group;
-    } else if( value.test_array() ) {
-        const item_group_id group = get_unique_group_id();
+void Item_group::check() const
+{
+    check_consistency( id.str() );
+}
 
-        JsonArray jarr = value.get_array();
-        // load_item_group needs a bool, invalid subtypes are unexpected and most likely errors
-        // from the caller of this function.
-        if( default_subtype != "collection" && default_subtype != "distribution" ) {
-            debugmsg( "invalid subtype for item group: %s", default_subtype.c_str() );
+std::vector<Item_group> Item_group::get_all()
+{
+    return all_itemgroups.get_all();
+}
+
+void Item_group::reset()
+{
+    all_itemgroups.reset();
+}
+
+void Item_modifier::check_consistency( const std::string &context ) const
+{
+    if( ammo != nullptr ) {
+        ammo->check_consistency( "ammo of " + context );
+    }
+    if( container != nullptr ) {
+        container->check_consistency( "container of " + context );
+    }
+    if( contents != nullptr ) {
+        contents->check_consistency( "contents of " + context );
+    }
+    if( with_ammo < 0 || with_ammo > 100 ) {
+        debugmsg( "Item modifier's ammo chance %d is out of range", with_ammo );
+    }
+    if( with_magazine < 0 || with_magazine > 100 ) {
+        debugmsg( "Item modifier's magazine chance %d is out of range", with_magazine );
+    }
+}
+
+void Item_group::check_consistency( const std::string &context ) const
+{
+    for( const auto &elem : items ) {
+        ( elem )->check_consistency( context );
+    }
+}
+
+void Single_item_creator::check_consistency( const std::string &context ) const
+{
+    if( type == S_ITEM ) {
+        if( !itype_id( id ).is_valid() ) {
+            debugmsg( "item id %s is unknown (in %s)", id, context );
         }
-        item_controller->load_item_group( jarr, group, default_subtype == "collection", 0, 0 );
-
-        return group;
+    } else if( type == S_ITEM_GROUP ) {
+        // TODO: figure out a way to check for itemgroup recursion here
+        // Beyond the fact that your game wil ljust stall...
+        if( !item_group_id( id ).is_valid() ) {
+            debugmsg( "item group id %s is unknown (in %s)", id, context );
+        }
+    } else if( type == S_NONE ) {
+        // this is okay, it will be ignored
     } else {
-        value.throw_error( "invalid item group, must be string (group id) or object/array (the group data)" );
-        // stream.error always throws, this is here to prevent a warning
-        return item_group_id{};
+        debugmsg( "Unknown type of Single_item_creator: %d", static_cast<int>( type ) );
+    }
+    if( modifier ) {
+        modifier->check_consistency( context );
+        for( auto &item : every_item_modified( false ) ) {
+            if( modifier && modifier->ammo != nullptr ) {
+                for( auto &ammo : modifier->ammo->every_item_modified() ) {
+                    if( item->is_tool() ) {
+                        if( item->magazine_integral() ) {
+                            if( !item->ammo_types().contains( ammo->ammo_type() ) &&
+                                !item->ammo_types().contains( ammo->ammo_default()->ammo->type ) ) {
+                                debugmsg( "Incompatible ammo: %s in ( %s %s )", ammo->type->get_id().str(),
+                                          item->type->get_id().str(), context );
+                            }
+                        } else if( !item->ammo_types().empty() ) {
+                            if( !item->ammo_types().contains( ammo->ammo_type() ) &&
+                                !item->ammo_types().contains( ammo->ammo_default()->ammo->type ) ) {
+                                debugmsg( "Incompatible ammo: %s in ( %s %s )", ammo->type->get_id().str(),
+                                          item->type->get_id().str(), context );
+                            }
+                        } else if( item->ammo_default() != ammo->type->get_id() ) {
+                            debugmsg( "Incompatible ammo: %s in ( %s %s )", ammo->type->get_id().str(),
+                                      item->type->get_id().str(), context );
+                        }
+                    }
+                    if( item->is_magazine() || item->is_gun() ) {
+                        if( item->magazine_integral() ) {
+                            if( !item->ammo_types().contains( ammo->ammo_type() ) ) {
+                                debugmsg( "Incompatible ammo: %s in ( %s %s )", ammo->type->get_id().str(),
+                                          item->type->get_id().str(), context );
+                            }
+                        } else if( !item->ammo_types().contains( ammo->ammo_type() ) ) {
+                            debugmsg( "Incompatible ammo: %s in ( %s %s )", ammo->type->get_id().str(),
+                                      item->type->get_id().str(), context );
+                        }
+                    }
+                    // Exception as can_reload_with does not work for containers
+                    // As it always returns true regardless of volume
+                    else if( item->is_container() ) {
+                        if( !item->is_reloadable_with( ammo->type->get_id() ) ) {
+                            debugmsg( "Incompatible contained item: %s in ( %s %s )", ammo->type->get_id().str(),
+                                      item->type->get_id().str(), context );
+                        }
+                        auto volume = ammo->volume();
+                        if( ammo->count_by_charges() ) {
+                            volume /= ammo->charges;
+                        }
+                        auto maxmult = std::max( modifier->charges.second, modifier->count.second );
+                        // If autofill put to 1
+                        if( maxmult == -1 ) {
+                            maxmult = 1;
+                        }
+                        if( item->get_container_capacity() < volume * maxmult ) {
+                            debugmsg( "Incompatible contained size: %s in ( %s %s )", ammo->type->get_id().str(),
+                                      item->type->get_id().str(), context );
+                        }
+                    }
+                }
+            }
+            if( modifier && modifier->container != nullptr ) {
+                for( auto &container : modifier->container->every_item_modified() ) {
+                    if( container->is_container() ) {
+                        if( container->is_container() && !container->type->container->watertight &&
+                            item->type->phase == LIQUID ) {
+                            debugmsg( "Liquid %s in solid container ( %s %s )", item->type->get_id().str(),
+                                      container->type->get_id().str(), context );
+                        }
+                        auto volume = item->volume();
+                        if( item->count_by_charges() ) {
+                            volume /= item->charges;
+                        }
+                        auto maxmult = std::max( modifier->charges.second, modifier->count.second );
+                        // If autofill put to 1
+                        if( maxmult == -1 ) {
+                            maxmult = 1;
+                        }
+                        if( container->get_container_capacity() < volume * maxmult ) {
+                            debugmsg( "Incompatible individual contents size: %s in ( %s %s )", item->type->get_id().str(),
+                                      container->type->get_id().str(), context );
+                        }
+                    } else if( container->is_holster() && !container->can_holster( *item ) ) {
+                        debugmsg( "Incorrect holstered object object: ( %s %s ) in %s", item->type->get_id().str(),
+                                  context, container->type->get_id().str() );
+                    } else if( container->is_bandolier() && !container->can_put_in_bandolier( *item ) ) {
+                        debugmsg( "Incorrect bandoliered object object: ( %s %s ) in %s", item->type->get_id().str(),
+                                  context, container->type->get_id().str() );
+                    } else if( container->is_tool() ) {
+                        if( container->magazine_integral() ) {
+                            if( !container->ammo_types().contains( item->ammo_type() ) &&
+                                !container->ammo_types().contains( item->ammo_default()->ammo->type ) ) {
+                                debugmsg( "Incompatible ammo: %s in ( %s %s )", item->type->get_id().str(),
+                                          container->type->get_id().str(), context );
+                            }
+                        } else if( !container->ammo_types().empty() ) {
+                            if( !container->ammo_types().contains( item->ammo_type() ) &&
+                                !container->ammo_types().contains( item->ammo_default()->ammo->type ) ) {
+                                debugmsg( "Incompatible ammo: %s in ( %s %s )", item->type->get_id().str(),
+                                          container->type->get_id().str(), context );
+                            }
+                        } else if( container->ammo_default() != item->type->get_id() ) {
+                            debugmsg( "Incompatible ammo: %s in ( %s %s )", item->type->get_id().str(),
+                                      container->type->get_id().str(), context );
+                        }
+                    }
+                }
+            }
+            if( modifier && modifier->contents != nullptr ) {
+                for( auto &contents : modifier->contents->every_item_modified() ) {
+                    // Exception as can_reload_with does not work for containers
+                    // As it always returns true regardless of volume
+                    if( item->is_container() ) {
+                        if( !item->is_reloadable_with( contents->type->get_id() ) ) {
+                            // Okay if we cant contain it first try nesting it
+                            // Then if still failing enter debugmsg
+                            contents = item::in_its_container( std::move( contents ) );
+                            if( !item->is_reloadable_with( contents->type->get_id() ) ) {
+                                debugmsg( "Incompatible contained item: %s in ( %s %s )", contents->type->get_id().str(),
+                                          item->type->get_id().str(), context );
+                            }
+                        }
+                        auto volume = contents->volume();
+                        if( contents->count_by_charges() ) {
+                            volume /= contents->charges;
+                        }
+                        auto maxmult = std::max( modifier->charges.second, modifier->count.second );
+                        // If autofill put to 1
+                        if( maxmult == -1 ) {
+                            maxmult = 1;
+                        }
+                        if( item->get_container_capacity() < volume * maxmult ) {
+                            debugmsg( "Incompatible contained size: %s in ( %s %s )", contents->type->get_id().str(),
+                                      item->type->get_id().str(), context );
+                        }
+                    } else if( item->is_holster() ) {
+                        // Need to keep these if statements seperate for ordering purposes
+                        if( !item->can_holster( *contents ) ) {
+                            debugmsg( "Incorrect holstered object object: ( %s %s ) in %s", contents->type->get_id().str(),
+                                      context, item->type->get_id().str() );
+                        }
+                    } else if( item->is_bandolier() ) {
+                        if( !item->can_put_in_bandolier( *contents ) ) {
+                            debugmsg( "Incorrect bandoliered object object: ( %s %s ) in %s", contents->type->get_id().str(),
+                                      context, item->type->get_id().str() );
+                        }
+                    } else if( item->is_gun() ) {
+                        if( !item->is_gunmod_compatible( *contents ).success() ) {
+                            debugmsg( "Incompatible gunmod: %s in ( %s %s )", contents->type->get_id().str(),
+                                      item->type->get_id().str(), context );
+                        }
+                    } else if( item->is_tool() ) {
+                        // TODO: Make a unified check in item
+                        // This is taken from iuse.cpp iuse::toolmod_attach
+                        if( contents->is_toolmod() ) {
+                            bool is_acceptable_ammo_mod = std::any_of( contents->type->mod->acceptable_ammo.begin(),
+                            contents->type->mod->acceptable_ammo.end(), [&]( const ammotype & at ) {
+                                return item->ammo_types( false ).count( at );
+                            } );
+                            if( ( contents->has_flag( flag_USE_UPS ) &&
+                                  ( item->has_flag( flag_IS_UPS ) || item->has_flag( flag_USE_UPS ) ) ) ||
+                                !item->toolmods().empty()  || !is_acceptable_ammo_mod ) {
+                                debugmsg( "Incompatible toolmod: %s in ( %s %s )", contents->type->get_id().str(),
+                                          item->type->get_id().str(), context );
+                            }
+                            if( item->magazine_current() ) {
+                                debugmsg( "Tried to put a toolmod in a magazine containing item %s in ( %s %s )",
+                                          contents->type->get_id().str(),
+                                          item->type->get_id().str(), context );
+                            }
+                        } else {
+                            debugmsg( "Tried to put %s in ( %s %s ) as a toolmod while it wasn't",
+                                      contents->type->get_id().str(),
+                                      item->type->get_id().str(), context );
+                        }
+                    }
+                }
+            }
+        }
     }
 }

@@ -311,16 +311,16 @@ item::item( const itype *type, time_point turn, int qty ) : type( type ),
 
     if( has_flag( flag_NANOFAB_TEMPLATE ) ) {
         // Define all nanofab subgroups from nanofab_recipes.json
-        auto all_groups = item_controller->get_all_group_names();
+        auto all_groups = Item_group::get_all();
 
         // Prepare a vector to hold nanofab groups dynamically
         std::vector<item_group_id> nanofab_groups;
 
         // Populate it dynamically (this is probably pretty performance intensive, but allows for modded templates)
         for( const auto &group : all_groups ) {
-            const std::string &name = group.str();
+            const std::string &name = group.id.str();
             if( name.starts_with( "nanofab_template_" ) ) {
-                nanofab_groups.push_back( group );
+                nanofab_groups.push_back( group.id );
             }
         }
 
