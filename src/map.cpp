@@ -942,10 +942,9 @@ void map::add_vehicle_to_cache( vehicle *veh )
         level_cache &ch = get_cache( p.z() );
         ch.veh_in_active_range = true;
 
-        // DANGER: Unlike what you think where you can just use vpr.has_flag( VPFLAG_NOCOLLIDE )
-        // THAT DOES NOT WORK DO NOT TRY AND CHANGE THIS MESS
         if( !ch.veh_cached_parts.contains( p ) ||
-            ( !veh->part_info( vpr.part_index() ).has_flag( VPFLAG_NOCOLLIDE ) ) ) {
+            !veh->part_info( vpr.part_index() ).has_flag( VPFLAG_NOCOLLIDE ) ||
+            ch.veh_cached_parts.at( p ).first == veh ) {
             ch.veh_cached_parts[p] = std::make_pair( veh,  static_cast<int>( vpr.part_index() ) );
         }
         if( inbounds( p ) ) {
