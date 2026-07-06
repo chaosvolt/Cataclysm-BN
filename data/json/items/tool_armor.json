@@ -1087,7 +1087,7 @@
       "passive_effects": [
         {
           "has": "WORN",
-          "condition": "ALWAYS",
+          "condition": "ACTIVE",
           "values": [ { "value": "ARMOR_PSI", "add": -25 }, { "value": "CLIMATE_CONTROL", "add": 1250 } ]
         }
       ]
