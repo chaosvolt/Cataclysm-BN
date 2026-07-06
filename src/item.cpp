@@ -4506,6 +4506,22 @@ void item::final_info( std::vector<iteminfo> &info, const iteminfo_query &parts_
     }
 }
 
+void item::enchantment_info( std::vector<iteminfo> &info, const iteminfo_query &parts_ref,
+                             int batch,
+                             bool debug ) const
+{
+    const std::vector<enchantment> &enchs = get_enchantments();
+    if( is_null() || enchs.empty() || has_flag( flag_SECRET_ENCHANTMENTS ) ) {
+        return;
+    }
+    insert_separation_line( info );
+    for( const enchantment &ench : get_enchantments() ) {
+        for( std::string str : ench.get_effect_string( true ) ) {
+            info.emplace_back( "DESCRIPTION", str );
+        }
+    }
+    insert_separation_line( info );
+}
 std::vector<iteminfo> item::info() const
 {
     return info( iteminfo_query::no_conditions, 1, temperature_flag::TEMP_NORMAL );
@@ -4592,6 +4608,8 @@ std::vector<iteminfo> item::info( const iteminfo_query &parts_ref, int batch,
 
     repair_info( info, parts, batch, debug );
     disassembly_info( info, parts, batch, debug );
+
+    enchantment_info( info, parts_ref, batch, debug );
 
     final_info( info, parts_ref, batch, debug );
 

@@ -89,7 +89,16 @@
       "set_charges_msg": "You need a UPS or a bionic armor interface to power this."
     },
     "resistance": { "bullet": 90 },
-    "flags": [ "USE_UPS", "NAT_UPS", "POWERARMOR_EXO", "WATERPROOF", "STURDY", "ELECTRIC_IMMUNE", "COMBAT_NPC_USE" ]
+    "flags": [ "USE_UPS", "NAT_UPS", "POWERARMOR_EXO", "WATERPROOF", "STURDY", "ELECTRIC_IMMUNE", "COMBAT_NPC_USE" ],
+    "relic_data": {
+      "passive_effects": [
+        {
+          "has": "WORN",
+          "condition": "ACTIVE",
+          "values": [ { "value": "STRENGTH", "add": 2 }, { "value": "CLIMATE_CONTROL", "add": 2000 } ]
+        }
+      ]
+    }
   },
   {
     "id": "power_armor_basic_on",
@@ -102,15 +111,6 @@
     "extend": { "flags": [ "HEAVY_WEAPON_SUPPORT", "TRADER_AVOID", "COMBAT_NPC_ON" ] },
     "power_draw": 1500000,
     "revert_to": "power_armor_basic",
-    "relic_data": {
-      "passive_effects": [
-        {
-          "has": "WORN",
-          "condition": "ACTIVE",
-          "values": [ { "value": "STRENGTH", "add": 2 }, { "value": "CLIMATE_CONTROL", "add": 2000 } ]
-        }
-      ]
-    },
     "use_action": {
       "type": "set_transform",
       "turn_off": true,
@@ -159,7 +159,16 @@
       "set_charges": 2,
       "set_charges_msg": "You need a UPS or a bionic armor interface to power this."
     },
-    "flags": [ "USE_UPS", "NAT_UPS", "POWERARMOR_EXO", "WATERPROOF", "STURDY", "ELECTRIC_IMMUNE", "COMBAT_NPC_USE" ]
+    "flags": [ "USE_UPS", "NAT_UPS", "POWERARMOR_EXO", "WATERPROOF", "STURDY", "ELECTRIC_IMMUNE", "COMBAT_NPC_USE" ],
+    "relic_data": {
+      "passive_effects": [
+        {
+          "has": "WORN",
+          "condition": "ACTIVE",
+          "values": [ { "value": "STRENGTH", "add": 6 }, { "value": "CLIMATE_CONTROL", "add": 2000 } ]
+        }
+      ]
+    }
   },
   {
     "id": "power_armor_heavy_on",
@@ -172,15 +181,6 @@
     "extend": { "flags": [ "HEAVY_WEAPON_SUPPORT", "TRADER_AVOID", "COMBAT_NPC_ON" ] },
     "power_draw": 2250000,
     "revert_to": "power_armor_heavy",
-    "relic_data": {
-      "passive_effects": [
-        {
-          "has": "WORN",
-          "condition": "ACTIVE",
-          "values": [ { "value": "STRENGTH", "add": 6 }, { "value": "CLIMATE_CONTROL", "add": 2000 } ]
-        }
-      ]
-    },
     "use_action": {
       "type": "set_transform",
       "turn_off": true,
@@ -229,7 +229,16 @@
       "set_charges_msg": "You need a UPS or a bionic armor interface to power this."
     },
     "resistance": { "bullet": 70 },
-    "flags": [ "USE_UPS", "NAT_UPS", "POWERARMOR_EXO", "WATERPROOF", "STURDY", "ELECTRIC_IMMUNE", "COMBAT_NPC_USE" ]
+    "flags": [ "USE_UPS", "NAT_UPS", "POWERARMOR_EXO", "WATERPROOF", "STURDY", "ELECTRIC_IMMUNE", "COMBAT_NPC_USE" ],
+    "relic_data": {
+      "passive_effects": [
+        {
+          "has": "WORN",
+          "condition": "ACTIVE",
+          "values": [ { "value": "STRENGTH", "add": 4 }, { "value": "CLIMATE_CONTROL", "add": 2000 } ]
+        }
+      ]
+    }
   },
   {
     "id": "power_armor_light_on",
@@ -242,15 +251,6 @@
     "extend": { "flags": [ "HEAVY_WEAPON_SUPPORT", "TRADER_AVOID", "COMBAT_NPC_ON" ] },
     "power_draw": 750000,
     "revert_to": "power_armor_light",
-    "relic_data": {
-      "passive_effects": [
-        {
-          "has": "WORN",
-          "condition": "ACTIVE",
-          "values": [ { "value": "STRENGTH", "add": 4 }, { "value": "CLIMATE_CONTROL", "add": 2000 } ]
-        }
-      ]
-    },
     "use_action": {
       "type": "set_transform",
       "turn_off": true,

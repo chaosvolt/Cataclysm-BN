@@ -305,6 +305,7 @@ const flag_id flag_ROLLER_ONE( "ROLLER_ONE" );
 const flag_id flag_ROLLER_QUAD( "ROLLER_QUAD" );
 const flag_id flag_SAFECRACK( "SAFECRACK" );
 const flag_id flag_SEMITANGIBLE( "SEMITANGIBLE" );
+const flag_id flag_SECRET_ENCHANTMENTS( "SECRET_ENCHANTMENTS" );
 const flag_id flag_SHATTERS( "SHATTERS" );
 const flag_id flag_SHOCKING( "SHOCKING" );
 const flag_id flag_ACIDIC( "ACIDIC" );

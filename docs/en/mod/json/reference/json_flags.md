@@ -740,6 +740,7 @@ List of known flags, used in both `terrain.json` and `furniture.json`.
 - `SLEEP_IGNORE` ... This item is not shown as before-sleep warning.
 - `SLOW_WIELD` ... Has an additional time penalty upon wielding. For melee weapons and guns this is
   offset by the relevant skill. Stacks with "NEEDS_UNFOLD".
+- `SECRET_ENCHANTMENTS` ... Enchantments on this item aren't shown in item info.
 - `TACK` ... Item can be used as tack for a mount.
 - `TIE_UP` ... Item can be used to tie up a creature.
 - `TINDER` ... This item can be used as tinder for lighting a fire with a REQUIRES_TINDER flagged

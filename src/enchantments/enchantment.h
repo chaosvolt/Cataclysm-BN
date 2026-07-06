@@ -102,6 +102,8 @@ public:
     static void finalize_all();
     void finalize();
 
+    std::vector<std::string> get_effect_string(bool is_item) const;
+
 private:
     std::set<trait_id> mutations;
     std::optional<emit_id> emitter;

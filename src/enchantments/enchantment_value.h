@@ -41,6 +41,9 @@ public:
     bool can_mult = true;
     bool can_max = false;
 
+    std::string desc = "How did you get here?";
+    bool increase_good = true;
+
     bool has_parent() const;
     enchantment_value_id get_parent() const;
 

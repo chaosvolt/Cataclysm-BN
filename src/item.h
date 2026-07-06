@@ -590,6 +590,8 @@ class item : public location_visitable<item>, public game_object<item>
                             bool debug ) const;
         void final_info( std::vector<iteminfo> &info, const iteminfo_query &parts, int batch,
                          bool debug ) const;
+        void enchantment_info( std::vector<iteminfo> &info, const iteminfo_query &parts, int batch,
+                               bool debug ) const;
 
         /**
          * Calculate all burning calculations, but don't actually apply them to item.

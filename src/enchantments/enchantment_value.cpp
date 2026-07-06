@@ -21,11 +21,15 @@ void enchantment_value::load(const JsonObject& jo, const std::string& src) {
     optional(jo, was_loaded, "can_add", can_add, true);
     optional(jo, was_loaded, "can_mult", can_mult, true);
     optional(jo, was_loaded, "can_max", can_max, false);
+    optional(jo, was_loaded, "increase_good", increase_good, true);
+    mandatory(jo, was_loaded, "desc", desc);
     if (jo.has_array("suffixes")) {
-        for (std::string& suffix : jo.get_string_array("suffixes")) {
+        for (JsonValue val : jo.get_array("suffixes")) {
+            JsonArray suffix = val.get_array();
             enchantment_value suffixed = enchantment_value(*this);
-            suffixed.id = enchantment_value_id(suffixed.id.str() + "_" + suffix);
+            suffixed.id = enchantment_value_id(suffixed.id.str() + "_" + suffix.next_string());
             suffixed.parent_id = id;
+            suffixed.desc = suffix.next_string();
             all_enchantment_values.insert(suffixed);
         }
     }

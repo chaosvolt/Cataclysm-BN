@@ -23,6 +23,7 @@
 #include <cstdlib>
 #include <memory>
 #include <set>
+#include <vector>
 
 template <typename E> struct enum_traits;
 
@@ -89,6 +90,67 @@ generic_factory<enchantment> enchant_factory("enchantment");
 } // namespace
 
 IMPLEMENT_STRING_AND_INT_IDS(enchantment, enchant_factory);
+
+std::vector<std::string> enchantment::get_effect_string(bool is_item) const {
+    std::string cond_string;
+    if (is_item) {
+        if (active_conditions.first == has::WIELD) {}
+        const auto itemCond = active_conditions.first;
+        cond_string =
+            itemCond == has::WIELD  ? _("While wielded and ")
+            : itemCond == has::WORN ? _("While worn and ")
+            : itemCond == has::HELD
+                ? _("While held and ")
+                : "You shouldn't see this";
+    }
+    const auto genCond = active_conditions.second;
+    cond_string +=
+        genCond == condition::ALWAYS        ? _("At all times:")
+        : genCond == condition::ACTIVE      ? _("While active:")
+        : genCond == condition::INACTIVE    ? _("While inactive:")
+        : genCond == condition::UNDERGROUND ? _("While underground:")
+        : genCond == condition::ABOVEGROUND ? _("While aboveground:")
+        : genCond == condition::UNDERWATER  ? _("While underwater:")
+        : genCond == condition::NIGHT       ? _("During the night:")
+        : genCond == condition::DAY         ? _("During the day:")
+        : genCond == condition::DUSK        ? _("At dusk:")
+        : genCond == condition::DAWN
+            ? _("At dawn:")
+            : "You shouldn't see this";
+
+    std::map<enchantment_value_id, int> value_effects;
+    for (const auto [ench_id, effect] : values_add) {
+        if (effect > 0) {
+            value_effects[ench_id] += (ench_id->increase_good) ? 1 : -1;
+        } else if (effect < 0) {
+            value_effects[ench_id] += (ench_id->increase_good) ? -1 : 1;
+        }
+    }
+    for (const auto [ench_id, effect] : values_multiply) {
+        if (effect > 1) {
+            value_effects[ench_id] += (ench_id->increase_good) ? 1 : -1;
+        } else if (effect < 1) {
+            value_effects[ench_id] += (ench_id->increase_good) ? -1 : 1;
+        }
+    }
+    for (const auto [ench_id, effect] : values_max) {
+        // Value max fundamentally cant be bad
+        value_effects[ench_id] += 1;
+    }
+    std::vector<std::string> result;
+    if (value_effects.empty()) { return result; }
+    result.push_back(cond_string);
+    for (const auto [ench_id, goodbad] : value_effects) {
+        if (goodbad > 0) {
+            result.push_back(string_format("  <color_green>%s</color>", ench_id->desc));
+        } else if (goodbad < 0) {
+            result.push_back(string_format("  <color_red>%s</color>", ench_id->desc));
+        } else {
+            result.push_back(string_format("  <color_magenta>%s</color>", ench_id->desc));
+        }
+    }
+    return result;
+}
 
 void enchantment::load_enchantment(const JsonObject& jo, const std::string& src) {
     enchant_factory.load(jo, src);

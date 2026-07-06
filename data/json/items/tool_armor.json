@@ -631,6 +631,9 @@
     "description": "This a bodysuit with a number of heatsinks and heating coils tied to a liquid coolant system, and a built-in thermometer.  Use it to turn it on, helping to keep the entire body at an ideal temperature",
     "flags": [ "VARSIZE", "SKINTIGHT", "TRADER_AVOID", "ONLY_ONE", "THERMOMETER" ],
     "weight": "1652 g",
+    "relic_data": {
+      "passive_effects": [ { "has": "WORN", "condition": "ACTIVE", "values": [ { "value": "CLIMATE_CONTROL", "add": 1250 } ] } ]
+    },
     "use_action": {
       "type": "transform",
       "msg": "You activate your %s.",
@@ -647,9 +650,6 @@
     "copy-from": "thermal_cooling_suit",
     "name": { "str": "liquid cooling suit (on)", "str_pl": "liquid cooling suits (on)" },
     "description": "This a bodysuit with a number of heatsinks and heating coils tied to a liquid coolant system, and a built-in thermometer.  It is currently working to keep the entire body at an ideal temperature, use it to turn it off.",
-    "relic_data": {
-      "passive_effects": [ { "has": "WORN", "condition": "ACTIVE", "values": [ { "value": "CLIMATE_CONTROL", "add": 1250 } ] } ]
-    },
     "power_draw": 125000,
     "revert_to": "thermal_cooling_suit",
     "use_action": { "type": "transform", "menu_text": "Turn off", "msg": "Your %s deactivates.", "target": "thermal_cooling_suit" }
@@ -932,7 +932,20 @@
     "coverage": 100,
     "material_thickness": 4,
     "resistance": { "bullet": 50 },
-    "hearing_protection": 12
+    "hearing_protection": 12,
+    "relic_data": {
+      "passive_effects": [
+        {
+          "has": "WORN",
+          "condition": "ACTIVE",
+          "values": [
+            { "value": "STRENGTH", "add": 2 },
+            { "value": "CLIMATE_CONTROL", "add": 1250 },
+            { "value": "BLISTER_COUNT", "add": -20 }
+          ]
+        }
+      ]
+    }
   },
   {
     "id": "rm13_armor_on",
@@ -961,19 +974,6 @@
     ],
     "turns_per_charge": 18,
     "revert_to": "rm13_armor",
-    "relic_data": {
-      "passive_effects": [
-        {
-          "has": "WORN",
-          "condition": "ACTIVE",
-          "values": [
-            { "value": "STRENGTH", "add": 2 },
-            { "value": "CLIMATE_CONTROL", "add": 1250 },
-            { "value": "BLISTER_COUNT", "add": -20 }
-          ]
-        }
-      ]
-    },
     "use_action": { "type": "transform", "menu_text": "Turn off", "msg": "Your RM13 combat armor turns off.", "target": "rm13_armor" },
     "environmental_protection": 40,
     "encumbrance": 10,
@@ -1082,7 +1082,16 @@
       "SWIM_GOGGLES",
       "SUN_GLASSES",
       "COMBAT_NPC_USE"
-    ]
+    ],
+    "relic_data": {
+      "passive_effects": [
+        {
+          "has": "WORN",
+          "condition": "ALWAYS",
+          "values": [ { "value": "ARMOR_PSI", "add": -25 }, { "value": "CLIMATE_CONTROL", "add": 1250 } ]
+        }
+      ]
+    }
   },
   {
     "id": "phase_immersion_suit_on",
@@ -1098,15 +1107,6 @@
     "qualities": [ [ "HV_INSULATION", 1 ] ],
     "covers": [ "head", "mouth", "eyes", "torso", "arms", "hands", "legs", "feet" ],
     "environmental_protection": 80,
-    "relic_data": {
-      "passive_effects": [
-        {
-          "has": "WORN",
-          "condition": "ALWAYS",
-          "values": [ { "value": "ARMOR_PSI", "add": -25 }, { "value": "CLIMATE_CONTROL", "add": 1250 } ]
-        }
-      ]
-    },
     "flags": [
       "RAD_PROOF",
       "STURDY",
