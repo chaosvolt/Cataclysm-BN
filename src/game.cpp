@@ -12976,12 +12976,13 @@ auto game::place_player( const tripoint_bub_ms &dest_loc ) -> point_rel_sm
         u.stop_hauling();
     }
     const auto origin_before_setpos = m.get_abs_sub();
+    const tripoint_abs_ms abs_dest_loc = bub_to_abs( dest_loc );
     u.setpos( dest_loc );
     m.invalidate_visibility_caches();
     mon_info_cache_dirty = true;
     if( u.is_mounted() ) {
         monster *mon = u.mounted_creature.get();
-        mon->setpos( dest_loc );
+        mon->setpos( abs_dest_loc );
         mon->process_triggers();
         m.creature_in_field( *mon );
     }
