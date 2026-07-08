@@ -218,6 +218,13 @@ AMPHIBIAN, INSECT, SPIDER, FUNGUS, PLANT, NETHER, MUTANT, BLOB, HORROR, ABERRATI
 괴물 사기. 몬스터가 후퇴하기 전에 얼마나 낮은 몬스터 HP를 얻을 수 있는지 정의합니다. 이 숫자는 %로 처리됩니다.
 최대 HP의.
 
+## "tracking_distance"
+
+(정수, 선택사항, 기본값 `8`)
+
+몬스터가 `KEEP_DISTANCE` 플래그를 가지고 있을 때 현재 대상과 자신 사이에 유지하려는 타일 단위 거리입니다.
+또한 따라가는 몬스터가 목표에 얼마나 가까이 접근하는지도 제어합니다.
+
 ## "aggro_character"
 
 (부울, 선택 사항, 기본값은 true)
