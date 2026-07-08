@@ -184,6 +184,24 @@ calculated values have hardcoded bounds to prevent unintended behavior.
 
 For all basegame values see [here](#Basegame-Enchantment-Value-ID-List)
 
+### Flags
+
+(array) of enchantment_flag_id values
+
+For all basegame values see [here](#Basegame-Enchantment-Flag-ID-List)
+
+### Immune Effects
+
+(array) of effect_type_id values
+
+Prevents recieving these effects, but any present effects will persist
+
+### Immune Fields
+
+(array) of field_type_id values
+
+Prevents environmental effects of fields from being applied
+
 ## Examples
 
 ```json
@@ -222,6 +240,10 @@ For all basegame values see [here](#Basegame-Enchantment-Value-ID-List)
           ]
         }
       ]
+    },
+    "flags": ["FOOD_POISON_IMMUNE"],
+    "immune_fields": ["fd_fire"],
+    "immune_effects": ["poison"]
     }
   }
 ]
@@ -230,30 +252,29 @@ For all basegame values see [here](#Basegame-Enchantment-Value-ID-List)
 # Enchantment Values
 
 ```jsonc
-  {
-    "id": "RANGED_DAMAGE", // Id of enchantment
-    "type": "enchantment_value", // Needed type
-    "can_add": true, // Weather adding to the enchantment value will do anything; Default true
-    "can_mult": true, // Weather multiplying to the enchantment value will do anything; Default true
-    "can_max": false, // Weather getting the maximum value of this type will do anything; Default false
-    "desc": "Affects Outgoing Ranged Damage", // Description of the enchantment used in some menus
-    "increase_good": true, // Color for enchantment descriptions, if true > 0 or > 1 == green else == red
-    "suffixes": [ // All the suffixes. These appear as `RANGED_DAMAGE_XXX` in this case
-      [ "BASH", "Affects Outgoing Ranged Bash Damage" ], // Suffixes reference the value of the parent in calculations automatically
-      [ "CUT", "Affects Outgoing Ranged Cut Damage" ], // The second value here is the description of the enchantment
-      [ "DARK", "Affects Outgoing Ranged Dark Damage" ],
-      [ "LIGHT", "Affects Outgoing Ranged Light Damage" ],
-      [ "PSI", "Affects Outgoing Ranged Psi Damage" ],
-      [ "STAB", "Affects Outgoing Ranged Stab Damage" ],
-      [ "BULLET", "Affects Outgoing Ranged Ballistic Damage" ],
-      [ "HEAT", "Affects Outgoing Ranged Heat Damage" ],
-      [ "COLD", "Affects Outgoing Ranged Cold Damage" ],
-      [ "ELECTRIC", "Affects Outgoing Ranged Electric Damage" ],
-      [ "ACID", "Affects Outgoing Ranged Acid Damage" ],
-      [ "BIOLOGICAL", "Affects Outgoing Ranged Biological Damage"  ],
-      [ "TRUE", "Affects Outgoing Ranged True Damage"  ],
-    ],
-  }
+{
+  "id": "RANGED_DAMAGE", // Id of enchantment
+  "type": "enchantment_value", // Needed type
+  "can_add": true, // Weather adding to the enchantment value will do anything; Default true
+  "can_mult": true, // Weather multiplying to the enchantment value will do anything; Default true
+  "can_max": false, // Weather getting the maximum value of this type will do anything; Default false
+  "desc": "Affects Outgoing Ranged Damage", // Description of the enchantment used in some menus
+  "increase_good": true, // Color for enchantment descriptions, if true > 0 or > 1 == green else == red
+  "suffixes": [ // All the suffixes. These appear as `RANGED_DAMAGE_XXX` in this case
+    ["BASH", "Affects Outgoing Ranged Bash Damage"], // Suffixes reference the value of the parent in calculations automatically
+    ["CUT", "Affects Outgoing Ranged Cut Damage"], // The second value here is the description of the enchantment
+    ["DARK", "Affects Outgoing Ranged Dark Damage"],
+    ["LIGHT", "Affects Outgoing Ranged Light Damage"],
+    ["PSI", "Affects Outgoing Ranged Psi Damage"],
+    ["STAB", "Affects Outgoing Ranged Stab Damage"],
+    ["BULLET", "Affects Outgoing Ranged Ballistic Damage"],
+    ["HEAT", "Affects Outgoing Ranged Heat Damage"],
+    ["COLD", "Affects Outgoing Ranged Cold Damage"],
+    ["ELECTRIC", "Affects Outgoing Ranged Electric Damage"],
+    ["ACID", "Affects Outgoing Ranged Acid Damage"],
+    ["BIOLOGICAL", "Affects Outgoing Ranged Biological Damage"],
+    ["TRUE", "Affects Outgoing Ranged True Damage"],
+  ],
 }
 ```
 
@@ -645,3 +666,108 @@ value, in addition to the global `ITEM_ARMOR`:
 - `ITEM_ARMOR_HEAT`
 - `ITEM_ARMOR_STAB`
 - `ITEM_ARMOR_TRUE`
+
+# Enchantment Flag
+
+```jsonc
+{
+  "id": "NEARSIGHTED",               // Id of the enchantment flag
+  "type": "enchantment_flag",        // Needed type
+  "conflicts": [ "FIX_NEARSIGHTED" ] // Array of other enchantment_flags of which it cancels
+},
+```
+
+All noted effects apply to the character in possession of the enchantment granting thing
+
+## Basegame Enchantment Flag ID List
+
+### Sight
+
+##### UNDERWATER_SIGHT
+
+Makes sight underwater uninhibited
+
+##### SLEEP_SIGHT
+
+Allows sight while sleeping
+
+##### NEARSIGHTED
+
+Restricts vision greatly, solved by some glasses
+
+##### FIX_NEARSIGHTED
+
+Conflict to NEARSIGHTED, cures and removes it
+
+##### BLIND
+
+Prevents seeing any tile, bumping into walls does reveal them
+
+##### FIX_BLIND
+
+Conflict to BLIND, cures and removes it
+
+##### INFRARED_VISION
+
+Gain infrared vision
+
+##### ELECTROSENSE
+
+Can see robots and electrical creatures through walls
+
+### Consumption
+
+##### EAT_ROTTEN
+
+Gives the ability to eat rotten food safely.
+
+##### ONLY_EAT_ROTTEN
+
+Gives significant penalty to eating fresh food, still allows drinking fresh liquids
+
+##### EAT_ROTTEN_MORALE
+
+Gives no morale penalty to eating rotten food
+
+##### CONSUME_UNCLEAN
+
+Gives the ability to drink unclean liquids and eat unclean foods
+
+##### FOOD_PARASITE_IMMUNE
+
+Prevents gaining parasites from consuming food
+
+##### FOOD_POISON_IMMUNE
+
+Prevents gaining poison from consuming food
+
+### Miscellaneous
+
+##### ALARMCLOCK
+
+Gives the ability to set an alarm while sleeping
+
+##### INTENAL_ALARMCLOCK
+
+Has the effects of `ALARMCLOCK`, but does not produce sound
+It also should prevent sleeping through it.
+
+##### VIEW_DRONE_CAM
+
+Allows viewing any creature with `effect_drone_marker`, generally applied by `PHOTOGRAPH` robots
+
+##### RADIO
+
+Gives the effects of having a radio
+
+##### THERMOMETER
+
+Gives the effects of having a themometer
+
+##### WATCH
+
+Gives the ability to see the precise time
+
+##### FIRE_FIELD_IMMUNE
+
+Provides immunity to fire fields.
