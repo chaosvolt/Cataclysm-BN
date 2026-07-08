@@ -49,7 +49,6 @@
     "type": "mapgen",
     "method": "json",
     "nested_mapgen_id": "central_lab_layout_a_20x20",
-    "//": "These chunks determine the overall layout of each individual cell of the core lab, dividing the space up in different ways and spawning rooms inside of different sizes.  This variant spawns the interesting stuff directly since it's just one big room, while other variants below are more deeply nested.",
     "object": {
       "mapgensize": [ 20, 20 ],
       "rows": [
@@ -184,6 +183,64 @@
     "object": {
       "mapgensize": [ 20, 20 ],
       "rows": [
+        "CC                CC",
+        "CC                CC",
+        "                    ",
+        "      |||++|||      ",
+        "     r|S    S|r     ",
+        "u    r|Y    Y|r    u",
+        "||++||||7==|||||++||",
+        "b     |~~gg~~|     b",
+        "b    L|~gggg~|L    b",
+        "     L|~gRRg~|L     ",
+        "     L|~gRRg~|L     ",
+        "b    L|~gggg~|L    b",
+        "b     |~~~~~~|     b",
+        "||++||||WWWW||||++||",
+        "u      888888      u",
+        "dh      h  h      hd",
+        "d      888888      d",
+        "d       h  h       d",
+        "dh                hd",
+        "                    "
+      ],
+      "terrain": {
+        "~": "t_water_dp",
+        "|": "t_strconc_wall",
+        "+": "t_door_metal_interior_locked",
+        "=": "t_door_metal_locked",
+        "7": "t_card_science",
+        "g": "t_bridge",
+        "R": "t_nuclear_reactor",
+        "u": [ "t_metal_floor", "t_metal_floor_olight" ],
+        "W": "t_ballistic_glass"
+      },
+      "furniture": {
+        "8": "f_control_station",
+        "b": "f_bench",
+        "d": "f_desk",
+        "h": "f_chair",
+        "L": "f_locker",
+        "r": "f_rack",
+        "S": "f_shower",
+        "Y": "f_eyewash",
+      },
+      "nested": { "C": { "chunks": [ "null", "central_lab_crate_1x1" ] } },
+      "items": {
+        "d": { "item": "office", "chance": 50, "repeat": 4 },
+        "L": { "item": "reactor_gear", "chance": 25, "repeat": 3 },
+        "r": { "item": "gear_medical", "chance": 50, "repeat": 3 }
+      },
+      "place_loot": [ { "item": "eyedrops", "x": 7, "y": 5, "chance": 75, "repeat": 2 }, { "item": "eyedrops", "x": 12, "y": 5, "chance": 75, "repeat": 2 } ]
+    }
+  },
+  {
+    "type": "mapgen",
+    "method": "json",
+    "nested_mapgen_id": "central_lab_layout_a_20x20",
+    "object": {
+      "mapgensize": [ 20, 20 ],
+      "rows": [
         "                    ",
         "                    ",
         "                    ",
@@ -211,7 +268,7 @@
     "type": "mapgen",
     "method": "json",
     "nested_mapgen_id": "central_lab_layout_a_20x20",
-    "//": "Todo: Potential room variants include: random experimental vehicle spawned with mechanics workstations and a broken elevator, heavily ruined and irradiated reactor room, large storage area with classic sealed storage rooms containing spicier than normal goodies, ruined leftovers of an unidentified room with uncontained nether outbreak and portal",
+    "//": "Todo: Potential room variants include: heavily ruined and irradiated reactor room, large storage area with classic sealed storage rooms containing spicier than normal goodies, ruined leftovers of an unidentified room with uncontained nether outbreak and portal",
     "object": {
       "mapgensize": [ 20, 20 ],
       "rows": [
@@ -810,7 +867,7 @@
     "type": "mapgen",
     "method": "json",
     "nested_mapgen_id": "central_lab_mini_room_ew_4x4",
-    "//": "Todo: add more variants to 4x4 rooms: small medical exam room with possible autodoc, small autoclave room with recyling utilities for implied corpse disposal",
+    "//": "Todo: add more variants to 4x4 rooms: small medical exam room with possible autodoc, small autoclave room with recycling utilities for implied corpse disposal",
     "object": {
       "mapgensize": [ 4, 4 ],
       "rows": [
