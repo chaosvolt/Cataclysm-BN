@@ -223,7 +223,7 @@
         "L": "f_locker",
         "r": "f_rack",
         "S": "f_shower",
-        "Y": "f_eyewash",
+        "Y": "f_eyewash"
       },
       "nested": { "C": { "chunks": [ "null", "central_lab_crate_1x1" ] } },
       "items": {
@@ -231,7 +231,10 @@
         "L": { "item": "reactor_gear", "chance": 25, "repeat": 3 },
         "r": { "item": "gear_medical", "chance": 50, "repeat": 3 }
       },
-      "place_loot": [ { "item": "eyedrops", "x": 7, "y": 5, "chance": 75, "repeat": 2 }, { "item": "eyedrops", "x": 12, "y": 5, "chance": 75, "repeat": 2 } ]
+      "place_loot": [
+        { "item": "eyedrops", "x": 7, "y": 5, "chance": 75, "repeat": 2 },
+        { "item": "eyedrops", "x": 12, "y": 5, "chance": 75, "repeat": 2 }
+      ]
     }
   },
   {
