@@ -1535,9 +1535,13 @@ void options_manager::add_options_general()
          true, COPT_NO_SOUND_HIDE
        );
 
+    const auto soundpacks = build_soundpacks_list();
+    const auto bundled_soundpack = "otopack bn";
+    const auto default_soundpack = SOUNDPACKS.contains( bundled_soundpack ) ? bundled_soundpack :
+                                   "basic";
     add( "SOUNDPACKS", general, translate_marker( "Choose soundpack" ),
          translate_marker( "Choose the soundpack you want to use.  Requires restart." ),
-         build_soundpacks_list(), "basic", COPT_NO_SOUND_HIDE
+         soundpacks, default_soundpack, COPT_NO_SOUND_HIDE
        ); // populate the options dynamically
 
     get_option( "SOUNDPACKS" ).setPrerequisite( "SOUND_ENABLED" );
