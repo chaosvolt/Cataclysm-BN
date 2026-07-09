@@ -326,6 +326,7 @@ void enchantment::serialize(JsonOut& jsout) const {
     }
     jsout.end_array();
 
+    jsout.member("flags");
     jsout.start_array();
     for (const auto& [ench_flag_id, cnt] : flags) { jsout.write(ench_flag_id.str()); }
     jsout.end_array();
