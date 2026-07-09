@@ -1363,7 +1363,7 @@ class item : public location_visitable<item>, public game_object<item>
         bool is_tool() const;
         bool is_transformable() const;
         bool is_artifact() const;
-        bool is_relic() const;
+        bool is_relic( bool not_itype = false ) const;
         bool is_pocket_dimension_key() const;
         bool is_bucket() const;
         bool is_bucket_nonempty() const;

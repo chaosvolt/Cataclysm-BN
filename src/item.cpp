@@ -104,6 +104,7 @@
 #include "scores_ui.h"
 #include "cloning_utils.h"
 #include "skill.h"
+#include "sol/sol.hpp"
 #include "stomach.h"
 #include "string_formatter.h"
 #include "string_id_utils.h"
@@ -371,11 +372,6 @@ item::item( const itype *type, time_point turn, int qty ) : type( type ),
         snip_id = SNIPPET.random_id_from_category( type->snippet_category );
     }
 
-    // item always has any relic properties from itype.
-    if( type->relic_data ) {
-        relic_data = type->relic_data;
-    }
-
     for( const auto &func : type->use_methods | std::views::values ) {
         const auto actor = func.get_actor_ptr();
         if( actor != nullptr ) {
@@ -605,7 +601,6 @@ detached_ptr<item> item::make_corpse( const mtype_id &mt, time_point turn, const
 void item::convert( const itype_id &new_type )
 {
     type = &*new_type;
-    relic_data = type->relic_data;
     invalidate_processing_cache_upwards();
 }
 
@@ -1144,7 +1139,7 @@ bool item::stacks_with( const item &rhs, bool check_components, bool skip_type_c
     if( !skip_type_check && type != rhs.type ) {
         return false;
     }
-    if( is_relic() && rhs.is_relic() && !( *relic_data == *rhs.relic_data ) ) {
+    if( is_relic( true ) && rhs.is_relic( true ) && !( *relic_data == *rhs.relic_data ) ) {
         return false;
     }
     if( is_money() && charges != 0 && rhs.charges != 0 ) {
@@ -8051,9 +8046,9 @@ bool item::is_artifact() const
     return !!type->artifact;
 }
 
-bool item::is_relic() const
+bool item::is_relic( bool not_itype ) const
 {
-    return !!relic_data;
+    return !!relic_data || ( !not_itype && type->relic_data );
 }
 
 const std::vector<enchantment> &item::get_enchantments() const
@@ -8062,7 +8057,11 @@ const std::vector<enchantment> &item::get_enchantments() const
         static const std::vector<enchantment> fallback;
         return fallback;
     }
-    return relic_data->get_enchantments();
+    if( is_relic( true ) ) {
+        return relic_data->get_enchantments();
+    } else {
+        return type->relic_data->get_enchantments();
+    }
 }
 
 double item::bonus_from_enchantments( const Character &owner, double base,
@@ -8105,7 +8104,11 @@ double item::bonus_from_enchantments_wielded( double base, enchantment_value_id 
 
 const std::vector<relic_recharge> &item::get_relic_recharge_scheme() const
 {
-    return relic_data->get_recharge_scheme();
+    if( is_relic( true ) ) {
+        return relic_data->get_recharge_scheme();
+    } else {
+        return type->relic_data->get_recharge_scheme();
+    }
 }
 
 bool item::can_contain( const item &it ) const
@@ -10480,10 +10483,13 @@ std::vector<trait_id> item::mutations_from_wearing( const Character &guy ) const
     }
     std::vector<trait_id> muts;
 
-    for( const enchantment &ench : relic_data->get_enchantments() ) {
-        for( const trait_id &mut : ench.get_mutations() ) {
-            // this may not be perfectly accurate due to conditions
-            muts.push_back( mut );
+    const auto rel_data = is_relic( true ) ? relic_data : type->relic_data;
+    for( const enchantment &ench : rel_data->get_enchantments() ) {
+        if( ench.is_active( guy, is_active() ) ) {
+            for( const trait_id &mut : ench.get_mutations() ) {
+                // this may not be perfectly accurate due to conditions
+                muts.push_back( mut );
+            }
         }
     }
 
