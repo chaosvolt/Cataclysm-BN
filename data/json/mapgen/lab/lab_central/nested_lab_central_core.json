@@ -227,16 +227,7 @@
         "Y": "f_eyewash"
       },
       "nested": { "C": { "chunks": [ "null", "central_lab_crate_1x1" ] } },
-      "place_nested": [
-        {
-          "chunks": [
-            [ "null", 50 ],
-            [ "central_lab_reactor_meltdown_20x20", 5000 ]
-          ],
-          "x": 0,
-          "y": 0
-        },
-      ],
+      "place_nested": [ { "chunks": [ [ "null", 50 ], [ "central_lab_reactor_meltdown_20x20", 5000 ] ], "x": 0, "y": 0 } ],
       "items": {
         "d": { "item": "office", "chance": 50, "repeat": 4 },
         "L": { "item": "reactor_gear", "chance": 25, "repeat": 3 },
@@ -248,7 +239,6 @@
       ]
     }
   },
-
   {
     "type": "mapgen",
     "method": "json",
@@ -262,8 +252,6 @@
       ]
     }
   },
-
-
   {
     "type": "mapgen",
     "method": "json",
