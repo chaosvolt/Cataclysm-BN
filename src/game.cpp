@@ -16446,6 +16446,20 @@ std::vector<npc *> game::get_npcs_if( const std::function<bool( const npc & )> &
     return result;
 }
 
+std::vector<weak_ptr_fast<npc>> game::get_npcs_pointers_if( const std::function<bool( const npc & )>
+                             &pred )
+{
+    std::vector<weak_ptr_fast<npc>> result;
+    for( weak_ptr_fast<npc> guy : *all_npcs().items ) {
+        if( shared_ptr_fast<npc> true_guy = guy.lock() ) {
+            if( pred( *true_guy ) ) {
+                result.push_back( guy );
+            }
+        }
+    }
+    return result;
+}
+
 template<>
 bool game::non_dead_range<monster>::iterator::valid()
 {
