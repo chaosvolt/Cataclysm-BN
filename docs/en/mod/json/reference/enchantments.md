@@ -502,6 +502,11 @@ Maximum is 3
 Modifier to focus. `base_value` is current focus
 There is no limit
 
+##### FOOD_FUN
+
+Modifier to food morale. `base_value` is current food morale
+There is no limit.
+
 ##### BONUS_DODGE
 
 Additional dodges per turn before dodge penalty kicks in. `base_value` here is character's base
@@ -771,3 +776,19 @@ Gives the ability to see the precise time
 ##### FIRE_FIELD_IMMUNE
 
 Provides immunity to fire fields.
+
+##### SILENT
+
+Prevents player sound from movement
+
+##### NO_THERMAL_WAKE
+
+Extreme temperatures will not wake up the player
+
+##### NO_DAMAGE_WAKE
+
+Taking damage will not wake up the player
+
+##### NO_LIGHT_WAKE
+
+Lights will not wake up the player

@@ -2682,9 +2682,6 @@ dispersion_sources ranged::get_weapon_dispersion( const Character &who, const it
 
     dispersion.add_range( dispersion_from_skill( avgSkill, weapon_dispersion ) );
 
-    if( who.has_bionic( bio_targeting ) ) {
-        dispersion.add_multiplier( 0.75 );
-    }
     // If we're crouched, it's easier to steady our aim.
     if( who.movement_mode_is( CMM_CROUCH ) ) {
         dispersion.add_multiplier( 0.75 );

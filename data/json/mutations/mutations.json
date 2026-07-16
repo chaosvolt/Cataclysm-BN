@@ -6877,7 +6877,7 @@
     "valid": false,
     "description": "Be vewwy vewwy quiet.  We're hunting bugs.",
     "debug": true,
-    "mut_enchantments": [ { "condition": "ALWAYS", "values": [ { "value": "NOISE", "multiply": 0 } ] } ]
+    "mut_enchantments": [ { "condition": "ALWAYS", "flags": [ "SILENT" ] } ]
   },
   {
     "type": "mutation",

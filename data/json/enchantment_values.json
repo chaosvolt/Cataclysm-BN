@@ -234,6 +234,11 @@
     "desc": "Affects Focus"
   },
   {
+    "id": "FOOD_FUN",
+    "type": "enchantment_value",
+    "desc": "Affects Food Taste"
+  },
+  {
     "id": "BONUS_DODGE",
     "type": "enchantment_value",
     "desc": "Affects Dodging Ability"

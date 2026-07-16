@@ -595,6 +595,17 @@
     "points": 2
   },
   {
+    "id": "bio_grossfood",
+    "type": "bionic",
+    "name": { "str": "Taste Fouler" },
+    "occupied_bodyparts": [ [ "head", 1 ], [ "mouth", 1 ] ],
+    "description": "A malfunctioning processor haphazardly interfaced with your taste receptors has given everything you consume a horrid bitter taste.  Food and drink will severely harm your morale.",
+    "flags": [ "BIONIC_FAULTY" ],
+    "points": -1,
+    "starting_bionic": true,
+    "bio_enchantments": [ { "condition": "ALWAYS", "values": [ { "value": "FOOD_FUN", "add": -4 } ] } ]
+  },
+  {
     "id": "bio_ground_sonar",
     "type": "bionic",
     "name": { "str": "Terranian Sonar" },
@@ -1106,6 +1117,26 @@
     "points": -1
   },
   {
+    "id": "bio_sleep_shutdown",
+    "type": "bionic",
+    "name": { "str": "Sleep Mode Shutdown" },
+    "description": "For better or worse, this CBM suppresses most stimuli while asleep, preventing you from waking up from those causes.",
+    "occupied_bodyparts": [ [ "head", 1 ] ],
+    "flags": [ "BIONIC_FAULTY", "BIONIC_SHOCKPROOF" ],
+    "points": -2,
+    "starting_bionic": true,
+    "bio_enchantments": [
+      {
+        "condition": "ALWAYS",
+        "values": [
+          { "value": "SLEEP_PAIN_THRESH", "add": 1000, "//": "If you are that in pain props to you" },
+          { "value": "SLEEP_DB_RESIST", "add": 1000, "//": "Sounds can't exceed 191" }
+        ],
+        "flags": [ "NO_THERMAL_WAKE", "NO_DAMAGE_WAKE", "NO_LIGHT_WAKE" ]
+      }
+    ]
+  },
+  {
     "id": "bio_spasm",
     "type": "bionic",
     "name": { "str": "Motor Control Overstimulator" },
@@ -1193,7 +1224,8 @@
     "description": "Your eyes are surgically equipped with range finders, and their movement is synced with that of your arms, to a degree.  Shots you fire will be much more accurate, particularly at long range.",
     "occupied_bodyparts": [ [ "eyes", 1 ], [ "arm_l", 3 ], [ "arm_r", 3 ], [ "hand_l", 1 ], [ "hand_r", 1 ] ],
     "points": 2,
-    "flags": [ "BIONIC_NPC_USABLE" ]
+    "flags": [ "BIONIC_NPC_USABLE" ],
+    "bio_enchantments": [ { "condition": "ALWAYS", "values": [ { "value": "RANGED_DISPERSION", "multiply": -0.25 } ] } ]
   },
   {
     "id": "bio_teleport",
