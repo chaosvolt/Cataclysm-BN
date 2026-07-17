@@ -1598,6 +1598,13 @@ int throw_cost( const Character &c, const item &to_throw )
     move_cost -= dexbonus;
     move_cost *= c.mutation_value( "attackcost_modifier" );
 
+    // First apply weapon enchant
+    move_cost += to_throw.bonus_from_enchantments( c, move_cost,
+                 enchantment_value_id( "ITEM_THROW_ATTACK_COST" ), true );
+    // Then apply character enchant
+    move_cost += c.bonus_from_enchantments( move_cost, enchantment_value_id( "THROW_ATTACK_COST" ),
+                                            true );
+
     return std::max( 25, move_cost );
 }
 

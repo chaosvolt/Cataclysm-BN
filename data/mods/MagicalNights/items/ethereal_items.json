@@ -152,7 +152,7 @@
     "warmth": 30,
     "material_thickness": 1,
     "environmental_protection": 2,
-    "relic_data": { "passive_effects": [ { "has": "WORN", "condition": "ALWAYS", "values": [ { "value": "MOVE_COST", "add": -5 } ] } ] },
+    "relic_data": { "passive_effects": [ { "conditions": [ "WORN" ], "values": [ { "value": "MOVE_COST", "add": -5 } ] } ] },
     "flags": [
       "WATERPROOF",
       "ROLLER_QUAD",
@@ -428,7 +428,7 @@
       "NONCONDUCTIVE",
       "POWERARMOR_COMPATIBLE"
     ],
-    "relic_data": { "passive_effects": [ { "has": "WORN", "condition": "ALWAYS", "values": [ { "value": "BONUS_DODGE", "add": 2 } ] } ] }
+    "relic_data": { "passive_effects": [ { "conditions": [ "WORN" ], "values": [ { "value": "BONUS_DODGE", "add": 2 } ] } ] }
   },
   {
     "id": "acid_res_aura",
@@ -452,9 +452,7 @@
       "NONCONDUCTIVE",
       "POWERARMOR_COMPATIBLE"
     ],
-    "relic_data": {
-      "passive_effects": [ { "has": "WORN", "condition": "ALWAYS", "values": [ { "value": "ARMOR_ACID", "multiply": -0.25 } ] } ]
-    }
+    "relic_data": { "passive_effects": [ { "conditions": [ "WORN" ], "values": [ { "value": "ARMOR_ACID", "multiply": -0.25 } ] } ] }
   },
   {
     "id": "acid_res_aura_greater",
@@ -478,9 +476,7 @@
       "NONCONDUCTIVE",
       "POWERARMOR_COMPATIBLE"
     ],
-    "relic_data": {
-      "passive_effects": [ { "has": "WORN", "condition": "ALWAYS", "values": [ { "value": "ARMOR_ACID", "multiply": -0.6 } ] } ]
-    }
+    "relic_data": { "passive_effects": [ { "conditions": [ "WORN" ], "values": [ { "value": "ARMOR_ACID", "multiply": -0.6 } ] } ] }
   },
   {
     "id": "armor_frost",
