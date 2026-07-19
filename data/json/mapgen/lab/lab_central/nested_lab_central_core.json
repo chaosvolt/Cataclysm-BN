@@ -180,6 +180,7 @@
     "type": "mapgen",
     "method": "json",
     "nested_mapgen_id": "central_lab_layout_a_20x20",
+    "//": "Todo: Potential room variants include: large storage area with classic sealed storage rooms containing spicier than normal goodies, ruined leftovers of an unidentified room with uncontained nether outbreak and portal",
     "object": {
       "mapgensize": [ 20, 20 ],
       "rows": [
@@ -253,67 +254,6 @@
         { "point": "bash", "x": 10, "y": 13 },
         { "point": "bash", "x": 11, "y": 13 },
         { "square": "radiation", "amount": 100, "x": 0, "y": 0, "x2": 19, "y2": 19 }
-      ]
-    }
-  },
-  {
-    "type": "mapgen",
-    "method": "json",
-    "nested_mapgen_id": "central_lab_layout_a_20x20",
-    "object": {
-      "mapgensize": [ 20, 20 ],
-      "rows": [
-        "                    ",
-        "                    ",
-        "                    ",
-        "                    ",
-        "                    ",
-        "                    ",
-        "                    ",
-        "                    ",
-        "                    ",
-        "                    ",
-        "                    ",
-        "                    ",
-        "                    ",
-        "                    ",
-        "                    ",
-        "                    ",
-        "                    ",
-        "                    ",
-        "                    ",
-        "                    "
-      ]
-    }
-  },
-  {
-    "type": "mapgen",
-    "method": "json",
-    "nested_mapgen_id": "central_lab_layout_a_20x20",
-    "//": "Todo: Potential room variants include: large storage area with classic sealed storage rooms containing spicier than normal goodies, ruined leftovers of an unidentified room with uncontained nether outbreak and portal",
-    "object": {
-      "mapgensize": [ 20, 20 ],
-      "rows": [
-        "                    ",
-        "                    ",
-        "                    ",
-        "                    ",
-        "                    ",
-        "                    ",
-        "                    ",
-        "                    ",
-        "                    ",
-        "                    ",
-        "                    ",
-        "                    ",
-        "                    ",
-        "                    ",
-        "                    ",
-        "                    ",
-        "                    ",
-        "                    ",
-        "                    ",
-        "                    "
       ]
     }
   },
@@ -1127,6 +1067,7 @@
     "type": "mapgen",
     "method": "json",
     "nested_mapgen_id": "central_lab_mini_room_14x14",
+    "//": "Todo: Potential room variants include: large industrial space with conveyor belts, small military barracks, less-spicy prisoner containment with glass walls and no turrets",
     "object": {
       "mapgensize": [ 14, 14 ],
       "rows": [
@@ -1154,6 +1095,146 @@
           { "item": "supplies_samples_lab", "chance": 50, "repeat": 3 }
         ]
       }
+    }
+  },
+  {
+    "type": "mapgen",
+    "method": "json",
+    "nested_mapgen_id": "central_lab_mini_room_14x7",
+    "//": "These are hallway spaces used by the horizontal divided rooms.",
+    "object": {
+      "mapgensize": [ 14, 7 ],
+      "rows": [
+        "              ",
+        "              ",
+        "  ###b  b###  ",
+        "  #u#b  b#u#  ",
+        "  ###b  b###  ",
+        "              ",
+        "              "
+      ],
+      "terrain": { "u": [ "t_metal_floor", "t_metal_floor_olight" ] },
+      "furniture": { "#": "f_sandbag_half", "b": "f_bench" },
+      "place_monster": [ { "monster": "mon_turret_medium", "x": 3, "y": 3 }, { "monster": "mon_turret_medium", "x": 10, "y": 3 } ]
+    }
+  },
+  {
+    "type": "mapgen",
+    "method": "json",
+    "nested_mapgen_id": "central_lab_mini_room_14x7",
+    "object": {
+      "mapgensize": [ 14, 7 ],
+      "rows": [
+        "              ",
+        " dddd    dddd ",
+        " dh h    h hd ",
+        " d          d ",
+        " dh h    h hd ",
+        " dddd    dddd ",
+        "              "
+      ],
+      "furniture": { "d": "f_desk", "h": "f_chair" },
+      "items": { "d": { "item": "office", "chance": 50, "repeat": 4 } }
+    }
+  },
+  {
+    "type": "mapgen",
+    "method": "json",
+    "nested_mapgen_id": "central_lab_mini_room_14x7",
+    "object": {
+      "mapgensize": [ 14, 7 ],
+      "rows": [
+        "    tp  pt    ",
+        "hh   p  p   hh",
+        "eeh        hee",
+        "eeh        hee",
+        "eeh        hee",
+        "hh   p  p   hh",
+        "    tp  pt    "
+      ],
+      "furniture": { "e": "f_table", "h": "f_chair", "p": [ "f_indoor_plant", "f_indoor_plant_y" ], "t": "f_trashcan" },
+      "items": { "t": { "item": "trash_cart", "chance": 25, "repeat": 3 } }
+    }
+  },
+  {
+    "type": "mapgen",
+    "method": "json",
+    "nested_mapgen_id": "central_lab_mini_room_7x14",
+    "//": "Vertical counterpart to the other divided room interior.",
+    "object": {
+      "mapgensize": [ 7, 14 ],
+      "rows": [
+        "       ",
+        "       ",
+        "  ###  ",
+        "  #u#  ",
+        "  ###  ",
+        "  bbb  ",
+        "       ",
+        "       ",
+        "  bbb  ",
+        "  ###  ",
+        "  #u#  ",
+        "  ###  ",
+        "       ",
+        "       "
+      ],
+      "terrain": { "u": [ "t_metal_floor", "t_metal_floor_olight" ] },
+      "furniture": { "#": "f_sandbag_half", "b": "f_bench" },
+      "place_monster": [ { "monster": "mon_turret_medium", "x": 3, "y": 3 }, { "monster": "mon_turret_medium", "x": 3, "y": 10 } ]
+    }
+  },
+  {
+    "type": "mapgen",
+    "method": "json",
+    "nested_mapgen_id": "central_lab_mini_room_7x14",
+    "object": {
+      "mapgensize": [ 7, 14 ],
+      "rows": [
+        "       ",
+        " ddddd ",
+        " dh hd ",
+        " d   d ",
+        " dh hd ",
+        "       ",
+        "       ",
+        "       ",
+        "       ",
+        " dh hd ",
+        " d   d ",
+        " dh hd ",
+        " ddddd ",
+        "       "
+      ],
+      "furniture": { "d": "f_desk", "h": "f_chair" },
+      "items": { "d": { "item": "office", "chance": 50, "repeat": 4 } }
+    }
+  },
+  {
+    "type": "mapgen",
+    "method": "json",
+    "nested_mapgen_id": "central_lab_mini_room_7x14",
+    "//": "Todo: Potential room variants include: rows of chemical storage shelves, central conference table, bionic storage room",
+    "object": {
+      "mapgensize": [ 7, 14 ],
+      "rows": [
+        " heeeh ",
+        " heeeh ",
+        "  hhh  ",
+        "       ",
+        "t     t",
+        "pp   pp",
+        "       ",
+        "       ",
+        "pp   pp",
+        "t     t",
+        "       ",
+        "  hhh  ",
+        " heeeh ",
+        " heeeh "
+      ],
+      "furniture": { "e": "f_table", "h": "f_chair", "p": [ "f_indoor_plant", "f_indoor_plant_y" ], "t": "f_trashcan" },
+      "items": { "t": { "item": "trash_cart", "chance": 25, "repeat": 3 } }
     }
   }
 ]
