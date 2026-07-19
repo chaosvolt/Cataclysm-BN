@@ -1872,7 +1872,7 @@ void Character::sound_hallu()
     }
 
     add_msg( m_warning, _( "From the %1$s you hear %2$s" ), i_dir, i_desc );
-    sfx::play_variant_sound( i_sound.first, i_sound.second, rng( 20, 80 ) );
+    sfx::play_variant_sound( i_sound.first, i_sound.second, rng( 20, 80 ), false );
 }
 
 void Character::drench( int saturation, const body_part_set &flags, bool ignore_waterproof )
