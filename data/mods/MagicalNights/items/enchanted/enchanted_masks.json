@@ -30,7 +30,7 @@
     "max_charges": 12,
     "charges_per_use": 12,
     "use_action": { "type": "cast_spell", "spell_id": "invisibility", "no_fail": true, "level": 15, "need_worn": true },
-    "artifact_data": { "charge_type": "ARTC_TIME" }
+    "relic_data": { "recharge_scheme": [ { "type": "time", "interval": "1 h", "rate": 1 } ] }
   },
   {
     "type": "TOOL_ARMOR",

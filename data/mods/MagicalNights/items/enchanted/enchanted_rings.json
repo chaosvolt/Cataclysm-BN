@@ -109,7 +109,7 @@
     "initial_charges": 5,
     "max_charges": 5,
     "charges_per_use": 1,
-    "artifact_data": { "charge_type": "ARTC_TIME" }
+    "relic_data": { "recharge_scheme": [ { "type": "time", "interval": "1 h", "rate": 1 } ] }
   },
   {
     "copy-from": "mring_silver",
