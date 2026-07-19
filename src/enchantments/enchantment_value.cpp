@@ -33,7 +33,7 @@ void enchantment_value::load(const JsonObject& jo, const std::string& src) {
             enchantment_value suffixed = enchantment_value(*this);
             suffixed.id = enchantment_value_id(suffixed.id.str() + "_" + suffix.next_string());
             suffixed.parent_id = id;
-            suffixed.desc = suffix.next_string();
+            suffixed.desc = to_translation(suffix.next_string());
             all_enchantment_values.insert(suffixed);
         }
     }

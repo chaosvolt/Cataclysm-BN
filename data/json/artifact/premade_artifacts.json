@@ -11,7 +11,10 @@
     "color": "light_gray",
     "flags": [ "TRADER_AVOID" ],
     "relic_data": {
-      "passive_effects": [ { "conditions": [ "HELD" ], "ench_effects": [ { "effect": "debug_clairvoyance", "intensity": 1 } ] } ]
+      "passive_effects": [
+        { "conditions": [ "HELD" ], "ench_effects": [ { "effect": "debug_clairvoyance", "intensity": 1 } ] },
+        { "ench_effects": [ { "effect": "blind", "intensity": 1 } ], "immune_effects": [ "blind" ] }
+      ]
     }
   },
   {

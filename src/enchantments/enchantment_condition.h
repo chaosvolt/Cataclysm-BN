@@ -89,7 +89,7 @@ public:
     std::string condition_function;
 
     // String used for display of enchantment conditions in item info
-    std::string condition_info;
+    translation condition_info;
     // First: String id of the condition function
     // Second: The condition, called via check_item_condition for item conditions
     // Or check_generic_condition for everything else

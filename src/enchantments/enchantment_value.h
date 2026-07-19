@@ -39,7 +39,7 @@ public:
     bool can_mult = true;
     bool can_max = false;
 
-    std::string desc = "How did you get here?";
+    translation desc;
     bool increase_good = true;
 
     bool has_parent() const;

@@ -655,7 +655,9 @@ value, in addition to the global `ITEM_ARMOR`:
 {
   "id": "NEARSIGHTED",               // Id of the enchantment flag
   "type": "enchantment_flag",        // Needed type
+  "parents": [ "BLIND" ],            // Array of other enchantment_flags it also gives
   "conflicts": [ "FIX_NEARSIGHTED" ] // Array of other enchantment_flags of which it cancels
+  "info": "<bad>Causes nearsightedness</bad>" // Info string showed in enchantment info
 },
 ```
 

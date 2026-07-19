@@ -19,6 +19,7 @@ void enchantment_flag::load_enchantment_flags(const JsonObject& jo, const std::s
 }
 
 void enchantment_flag::load(const JsonObject& jo, const std::string& src) {
+    mandatory(jo, was_loaded, "info", info);
     optional(jo, was_loaded, "conflicts", conflicts);
     optional(jo, was_loaded, "parents", parents);
 }

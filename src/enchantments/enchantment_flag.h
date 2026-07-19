@@ -2,6 +2,7 @@
 
 #include "json.h"
 #include "string_id.h"
+#include "translations.h"
 #include "type_id.h"
 
 /**
@@ -26,6 +27,8 @@ public:
     std::set<enchantment_flag_id> get_parents() const;
 
     enchantment_flag_id id;
+
+    translation info;
 
     bool was_loaded = false;
 
