@@ -8,37 +8,13 @@ Enchantments make it possible to specify custom effects provided by item, bionic
 
 (string) Unique identifier for this enchantment.
 
-### has
+### conditions
 
-(string) How an enchantment determines if it is in the right location in order to qualify for being
-active.
+(string array) How an enchantment determines if it should be active
 
-This field is relevant only for items.
+All conditions must pass for it to be valid, if there are no conditions it is automatically true
 
-Values:
-
-- `HELD` (default) - when in your inventory
-- `WIELD` - when wielded in your hand
-- `WORN` - when worn as armor
-
-### condition
-
-(string) How an enchantment determines if you are in the right environments in order for the
-enchantment to qualify for being active.
-
-Values:
-
-- `ALWAYS` (default) - Always active
-- `UNDERGROUND` - When the owner of the item is below Z-level 0
-- `ABOVEGROUND` - When the owner of the item is at or above Z-level 0
-- `UNDERWATER` - When the owner is in swimmable terrain
-- `NIGHT` - When it is night time
-- `DUSK` - When it is dusk
-- `DAY` - When it is day time
-- `DAWN` - When it is dawn
-- `ACTIVE` - whenever the item, mutation, bionic, or whatever the enchantment is attached to is
-  active.
-- `INACTIVE` - the opposite of `ACTIVE`
+For all basegame values see [here](#Basegame-Enchantment-Condition-ID-List)
 
 ### emitter
 
@@ -182,9 +158,104 @@ being applied to the base value.
 Since there's no limit on number of enchantments the character can have at a time, the final
 calculated values have hardcoded bounds to prevent unintended behavior.
 
-#### IDs of modifiable values
+For all basegame values see [here](#Basegame-Enchantment-Value-ID-List)
 
-Note: mods can add more values to this list
+### Flags
+
+(array) of enchantment_flag_id values
+
+For all basegame values see [here](#Basegame-Enchantment-Flag-ID-List)
+
+### Immune Effects
+
+(array) of effect_type_id values
+
+Prevents recieving these effects, but any present effects will persist
+
+### Immune Fields
+
+(array) of field_type_id values
+
+Prevents environmental effects of fields from being applied
+
+## Examples
+
+```json
+[
+  {
+    "//": "On-hit effect for ink glands mutation, implemented via enchantment.",
+    "type": "enchantment",
+    "id": "MEP_INK_GLAND_SPRAY",
+    "hit_me_effect": [
+      {
+        "id": "generic_blinding_spray_1",
+        "hit_self": false,
+        "once_in": 15,
+        "message": "Your ink glands spray some ink into %2$s's eyes.",
+        "npc_message": "%1$s's ink glands spay some ink into %2$s's eyes."
+      }
+    ]
+  },
+  {
+    "//": "This one would look good on a katana for an anime mod.",
+    "type": "enchantment",
+    "id": "ENCH_ULTIMATE_ASSKICK",
+    "has": "WIELD",
+    "condition": "ALWAYS",
+    "ench_effects": [{ "effect": "invisibility", "intensity": 1 }],
+    "hit_you_effect": [{ "id": "AEA_FIREBALL" }],
+    "hit_me_effect": [{ "id": "AEA_HEAL" }],
+    "mutations": ["KILLER", "PARKOUR"],
+    "values": [{ "value": "STRENGTH", "multiply": 1.1, "add": -5 }],
+    "intermittent_activation": {
+      "effects": [
+        {
+          "frequency": "1 hour",
+          "spell_effects": [
+            { "id": "AEA_ADRENALINE" }
+          ]
+        }
+      ]
+    },
+    "flags": ["FOOD_POISON_IMMUNE"],
+    "immune_fields": ["fd_fire"],
+    "immune_effects": ["poison"]
+    }
+  }
+]
+```
+
+# Enchantment Values
+
+```jsonc
+{
+  "id": "RANGED_DAMAGE", // Id of enchantment
+  "type": "enchantment_value", // Needed type
+  "can_add": true, // Weather adding to the enchantment value will do anything; Default true
+  "can_mult": true, // Weather multiplying to the enchantment value will do anything; Default true
+  "can_max": false, // Weather getting the maximum value of this type will do anything; Default false
+  "desc": "Affects Outgoing Ranged Damage", // Description of the enchantment used in some menus
+  "increase_good": true, // Color for enchantment descriptions, if true > 0 or > 1 == green else == red
+  "suffixes": [ // All the suffixes. These appear as `RANGED_DAMAGE_XXX` in this case
+    ["BASH", "Affects Outgoing Ranged Bash Damage"], // Suffixes reference the value of the parent in calculations automatically
+    ["CUT", "Affects Outgoing Ranged Cut Damage"], // The second value here is the description of the enchantment
+    ["DARK", "Affects Outgoing Ranged Dark Damage"],
+    ["LIGHT", "Affects Outgoing Ranged Light Damage"],
+    ["PSI", "Affects Outgoing Ranged Psi Damage"],
+    ["STAB", "Affects Outgoing Ranged Stab Damage"],
+    ["BULLET", "Affects Outgoing Ranged Ballistic Damage"],
+    ["HEAT", "Affects Outgoing Ranged Heat Damage"],
+    ["COLD", "Affects Outgoing Ranged Cold Damage"],
+    ["ELECTRIC", "Affects Outgoing Ranged Electric Damage"],
+    ["ACID", "Affects Outgoing Ranged Acid Damage"],
+    ["BIOLOGICAL", "Affects Outgoing Ranged Biological Damage"],
+    ["TRUE", "Affects Outgoing Ranged True Damage"],
+  ],
+  "unsupported_conditions": ["character", "item_and_character"], // These values are called where these conditions cannot ever be used
+}
+```
+
+## Basegame Enchantment Value ID List
 
 #### Character values
 
@@ -408,6 +479,11 @@ Maximum is 3
 Modifier to focus. `base_value` is current focus
 There is no limit
 
+##### FOOD_FUN
+
+Modifier to food morale. `base_value` is current food morale
+There is no limit.
+
 ##### BONUS_DODGE
 
 Additional dodges per turn before dodge penalty kicks in. `base_value` here is character's base
@@ -573,71 +649,205 @@ value, in addition to the global `ITEM_ARMOR`:
 - `ITEM_ARMOR_STAB`
 - `ITEM_ARMOR_TRUE`
 
-## Examples
-
-```json
-[
-  {
-    "//": "On-hit effect for ink glands mutation, implemented via enchantment.",
-    "type": "enchantment",
-    "id": "MEP_INK_GLAND_SPRAY",
-    "hit_me_effect": [
-      {
-        "id": "generic_blinding_spray_1",
-        "hit_self": false,
-        "once_in": 15,
-        "message": "Your ink glands spray some ink into %2$s's eyes.",
-        "npc_message": "%1$s's ink glands spay some ink into %2$s's eyes."
-      }
-    ]
-  },
-  {
-    "//": "This one would look good on a katana for an anime mod.",
-    "type": "enchantment",
-    "id": "ENCH_ULTIMATE_ASSKICK",
-    "has": "WIELD",
-    "condition": "ALWAYS",
-    "ench_effects": [{ "effect": "invisibility", "intensity": 1 }],
-    "hit_you_effect": [{ "id": "AEA_FIREBALL" }],
-    "hit_me_effect": [{ "id": "AEA_HEAL" }],
-    "mutations": ["KILLER", "PARKOUR"],
-    "values": [{ "value": "STRENGTH", "multiply": 1.1, "add": -5 }],
-    "intermittent_activation": {
-      "effects": [
-        {
-          "frequency": "1 hour",
-          "spell_effects": [
-            { "id": "AEA_ADRENALINE" }
-          ]
-        }
-      ]
-    }
-  }
-]
-```
-
-# Enchantment Values
+# Enchantment Flag
 
 ```jsonc
 {
-  "id": "RANGED_DAMAGE", // Id of the enchantment
-  "type": "enchantment_value", // Needed Type
-  "can_add": true, // Weather adding to the enchantment value will do anything; Default true
-  "can_mult": true, // Weather multiplying to the enchantment value will do anything; Default true
-  "can_max": false, // Weather getting the maximum value of this type will do anything; Default false
-  "suffixes": [ // All the suffixes. These appear as in this case RANGED_DAMAGE_XXX
-    "BASH",     // In addition suffixes will also reference the parent type when in use
-    "CUT",
-    "DARK",
-    "LIGHT",
-    "PSI",
-    "STAB",
-    "BULLET",
-    "HEAT",
-    "COLD",
-    "ELECTRIC",
-    "ACID",
-    "BIOLOGICAL"
-  ]
+  "id": "NEARSIGHTED",               // Id of the enchantment flag
+  "type": "enchantment_flag",        // Needed type
+  "parents": [ "BLIND" ],            // Array of other enchantment_flags it also gives
+  "conflicts": [ "FIX_NEARSIGHTED" ] // Array of other enchantment_flags of which it cancels
+  "info": "<bad>Causes nearsightedness</bad>" // Info string showed in enchantment info
 },
 ```
+
+All noted effects apply to the character in possession of the enchantment granting thing
+
+## Basegame Enchantment Flag ID List
+
+### Sight
+
+##### UNDERWATER_SIGHT
+
+Makes sight underwater uninhibited
+
+##### SLEEP_SIGHT
+
+Allows sight while sleeping
+
+##### NEARSIGHTED
+
+Restricts vision greatly, solved by some glasses
+
+##### FIX_NEARSIGHTED
+
+Conflict to NEARSIGHTED, cures and removes it
+
+##### BLIND
+
+Prevents seeing any tile, bumping into walls does reveal them
+
+##### FIX_BLIND
+
+Conflict to BLIND, cures and removes it
+
+##### INFRARED_VISION
+
+Gain infrared vision
+
+##### ELECTROSENSE
+
+Can see robots and electrical creatures through walls
+
+### Consumption
+
+##### EAT_ROTTEN
+
+Gives the ability to eat rotten food safely.
+
+##### ONLY_EAT_ROTTEN
+
+Gives significant penalty to eating fresh food, still allows drinking fresh liquids
+
+##### EAT_ROTTEN_MORALE
+
+Gives no morale penalty to eating rotten food
+
+##### CONSUME_UNCLEAN
+
+Gives the ability to drink unclean liquids and eat unclean foods
+
+##### FOOD_PARASITE_IMMUNE
+
+Prevents gaining parasites from consuming food
+
+##### FOOD_POISON_IMMUNE
+
+Prevents gaining poison from consuming food
+
+### Miscellaneous
+
+##### ALARMCLOCK
+
+Gives the ability to set an alarm while sleeping
+
+##### INTENAL_ALARMCLOCK
+
+Has the effects of `ALARMCLOCK`, but does not produce sound
+It also should prevent sleeping through it.
+
+##### VIEW_DRONE_CAM
+
+Allows viewing any creature with `effect_drone_marker`, generally applied by `PHOTOGRAPH` robots
+
+##### RADIO
+
+Gives the effects of having a radio
+
+##### THERMOMETER
+
+Gives the effects of having a themometer
+
+##### WATCH
+
+Gives the ability to see the precise time
+
+##### FIRE_FIELD_IMMUNE
+
+Provides immunity to fire fields.
+
+##### SILENT
+
+Prevents player sound from movement
+
+##### NO_THERMAL_WAKE
+
+Extreme temperatures will not wake up the player
+
+##### NO_DAMAGE_WAKE
+
+Taking damage will not wake up the player
+
+##### NO_LIGHT_WAKE
+
+Lights will not wake up the player
+
+# Enchantment Condition
+
+```jsonc
+{
+  "id": "WORN", // Id of condition
+  "type": "enchantment_condition", // Mandatory Type
+  "condition_type": "item_and_character", // Type of condition, `global`, `item`, `character` and `item_and_character` are possible values
+  "condition_function": "worn", // What function to use, generally references a hardcode or lua function
+  "condition_info": "While worn", // Enchantment condition info to display on items
+}
+```
+
+## Basegame Enchantment Condition ID List
+
+#### Item and Character
+
+##### HELD
+
+When in your inventory
+
+##### WIELD
+
+When wielded in your hand
+
+##### WORN
+
+When worn as armor
+
+#### Global
+
+##### ALWAYS
+
+Always active ( Obsolete but supported: Comes out to be true, thus no condition is needed )
+
+##### NIGHT
+
+When it is night time
+
+##### DUSK
+
+When it is dusk
+
+##### DAY
+
+When it is day time
+
+##### DAWN
+
+When it is dawn
+
+##### ACTIVE
+
+Whenever the item, mutation, bionic, or whatever the enchantment is attached to is active.
+
+##### INACTIVE
+
+The opposite of ACTIVE
+
+#### Character
+
+##### INSIDE
+
+When the owner of the item is inside
+
+##### OUTSIDE
+
+When the owner of the item is outside
+
+##### UNDERGROUND
+
+When the owner of the item is below Z-level 0
+
+##### ABOVEGROUND
+
+When the owner of the item is at or above Z-level 0
+
+##### UNDERWATER
+
+When the owner is in swimmable terrain

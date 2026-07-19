@@ -191,6 +191,10 @@ class mapgen_constructor
         auto bash( const point_omt_ms &p, int str,
                    bool destroy = false, bool bash_floor = false,
                    const vehicle *bashing_vehicle = nullptr ) -> void;
+        auto bash_ter_furn( const point_omt_ms &p, bool destroy ) -> void;
+        auto bash_field( const point_omt_ms &p ) -> void;
+        auto bash_vehicle( const point_omt_ms &p, int str ) -> void;
+        auto bash_items( const point_omt_ms &p ) -> void;
         auto destroy( const point_omt_ms &p ) -> void;
         auto create_anomaly( const point_omt_ms &p, artifact_natural_property prop,
                              bool create_rubble = true ) -> void;

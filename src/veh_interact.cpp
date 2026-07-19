@@ -82,6 +82,7 @@ static const quality_id qual_LIFT( "LIFT" );
 static const quality_id qual_SELF_JACK( "SELF_JACK" );
 
 static const trait_id trait_DEBUG_HS( "DEBUG_HS" );
+static const trait_id trait_DEBUG_HT( "DEBUG_HT" );
 
 static const activity_id ACT_VEHICLE( "ACT_VEHICLE" );
 
@@ -158,7 +159,7 @@ std::unique_ptr<player_activity> veh_interact::serialize_activity()
         default:
             break;
     }
-    if( you.has_trait( trait_DEBUG_HS ) ) {
+    if( you.has_trait( trait_DEBUG_HT ) ) {
         time = 1;
     }
     std::unique_ptr<player_activity> res = std::make_unique<player_activity>( ACT_VEHICLE, time,
@@ -2112,7 +2113,7 @@ void veh_interact::do_siphon()
         hide_ui( true );
         const item &base = pt.get_base();
         const int idx = veh->find_part( base );//TODO!: Wtf is this way of finding the part number?
-        liquid_handler::handle_liquid( veh, idx, 0 );
+        liquid_handler::handle_liquid( veh, idx, 1 );
     };
 
     overview( sel, act );
@@ -3116,39 +3117,9 @@ void veh_interact::display_details( const vpart_info *part )
 
 void veh_interact::count_durability()
 {
-    const vehicle_part_range vpr = veh->get_all_parts();
-    int qty = std::accumulate( vpr.begin(), vpr.end(), 0,
-    []( int lhs, const vpart_reference & rhs ) {
-        return lhs + std::max( rhs.part().base->damage(), 0 );
-    } );
-
-    int total = std::accumulate( vpr.begin(), vpr.end(), 0,
-    []( int lhs, const vpart_reference & rhs ) {
-        return lhs + rhs.part().base->max_damage();
-    } );
-
-    int pct = total ? 100 * qty / total : 0;
-
-    if( pct < 5 ) {
-        total_durability_text = _( "like new" );
-        total_durability_color = c_light_green;
-
-    } else if( pct < 33 ) {
-        total_durability_text = _( "dented" );
-        total_durability_color = c_yellow;
-
-    } else if( pct < 66 ) {
-        total_durability_text = _( "battered" );
-        total_durability_color = c_magenta;
-
-    } else if( pct < 100 ) {
-        total_durability_text = _( "wrecked" );
-        total_durability_color = c_red;
-
-    } else {
-        total_durability_text = _( "destroyed" );
-        total_durability_color = c_dark_gray;
-    }
+    auto info = veh->vehicle_damage_summary();
+    total_durability_text = info.first;
+    total_durability_color = info.second;
 }
 
 void act_vehicle_siphon( vehicle *veh )

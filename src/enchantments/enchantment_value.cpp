@@ -2,6 +2,7 @@
 
 #include "assign.h"
 #include "debug.h"
+#include "enchantment_condition.h"
 #include "generic_factory.h"
 #include "type_id_implement.h"
 
@@ -21,11 +22,18 @@ void enchantment_value::load(const JsonObject& jo, const std::string& src) {
     optional(jo, was_loaded, "can_add", can_add, true);
     optional(jo, was_loaded, "can_mult", can_mult, true);
     optional(jo, was_loaded, "can_max", can_max, false);
+    optional(jo, was_loaded, "increase_good", increase_good, true);
+    optional(jo, was_loaded, "unsupported_conditions", unsupported_conditions,
+             enum_flags_reader<enchantment_condition_type>("enchantment_condition_type"));
+
+    mandatory(jo, was_loaded, "desc", desc);
     if (jo.has_array("suffixes")) {
-        for (std::string& suffix : jo.get_string_array("suffixes")) {
+        for (JsonValue val : jo.get_array("suffixes")) {
+            JsonArray suffix = val.get_array();
             enchantment_value suffixed = enchantment_value(*this);
-            suffixed.id = enchantment_value_id(suffixed.id.str() + "_" + suffix);
+            suffixed.id = enchantment_value_id(suffixed.id.str() + "_" + suffix.next_string());
             suffixed.parent_id = id;
+            suffixed.desc = to_translation(suffix.next_string());
             all_enchantment_values.insert(suffixed);
         }
     }

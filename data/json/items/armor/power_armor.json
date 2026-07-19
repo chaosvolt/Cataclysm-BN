@@ -89,7 +89,15 @@
       "set_charges_msg": "You need a UPS or a bionic armor interface to power this."
     },
     "resistance": { "bullet": 90 },
-    "flags": [ "USE_UPS", "NAT_UPS", "POWERARMOR_EXO", "WATERPROOF", "STURDY", "ELECTRIC_IMMUNE", "COMBAT_NPC_USE" ]
+    "flags": [ "USE_UPS", "NAT_UPS", "POWERARMOR_EXO", "WATERPROOF", "STURDY", "ELECTRIC_IMMUNE", "COMBAT_NPC_USE" ],
+    "relic_data": {
+      "passive_effects": [
+        {
+          "conditions": [ "WORN", "ACTIVE" ],
+          "values": [ { "value": "STRENGTH", "add": 2 }, { "value": "CLIMATE_CONTROL", "add": 2000 } ]
+        }
+      ]
+    }
   },
   {
     "id": "power_armor_basic_on",
@@ -102,15 +110,6 @@
     "extend": { "flags": [ "HEAVY_WEAPON_SUPPORT", "TRADER_AVOID", "COMBAT_NPC_ON" ] },
     "power_draw": 1500000,
     "revert_to": "power_armor_basic",
-    "relic_data": {
-      "passive_effects": [
-        {
-          "has": "WORN",
-          "condition": "ACTIVE",
-          "values": [ { "value": "STRENGTH", "add": 2 }, { "value": "CLIMATE_CONTROL", "add": 2000 } ]
-        }
-      ]
-    },
     "use_action": {
       "type": "set_transform",
       "turn_off": true,
@@ -159,7 +158,15 @@
       "set_charges": 2,
       "set_charges_msg": "You need a UPS or a bionic armor interface to power this."
     },
-    "flags": [ "USE_UPS", "NAT_UPS", "POWERARMOR_EXO", "WATERPROOF", "STURDY", "ELECTRIC_IMMUNE", "COMBAT_NPC_USE" ]
+    "flags": [ "USE_UPS", "NAT_UPS", "POWERARMOR_EXO", "WATERPROOF", "STURDY", "ELECTRIC_IMMUNE", "COMBAT_NPC_USE" ],
+    "relic_data": {
+      "passive_effects": [
+        {
+          "conditions": [ "WORN", "ACTIVE" ],
+          "values": [ { "value": "STRENGTH", "add": 6 }, { "value": "CLIMATE_CONTROL", "add": 2000 } ]
+        }
+      ]
+    }
   },
   {
     "id": "power_armor_heavy_on",
@@ -172,15 +179,6 @@
     "extend": { "flags": [ "HEAVY_WEAPON_SUPPORT", "TRADER_AVOID", "COMBAT_NPC_ON" ] },
     "power_draw": 2250000,
     "revert_to": "power_armor_heavy",
-    "relic_data": {
-      "passive_effects": [
-        {
-          "has": "WORN",
-          "condition": "ACTIVE",
-          "values": [ { "value": "STRENGTH", "add": 6 }, { "value": "CLIMATE_CONTROL", "add": 2000 } ]
-        }
-      ]
-    },
     "use_action": {
       "type": "set_transform",
       "turn_off": true,
@@ -229,7 +227,15 @@
       "set_charges_msg": "You need a UPS or a bionic armor interface to power this."
     },
     "resistance": { "bullet": 70 },
-    "flags": [ "USE_UPS", "NAT_UPS", "POWERARMOR_EXO", "WATERPROOF", "STURDY", "ELECTRIC_IMMUNE", "COMBAT_NPC_USE" ]
+    "flags": [ "USE_UPS", "NAT_UPS", "POWERARMOR_EXO", "WATERPROOF", "STURDY", "ELECTRIC_IMMUNE", "COMBAT_NPC_USE" ],
+    "relic_data": {
+      "passive_effects": [
+        {
+          "conditions": [ "WORN", "ACTIVE" ],
+          "values": [ { "value": "STRENGTH", "add": 4 }, { "value": "CLIMATE_CONTROL", "add": 2000 } ]
+        }
+      ]
+    }
   },
   {
     "id": "power_armor_light_on",
@@ -242,15 +248,6 @@
     "extend": { "flags": [ "HEAVY_WEAPON_SUPPORT", "TRADER_AVOID", "COMBAT_NPC_ON" ] },
     "power_draw": 750000,
     "revert_to": "power_armor_light",
-    "relic_data": {
-      "passive_effects": [
-        {
-          "has": "WORN",
-          "condition": "ACTIVE",
-          "values": [ { "value": "STRENGTH", "add": 4 }, { "value": "CLIMATE_CONTROL", "add": 2000 } ]
-        }
-      ]
-    },
     "use_action": {
       "type": "set_transform",
       "turn_off": true,
@@ -295,8 +292,8 @@
       "active": true
     },
     "valid_mods": [ "steel_padded", "hard_steel_padded", "alloy_padded", "resized_large", "resized_small" ],
+    "flags": [ "USE_UPS", "NAT_UPS", "POWERARMOR_EXTERNAL", "WATERPROOF", "STURDY", "SUN_GLASSES", "WATCH", "DRONE_CAM" ],
     "resistance": { "bullet": 90 },
-    "flags": [ "USE_UPS", "NAT_UPS", "POWERARMOR_EXTERNAL", "WATERPROOF", "STURDY", "SUN_GLASSES", "WATCH" ],
     "hearing_protection": 80
   },
   {
@@ -356,7 +353,7 @@
       "active": true
     },
     "valid_mods": [ "steel_padded", "hard_steel_padded", "alloy_padded", "resized_large", "resized_small" ],
-    "flags": [ "USE_UPS", "NAT_UPS", "POWERARMOR_EXTERNAL", "WATERPROOF", "STURDY", "SUN_GLASSES", "WATCH" ],
+    "flags": [ "USE_UPS", "NAT_UPS", "POWERARMOR_EXTERNAL", "WATERPROOF", "STURDY", "SUN_GLASSES", "WATCH", "DRONE_CAM" ],
     "hearing_protection": 80
   },
   {
@@ -416,8 +413,8 @@
     },
     "qualities": [ [ "GLARE", 1 ] ],
     "valid_mods": [ "steel_padded", "hard_steel_padded", "alloy_padded", "resized_large", "resized_small" ],
+    "flags": [ "USE_UPS", "NAT_UPS", "POWERARMOR_EXTERNAL", "WATERPROOF", "STURDY", "SUN_GLASSES", "WATCH", "DRONE_CAM" ],
     "resistance": { "bullet": 70 },
-    "flags": [ "USE_UPS", "NAT_UPS", "POWERARMOR_EXTERNAL", "WATERPROOF", "STURDY", "SUN_GLASSES", "WATCH" ],
     "hearing_protection": 80
   },
   {
@@ -798,7 +795,7 @@
     "valid_mods": [ "steel_padded", "hard_steel_padded", "alloy_padded", "resized_large", "resized_small" ],
     "max_charges": 500,
     "ammo": "battery",
-    "relic_data": { "passive_effects": [ { "has": "WORN", "condition": "ACTIVE", "values": [ { "value": "STRENGTH", "add": 2 } ] } ] },
+    "relic_data": { "passive_effects": [ { "conditions": [ "WORN", "ACTIVE" ], "values": [ { "value": "STRENGTH", "add": 2 } ] } ] },
     "use_action": {
       "type": "transform",
       "msg": "The %s engages.",
@@ -847,11 +844,7 @@
     "valid_mods": [ "steel_padded", "hard_steel_padded", "alloy_padded" ],
     "relic_data": {
       "passive_effects": [
-        {
-          "has": "WORN",
-          "condition": "ACTIVE",
-          "values": [ { "value": "STRENGTH", "add": 4 }, { "value": "SPEED", "add": 25 } ]
-        }
+        { "conditions": [ "WORN", "ACTIVE" ], "values": [ { "value": "STRENGTH", "add": 4 }, { "value": "SPEED", "add": 25 } ] }
       ]
     },
     "use_action": {
@@ -922,11 +915,7 @@
     "valid_mods": [ "steel_padded", "hard_steel_padded", "alloy_padded" ],
     "relic_data": {
       "passive_effects": [
-        {
-          "has": "WORN",
-          "condition": "ACTIVE",
-          "values": [ { "value": "STRENGTH", "add": 6 }, { "value": "SPEED", "add": 10 } ]
-        }
+        { "conditions": [ "WORN", "ACTIVE" ], "values": [ { "value": "STRENGTH", "add": 6 }, { "value": "SPEED", "add": 10 } ] }
       ]
     },
     "use_action": {

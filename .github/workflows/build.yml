@@ -36,8 +36,8 @@ on:
             { "name": "macOS Tiles", "platform": "macos", "artifact": "osx-tiles-x64", "os": "macos-15-intel", "preset": "osx-tiles-x64-dist", "tiles": true, "sound": true, "ext": "dmg", "content-type": "application/x-apple-diskimage" },
             { "name": "macOS Curses ARM", "platform": "macos", "artifact": "osx-curses-arm", "os": "macos-15", "preset": "osx-curses-arm-dist", "tiles": false, "sound": false, "ext": "dmg", "content-type": "application/x-apple-diskimage" },
             { "name": "macOS Tiles ARM", "platform": "macos", "artifact": "osx-tiles-arm", "os": "macos-15", "preset": "osx-tiles-arm-dist", "tiles": true, "sound": true, "ext": "dmg", "content-type": "application/x-apple-diskimage" },
-            { "name": "Android ARM64", "platform": "android", "artifact": "android-x64", "os": "ubuntu-latest", "android": "arm64", "tiles": true, "ext": "apk", "content-type": "application/apk" },
-            { "name": "Android Bundle", "platform": "android", "artifact": "android-bundle", "os": "ubuntu-latest", "android": "bundle", "tiles": true, "ext": "aab", "content-type": "application/aab" }
+            { "name": "Android ARM64", "platform": "android", "artifact": "android-x64", "os": "ubuntu-latest", "android": "arm64", "tiles": true, "sound": true, "ext": "apk", "content-type": "application/apk" },
+            { "name": "Android Bundle", "platform": "android", "artifact": "android-bundle", "os": "ubuntu-latest", "android": "bundle", "tiles": true, "sound": true, "ext": "aab", "content-type": "application/aab" }
           ]
       download-translations:
         description: "Download prebuilt translation artifact"
@@ -432,7 +432,7 @@ jobs:
       - name: Bundle registry mods
         if: inputs.bundle-registry-mods
         continue-on-error: ${{ inputs.mode == 'ci' }}
-        run: deno run --allow-read --allow-write --allow-net build-scripts/bundle-registry-mods.ts ${{ (((matrix.platform == 'windows' || matrix.platform == 'macos') && matrix.tiles == true && matrix.sound == true) || format('{0}', matrix.sound) == 'false') && '--exclude-package-type soundpack' || '' }}
+        run: deno run --allow-read --allow-write --allow-net build-scripts/bundle-registry-mods.ts ${{ (((matrix.platform == 'windows' || matrix.platform == 'macos' || (matrix.platform == 'android' && inputs.upload-to-release)) && matrix.tiles == true && matrix.sound == true) || format('{0}', matrix.sound) == 'false') && '--exclude-package-type soundpack' || '' }}
 
       - name: Create distribution package (Linux)
         if: runner.os == 'Linux' && (matrix.android == '' || matrix.android == 'none') && inputs.package-artifacts && (!inputs.upload-artifacts || matrix.upload-artifact == true)
@@ -734,15 +734,38 @@ jobs:
             done
           }
 
-          if [ ${{ matrix.android }} = arm64 ]
-          then
-               gradle_retry -Pj=$(nproc) -Pabi_arm_32=false -Plocalize=${{ inputs.android-localize }} assemble${VARIANT}Release ${VERSION_ARG}
-               mv ./app/build/outputs/apk/${VARIANT_LOWER}/release/*.apk ../cbn-${{ matrix.artifact }}-${{ inputs.version-label }}.apk
-          elif [ ${{ matrix.android }} = bundle ]
-          then
-               gradle_retry -Pj=$(nproc) -Plocalize=${{ inputs.android-localize }} bundle${VARIANT}Release ${VERSION_ARG}
-               mv ./app/build/outputs/bundle/${VARIANT_LOWER}Release/*.aab ../cbn-${{ matrix.artifact }}-${{ inputs.version-label }}.aab
+          build_android_artifact() {
+            if [ "${{ matrix.android }}" = arm64 ]; then
+              gradle_retry -Pj=$(nproc) -Pabi_arm_32=false -Plocalize=${{ inputs.android-localize }} assemble${VARIANT}Release ${VERSION_ARG}
+            elif [ "${{ matrix.android }}" = bundle ]; then
+              gradle_retry -Pj=$(nproc) -Plocalize=${{ inputs.android-localize }} bundle${VARIANT}Release ${VERSION_ARG}
+            else
+              echo "Unsupported Android artifact type: ${{ matrix.android }}" >&2
+              return 1
+            fi
+          }
+
+          move_android_artifact() {
+            suffix="$1"
+            artifact="../cbn-${{ matrix.artifact }}-${{ inputs.version-label }}.${{ matrix.ext }}"
+            if [ -n "$suffix" ]; then
+              artifact="../cbn-${{ matrix.artifact }}-$suffix-${{ inputs.version-label }}.${{ matrix.ext }}"
+            fi
+            if [ "${{ matrix.android }}" = arm64 ]; then
+              mv ./app/build/outputs/apk/${VARIANT_LOWER}/release/*.apk "$artifact"
+            else
+              mv ./app/build/outputs/bundle/${VARIANT_LOWER}Release/*.aab "$artifact"
+            fi
+          }
+
+          if [ "${{ inputs.upload-to-release }}" = "true" ] && [ "${{ inputs.bundle-registry-mods }}" = "true" ]; then
+            build_android_artifact
+            move_android_artifact "no-soundpack"
+            (cd .. && deno run --allow-read --allow-write --allow-net build-scripts/bundle-registry-mods.ts)
           fi
+
+          build_android_artifact
+          move_android_artifact ""
 
       - name: Verify ccache compatibility (android)
         if: runner.os == 'Linux' && matrix.android != '' && matrix.android != 'none'
@@ -776,6 +799,16 @@ jobs:
           grep -E 'libSDL3_image\.so' bundled-deps.txt
           grep -E 'libSDL3_mixer\.so' bundled-deps.txt
           grep -E 'libSDL3_ttf\.so' bundled-deps.txt
+          if [ "${{ inputs.upload-to-release }}" = "true" ] && [ "${{ inputs.bundle-registry-mods }}" = "true" ]; then
+            no_soundpack_artifact="cbn-${{ matrix.artifact }}-no-soundpack-${{ inputs.version-label }}.${{ matrix.ext }}"
+            test -f "$no_soundpack_artifact"
+            unzip -l "$no_soundpack_artifact" | tee bundled-deps-no-soundpack.txt
+            if grep -F 'data/sound/Otopack+ModsUpdates BN/' bundled-deps-no-soundpack.txt; then
+              echo "Android no-soundpack release contains Otopack" >&2
+              exit 1
+            fi
+            grep -F 'data/sound/Otopack+ModsUpdates BN/soundpack.txt' bundled-deps.txt
+          fi
 
       - name: Build test executable (desktop)
         if: inputs.run-tests && (runner.os == 'Windows' || runner.os == 'macOS' || (runner.os == 'Linux' && (matrix.android == '' || matrix.android == 'none')))

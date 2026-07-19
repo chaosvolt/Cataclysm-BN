@@ -104,6 +104,7 @@
 #include "scores_ui.h"
 #include "cloning_utils.h"
 #include "skill.h"
+#include "sol/sol.hpp"
 #include "stomach.h"
 #include "string_formatter.h"
 #include "string_id_utils.h"
@@ -180,12 +181,9 @@ static const species_id ROBOT( "ROBOT" );
 
 static const trait_flag_str_id trait_flag_CANNIBAL( "CANNIBAL" );
 
-static const bionic_id bio_digestion( "bio_digestion" );
-
 static const trait_id trait_CARNIVORE( "CARNIVORE" );
 static const trait_id trait_ILLITERATE( "ILLITERATE" );
 static const trait_id trait_LIGHTWEIGHT( "LIGHTWEIGHT" );
-static const trait_id trait_SAPROVORE( "SAPROVORE" );
 static const trait_id trait_TOLERANCE( "TOLERANCE" );
 static const trait_id trait_WOOLALLERGY( "WOOLALLERGY" );
 
@@ -372,11 +370,6 @@ item::item( const itype *type, time_point turn, int qty ) : type( type ),
 
     if( !type->snippet_category.empty() ) {
         snip_id = SNIPPET.random_id_from_category( type->snippet_category );
-    }
-
-    // item always has any relic properties from itype.
-    if( type->relic_data ) {
-        relic_data = type->relic_data;
     }
 
     for( const auto &func : type->use_methods | std::views::values ) {
@@ -608,7 +601,6 @@ detached_ptr<item> item::make_corpse( const mtype_id &mt, time_point turn, const
 void item::convert( const itype_id &new_type )
 {
     type = &*new_type;
-    relic_data = type->relic_data;
     invalidate_processing_cache_upwards();
 }
 
@@ -1147,7 +1139,7 @@ bool item::stacks_with( const item &rhs, bool check_components, bool skip_type_c
     if( !skip_type_check && type != rhs.type ) {
         return false;
     }
-    if( is_relic() && rhs.is_relic() && !( *relic_data == *rhs.relic_data ) ) {
+    if( is_relic( true ) && rhs.is_relic( true ) && !( *relic_data == *rhs.relic_data ) ) {
         return false;
     }
     if( is_money() && charges != 0 && rhs.charges != 0 ) {
@@ -2164,12 +2156,7 @@ void item::food_info( const item *food_item, std::vector<iteminfo> &info,
                                   "parasites</good>." ) );
         }
         if( food_item->rotten() ) {
-            if( you.has_bionic( bio_digestion ) ) {
-                info.emplace_back( "DESCRIPTION",
-                                   _( "This food has started to <neutral>rot</neutral>, "
-                                      "but <info>your bionic digestion can tolerate "
-                                      "it</info>." ) );
-            } else if( you.has_trait( trait_SAPROVORE ) ) {
+            if( you.has_enchantment_flag( enchantment_flag_id( "EAT_ROTTEN" ) ) ) {
                 info.emplace_back( "DESCRIPTION",
                                    _( "This food has started to <neutral>rot</neutral>, "
                                       "but <info>you can tolerate it</info>." ) );
@@ -3468,7 +3455,7 @@ void item::component_info( std::vector<iteminfo> &info, const iteminfo_query *pa
         // TODO: Extract into a more proper place (function in namespace)
         std::string bionics_string = enumerate_as_string( components.begin(), components.end(),
         []( const item * const & entry ) -> std::string {
-            return entry->is_bionic() ? entry->display_name() : "";
+            return entry->is_bionic() ? entry->type_name() : "";
         }, enumeration_conjunction::none );
         info.emplace_back( "DESCRIPTION", string_format( _( "Contains: %s" ),
                            bionics_string ) );
@@ -3556,16 +3543,17 @@ void item::qualities_info( std::vector<iteminfo> &info, const iteminfo_query *pa
     auto name_quality = [&info]( const std::pair<quality_id, int> &q ) {
         std::string str;
         if( q.first == qual_JACK || q.first == qual_LIFT ) {
-            str = string_format( _( "Has level <info>%1$d %2$s</info> quality and "
-                                    "is rated at <info>%3$d</info> %4$s" ),
-                                 q.second, q.first.obj().name,
+            str = string_format( _( "Has level <num> <info>%1$s</info> quality and "
+                                    "is rated at <info>%2$d</info> %3$s." ),
+                                 q.first.obj().name,
                                  static_cast<int>( convert_weight( q.second * TOOL_LIFT_FACTOR ) ),
                                  weight_units() );
         } else {
-            str = string_format( _( "Has level <info>%1$d %2$s</info> quality." ),
-                                 q.second, q.first.obj().name );
+            str = string_format( _( "Has level <num> <info>%1$s</info> quality." ),
+                                 q.first.obj().name );
         }
-        info.emplace_back( "QUALITIES", "", str );
+        info.emplace_back( "QUALITIES", string_format( "%s", q.first.obj().name ), str,
+                           iteminfo::flags::no_name, q.second );
     };
 
     if( parts->test( iteminfo_parts::QUALITIES ) ) {
@@ -4034,46 +4022,47 @@ void item::throw_info( std::vector < iteminfo > &info, const iteminfo_query *par
 
     if( dmg_bash || dmg_cut || dmg_stab ) {
         std::string sep;
-        info.emplace_back( "BASE", _( "<bold>Base throw damage</bold>: " ), "", iteminfo::no_newline );
+        info.emplace_back( "BASE_THROW", _( "<bold>Base throw damage</bold>: " ), "",
+                           iteminfo::no_newline );
         if( dmg_bash ) {
-            info.emplace_back( "BASE", _( "Bash: " ), "", iteminfo::no_newline, dmg_bash );
+            info.emplace_back( "BASE_THROW", _( "Bash: " ), "", iteminfo::no_newline, dmg_bash );
             sep = " ";
         }
         if( dmg_cut ) {
-            info.emplace_back( "BASE", sep + _( "Cut: " ), "", iteminfo::no_newline, dmg_cut );
+            info.emplace_back( "BASE_THROW", sep + _( "Cut: " ), "", iteminfo::no_newline, dmg_cut );
             sep = " ";
         }
         if( dmg_stab ) {
-            info.emplace_back( "BASE", sep + _( "Pierce: " ), "", iteminfo::no_newline, dmg_stab );
+            info.emplace_back( "BASE_THROW", sep + _( "Pierce: " ), "", iteminfo::no_newline, dmg_stab );
         }
-        info.emplace_back( "BASE", "\n", "", iteminfo::no_newline );
+        info.emplace_back( "BASE_THROW", "\n", "", iteminfo::no_newline );
     }
 
     if( proj_dmg_bash || proj_dmg_cut || proj_dmg_stab ) {
         std::string sep;
-        info.emplace_back( "BASE", _( "<bold>Throw damage</bold>: " ), "", iteminfo::no_newline );
+        info.emplace_back( "THROW", _( "<bold>Throw damage</bold>: " ), "", iteminfo::no_newline );
         if( proj_dmg_bash ) {
-            info.emplace_back( "BASE", _( "Bash: " ), "", iteminfo::no_newline, proj_dmg_bash );
+            info.emplace_back( "THROW", _( "Bash: " ), "", iteminfo::no_newline, proj_dmg_bash );
             sep = " ";
         }
         if( proj_dmg_cut ) {
-            info.emplace_back( "BASE", sep + _( "Cut: " ), "", iteminfo::no_newline, proj_dmg_cut );
+            info.emplace_back( "THROW", sep + _( "Cut: " ), "", iteminfo::no_newline, proj_dmg_cut );
             sep = " ";
         }
         if( proj_dmg_stab ) {
-            info.emplace_back( "BASE", sep + _( "Pierce: " ), "", iteminfo::no_newline, proj_dmg_stab );
+            info.emplace_back( "THROW", sep + _( "Pierce: " ), "", iteminfo::no_newline, proj_dmg_stab );
         }
-        info.emplace_back( "BASE", "\n", "", iteminfo::no_newline );
+        info.emplace_back( "THROW", "\n", "", iteminfo::no_newline );
     }
 
-    info.emplace_back( "BASE", _( "Throw range: " ), "<num>", iteminfo::no_flags, throw_range );
+    info.emplace_back( "THROW", _( "Throw range: " ), "<num>", iteminfo::no_flags, throw_range );
 
     const int throw_cost = ranged::throw_cost( you, *this );
-    info.emplace_back( "BASE", _( "Moves per throw: " ), "<num>", iteminfo::lower_is_better,
+    info.emplace_back( "THROW", _( "Moves per throw: " ), "<num>", iteminfo::lower_is_better,
                        throw_cost );
 
     const int stamina_cost = ranged::throw_stamina_cost( you, *this );
-    info.emplace_back( "BASE", _( "Stamina cost: " ), "<num>", iteminfo::lower_is_better,
+    info.emplace_back( "THROW", _( "Stamina cost: " ), "<num>", iteminfo::lower_is_better,
                        stamina_cost );
 
     insert_separation_line( info );
@@ -4199,22 +4188,10 @@ void item::final_info( std::vector<iteminfo> &info, const iteminfo_query &parts_
     }
 
     if( parts->test( iteminfo_parts::BASE_RIGIDITY ) ) {
-        if( const islot_armor *armor = find_armor_data() ) {
-            if( !type->rigid ) {
-                info.emplace_back( "BASE",
-                                   _( "* This item is <info>not rigid</info>.  Its"
-                                      " volume and encumbrance increase with contents." ) );
-            } else {
-                bool any_encumb_increase = std::ranges::any_of( armor->data,
-                []( armor_portion_data data ) {
-                    return data.encumber != data.max_encumber;
-                } );
-                if( any_encumb_increase ) {
-                    info.emplace_back( "BASE",
-                                       _( "* This item is <info>not rigid</info>.  Its"
-                                          " volume and encumbrance increase with contents." ) );
-                }
-            }
+        if( is_non_rigid() ) {
+            info.emplace_back( "BASE",
+                               _( "* This item is <info>not rigid</info>.  Its"
+                                  " volume and encumbrance increase with contents." ) );
         }
     }
 
@@ -4518,6 +4495,22 @@ void item::final_info( std::vector<iteminfo> &info, const iteminfo_query &parts_
     }
 }
 
+void item::enchantment_info( std::vector<iteminfo> &info, const iteminfo_query &parts_ref,
+                             int batch,
+                             bool debug ) const
+{
+    const std::vector<enchantment> &enchs = get_enchantments();
+    if( is_null() || enchs.empty() || has_flag( flag_SECRET_ENCHANTMENTS ) ) {
+        return;
+    }
+    insert_separation_line( info );
+    for( const enchantment &ench : get_enchantments() ) {
+        for( std::string str : ench.get_effect_string( true ) ) {
+            info.emplace_back( "DESCRIPTION", str );
+        }
+    }
+    insert_separation_line( info );
+}
 std::vector<iteminfo> item::info() const
 {
     return info( iteminfo_query::no_conditions, 1, temperature_flag::TEMP_NORMAL );
@@ -4604,6 +4597,8 @@ std::vector<iteminfo> item::info( const iteminfo_query &parts_ref, int batch,
 
     repair_info( info, parts, batch, debug );
     disassembly_info( info, parts, batch, debug );
+
+    enchantment_info( info, parts_ref, batch, debug );
 
     final_info( info, parts_ref, batch, debug );
 
@@ -5875,10 +5870,9 @@ int item::lift_strength() const
 
 int item::attack_cost() const
 {
-    int base = 65 + ( volume() / 62.5_ml + weight() / 60_gram ) / count();
-    int bonus = bonus_from_enchantments_wielded( base, enchantment_value_id( "ITEM_ATTACK_COST" ),
-                true );
-    return std::max( 0, base + bonus );
+    int cost = 65 + ( volume() / 62.5_ml + weight() / 60_gram ) / count();
+    cost += bonus_from_enchantments( cost, enchantment_value_id( "ITEM_ATTACK_COST" ) );
+    return std::max( 0, cost );
 }
 
 int item::stamina_cost() const
@@ -5931,8 +5925,8 @@ int item::damage_melee( const attack_statblock &attack, damage_type dt ) const
 
     }
     auto internal_name = damage_unit( dt, 0.0 ).get_internal_name();
-    res += bonus_from_enchantments_wielded( res, enchantment_value_id( "ITEM_DAMAGE_" + internal_name ),
-                                            true );
+    res += bonus_from_enchantments( res, enchantment_value_id( "ITEM_DAMAGE_" + internal_name ),
+                                    true );
     // Apply melee damage bonus
     const auto &bonus = get_melee_damage_bonus();
     res += bonus.type_damage( dt );
@@ -5974,8 +5968,8 @@ std::map<std::string, attack_statblock> item::get_attacks() const
                     break;
             }
 
-            du.amount += bonus_from_enchantments_wielded( du.amount,
-                         enchantment_value_id( "ITEM_DAMAGE_" + du.get_internal_name() ), true );
+            du.amount += bonus_from_enchantments( du.amount,
+                                                  enchantment_value_id( "ITEM_DAMAGE_" + du.get_internal_name() ), true );
             // Apply melee damage bonus
             du.amount += bonus.type_damage( du.type );
         }
@@ -6136,6 +6130,21 @@ bool item::can_shatter() const
 {
     static const std::set<material_id> is_glass{ material_id( "glass" ) };
     return only_made_of( is_glass ) || has_flag( flag_SHATTERS );
+}
+
+bool item::is_non_rigid() const
+{
+    if( const islot_armor *armor = find_armor_data() ) {
+        if( !type->rigid ) {
+            return true;
+        }
+        bool any_encumb_increase = std::ranges::any_of( armor->data,
+        []( armor_portion_data data ) {
+            return data.encumber != data.max_encumber;
+        } );
+        return any_encumb_increase;
+    }
+    return false;
 }
 
 void item::unset_flags()
@@ -6741,24 +6750,29 @@ int item::get_encumber( const Character &who, const bodypart_id &bodypart ) cons
 
     contents_volume += contents.item_size_modifier();
 
-    if( who.is_worn( *this ) ) {
+    if( who.is_worn( *this ) && this->is_non_rigid() ) {
         const islot_armor *armor = find_armor_data();
 
         if( armor != nullptr ) {
             for( const armor_portion_data &entry : armor->data ) {
-                if( entry.covers.test( bodypart.id() ) ) {
-                    if( entry.max_encumber != 0 ) {
-                        units::volume char_storage( 0_ml );
+                if( entry.max_encumber != 0 && entry.covers.test( bodypart.id() ) ) {
+                    units::volume rigid_storage( 0_ml );
+                    units::volume non_rigid_storage( 0_ml );
+                    const units::volume volume_carried = who.volume_carried();
 
-                        for( const item * const &e : who.worn ) {
-                            char_storage += e->get_storage();
+                    for( const item * const &e : who.worn ) {
+                        if( e->is_non_rigid() ) {
+                            non_rigid_storage += e->get_storage();
+                        } else {
+                            rigid_storage += e->get_storage();
                         }
+                    }
 
-                        if( char_storage != 0_ml ) {
-                            // Cast up to 64 to prevent overflow. Dividing before would prevent this but lose data.
-                            contents_volume += units::from_milliliter( static_cast<int64_t>( armor->storage.value() ) *
-                                               who.inv_volume().value() / char_storage.value() );
-                        }
+                    if( volume_carried > rigid_storage && non_rigid_storage > 0_ml ) {
+                        // Cast up to 64 to prevent overflow. Dividing before would prevent this but lose data.
+                        contents_volume += units::from_milliliter( static_cast<int64_t>( armor->storage.value() ) *
+                                           ( static_cast<int64_t>( volume_carried.value() ) - rigid_storage.value() ) /
+                                           non_rigid_storage.value() );
                     }
                 }
             }
@@ -6783,11 +6797,7 @@ int item::get_encumber_when_containing(
         if( entry.covers.test( bodypart.id() ) ) {
             encumber = entry.encumber;
             // Non-rigid items add additional encumbrance proportional to their volume
-            bool any_encumb_increase = std::ranges::any_of( armor->data,
-            []( armor_portion_data data ) {
-                return data.encumber != data.max_encumber;
-            } );
-            if( !type->rigid || any_encumb_increase ) {
+            if( this->is_non_rigid() ) {
                 const int capacity = get_total_capacity().value();
                 if( entry.max_encumber == 0 ) {
                     encumber += contents_volume / 500_ml;
@@ -8035,9 +8045,9 @@ bool item::is_artifact() const
     return !!type->artifact;
 }
 
-bool item::is_relic() const
+bool item::is_relic( bool not_itype ) const
 {
-    return !!relic_data;
+    return !!relic_data || ( !not_itype && type->relic_data );
 }
 
 const std::vector<enchantment> &item::get_enchantments() const
@@ -8046,41 +8056,41 @@ const std::vector<enchantment> &item::get_enchantments() const
         static const std::vector<enchantment> fallback;
         return fallback;
     }
-    return relic_data->get_enchantments();
+    if( is_relic( true ) ) {
+        return relic_data->get_enchantments();
+    } else {
+        return type->relic_data->get_enchantments();
+    }
 }
 
 double item::bonus_from_enchantments( const Character &owner, double base,
                                       enchantment_value_id value, bool round ) const
 {
-    double add = 0.0;
-    double mul = 0.0;
+    double ret = 0.0;
     for( const enchantment &ench : get_enchantments() ) {
         if( ench.is_active( owner, *this ) ) {
-            add += ench.get_value_add( value );
-            mul += ench.get_value_multiply( value );
+            ret += ench.calc_bonus( value, base, round );
         }
     }
-    // TODO: this part duplicates enchantment::calc_bonus()
-    double ret = add + base * mul;
+    // In case of floating point errors
     if( round ) {
         ret = trunc( ret );
     }
     return ret;
 }
 
-double item::bonus_from_enchantments_wielded( double base, enchantment_value_id value,
-        bool round ) const
+double item::bonus_from_enchantments( double base, enchantment_value_id value,
+                                      bool round ) const
 {
-    double add = 0.0;
-    double mul = 0.0;
+    double ret = 0.0;
     for( const enchantment &ench : get_enchantments() ) {
-        if( ench.is_active_when_wielded() ) {
-            add += ench.get_value_add( value );
-            mul += ench.get_value_multiply( value );
+        // Check if it has the value first, because these enchantments
+        // Are more limited in scope then most enchantments
+        if( ench.has_value( value ) && ench.is_active( *this ) ) {
+            ret += ench.calc_bonus( value, base, round );
         }
     }
-    // TODO: this part duplicates enchantment::calc_bonus()
-    double ret = add + base * mul;
+    // In case of floating point errors
     if( round ) {
         ret = trunc( ret );
     }
@@ -8089,7 +8099,11 @@ double item::bonus_from_enchantments_wielded( double base, enchantment_value_id 
 
 const std::vector<relic_recharge> &item::get_relic_recharge_scheme() const
 {
-    return relic_data->get_recharge_scheme();
+    if( is_relic( true ) ) {
+        return relic_data->get_recharge_scheme();
+    } else {
+        return type->relic_data->get_recharge_scheme();
+    }
 }
 
 bool item::can_contain( const item &it ) const
@@ -10464,10 +10478,13 @@ std::vector<trait_id> item::mutations_from_wearing( const Character &guy ) const
     }
     std::vector<trait_id> muts;
 
-    for( const enchantment &ench : relic_data->get_enchantments() ) {
-        for( const trait_id &mut : ench.get_mutations() ) {
-            // this may not be perfectly accurate due to conditions
-            muts.push_back( mut );
+    const auto rel_data = is_relic( true ) ? relic_data : type->relic_data;
+    for( const enchantment &ench : rel_data->get_enchantments() ) {
+        if( ench.is_active( guy, *this ) ) {
+            for( const trait_id &mut : ench.get_mutations() ) {
+                // this may not be perfectly accurate due to conditions
+                muts.push_back( mut );
+            }
         }
     }
 

@@ -479,15 +479,6 @@
   {
     "type": "item_group",
     "subtype": "collection",
-    "id": "army_mags_power_armor",
-    "entries": [
-      { "item": "stanag100", "ammo-item": "556_incendiary", "charges": 100 },
-      { "item": "heavy_plus_battery_cell", "ammo-item": "battery", "charges": 1500 }
-    ]
-  },
-  {
-    "type": "item_group",
-    "subtype": "collection",
     "id": "army_mags_rm51",
     "entries": [
       { "item": "8x40_50_mag", "ammo-item": "8mm_caseless", "charges": 50 },
@@ -1130,6 +1121,7 @@
       "bio_metabolics",
       "bio_power_storage_mkII",
       "bio_tools",
+      "bio_storage",
       "bio_flashlight",
       "bio_lighter",
       "bio_evap",
@@ -1906,7 +1898,7 @@
       "both": {
         "items": [
           "pants_army",
-          "tshirt",
+          "undershirt",
           "jacket_army",
           "helmet_liner",
           "helmet_army",
@@ -1944,7 +1936,7 @@
       "both": {
         "items": [
           "pants",
-          "tshirt",
+          "undershirt",
           "jacket_army",
           "helmet_liner",
           "helmet_steel",
@@ -1990,7 +1982,7 @@
       "both": {
         "items": [
           "pants_army",
-          "tshirt",
+          "undershirt",
           "jacket_army",
           "helmet_liner",
           "helmet_army",
@@ -2041,7 +2033,7 @@
       "both": {
         "items": [
           "pants_army",
-          "tshirt",
+          "undershirt",
           "jacket_army",
           "helmet_liner",
           "helmet_army",
@@ -2090,7 +2082,7 @@
       "both": {
         "items": [
           "pants_army",
-          "tshirt",
+          "undershirt",
           "jacket_army",
           "helmet_liner",
           "helmet_army",
@@ -2148,7 +2140,7 @@
       "both": {
         "items": [
           "pants_army",
-          "tshirt",
+          "undershirt",
           "jacket_army",
           "helmet_liner",
           "helmet_army",
@@ -2200,7 +2192,7 @@
       "both": {
         "items": [
           "pants_army",
-          "tshirt",
+          "undershirt",
           "jacket_army",
           "helmet_liner",
           "helmet_army",
@@ -2256,7 +2248,7 @@
       "both": {
         "items": [
           "pants_army",
-          "tshirt",
+          "undershirt",
           "jacket_army",
           "gloves_liner",
           "gloves_tactical",
@@ -2355,7 +2347,7 @@
       "both": {
         "items": [
           "pants_army",
-          "tshirt",
+          "undershirt",
           "jacket_army",
           "gloves_liner",
           "gloves_tactical",
@@ -2387,7 +2379,7 @@
     "type": "profession",
     "id": "power_armor_soldier",
     "name": "Power Armor Soldier",
-    "description": "Those new plutonium power banks they were rolling out never arrived, nevermind the experimental new weapons, but at least your unit received the latest generation of powered armor.  The rest of your squad has fallen, but your gear might see you through.",
+    "description": "Your unit received the latest generation of powered armor, running off those new plutonium power banks they were rolling out and equipped with experimental energy weapons.  The rest of your squad has fallen, but your gear might see you through.",
     "age": { "min": 20, "max": 40 },
     "points": 8,
     "traits": [ "PROF_MILITARY" ],
@@ -2413,17 +2405,11 @@
           "power_armor_canteen"
         ],
         "entries": [
-          { "item": "heavy_plus_battery_cell", "charges": 1500, "container-item": "UPS_off" },
+          { "item": "adv_UPS_off", "charges": 5000 },
           { "item": "two_way_radio", "contents-item": [ "battery_ups" ] },
-          { "item": "power_armor_chest_rig", "contents-group": "army_mags_power_armor" },
           { "item": "knife_combat", "container-item": "power_armor_leg_hardpoint" },
-          {
-            "item": "stanag100",
-            "ammo-item": "556_incendiary",
-            "charges": 100,
-            "container-item": "m27iar",
-            "custom-flags": [ "auto_wield" ]
-          }
+          { "item": "power_armor_grenadebandolier", "contents-item": [ "grenade", "grenade" ] },
+          { "item": "laser_rifle", "contents-item": [ "hybrid_sight" ], "custom-flags": [ "auto_wield" ] }
         ]
       },
       "male": [ "boxer_shorts" ],
@@ -2484,7 +2470,7 @@
       "both": {
         "items": [
           "pants_army",
-          "tshirt",
+          "undershirt",
           "jacket_army",
           "gloves_liner",
           "gloves_tactical",
@@ -2534,7 +2520,7 @@
       "both": {
         "items": [
           "pants_army",
-          "tshirt",
+          "undershirt",
           "jacket_army",
           "gloves_liner",
           "gloves_tactical",
@@ -3925,7 +3911,7 @@
     "name": "Bionic Thief",
     "description": "You have done many high profile heists, but your gains mean nothing in this world.  All you have left are the tools of your trade and your impeccable style.",
     "points": 4,
-    "CBMs": [ "bio_batteries", "bio_lockpick", "bio_fingerhack", "bio_power_storage_mkII" ],
+    "CBMs": [ "bio_batteries", "bio_storage", "bio_lockpick", "bio_fingerhack", "bio_power_storage_mkII" ],
     "skills": [ { "level": 1, "name": "gun" }, { "level": 1, "name": "smg" } ],
     "items": {
       "both": {
@@ -4253,7 +4239,8 @@
       "both": {
         "items": [
           "winter_pants_army",
-          "tshirt",
+          "undershirt",
+          "jacket_army",
           "winter_jacket_army",
           "winter_gloves_army",
           "mask_ski",
@@ -4317,7 +4304,8 @@
       "both": {
         "items": [
           "winter_pants_army",
-          "tshirt",
+          "undershirt",
+          "jacket_army",
           "winter_jacket_army",
           "winter_gloves_army",
           "rucksack",
@@ -4376,7 +4364,8 @@
       "both": {
         "items": [
           "winter_pants_army",
-          "tshirt",
+          "undershirt",
+          "jacket_army",
           "winter_jacket_army",
           "gloves_liner",
           "gloves_tactical",
@@ -5499,7 +5488,7 @@
     "skills": [ { "level": 1, "name": "swimming" }, { "level": 1, "name": "gun" }, { "level": 1, "name": "firstaid" } ],
     "items": {
       "both": {
-        "items": [ "shorts", "tshirt", "socks", "smart_phone", "lowtops", "wristwatch" ],
+        "items": [ "shorts", "undershirt", "socks", "smart_phone", "lowtops", "wristwatch" ],
         "entries": [ { "item": "personal_gobag", "custom-flags": [ "FIT" ] } ]
       },
       "male": [ "boxer_shorts" ],
@@ -5765,7 +5754,7 @@
         "items": [
           "socks",
           "pants_army",
-          "tshirt",
+          "undershirt",
           "jacket_army",
           "boots_combat",
           "gloves_liner",
@@ -6273,7 +6262,7 @@
     "name": "Drone Operator",
     "description": "You had a job programming machines such as automatic street cleaners, newsbots and pizza delivery drones.  Now all the drones carry guns instead of pizza.",
     "points": 1,
-    "CBMs": [ "bio_batteries", "bio_power_storage", "bio_remote" ],
+    "CBMs": [ "bio_batteries", "bio_power_storage", "bio_remote", "bio_infolink" ],
     "skills": [ { "level": 2, "name": "computer" } ],
     "items": {
       "both": { "items": [ "jumpsuit", "socks", "boots", "smart_phone", "wristwatch" ] },
@@ -7659,7 +7648,7 @@
       "both": {
         "items": [
           "pants_army",
-          "tshirt",
+          "undershirt",
           "jacket_army",
           "helmet_liner",
           "helmet_army",
@@ -8227,7 +8216,7 @@
       "both": {
         "items": [
           "pants_army",
-          "tshirt",
+          "undershirt",
           "jacket_army",
           "helmet_liner",
           "helmet_army",
@@ -8593,7 +8582,7 @@
       { "level": 3, "name": "throw" }
     ],
     "items": {
-      "both": { "items": [ "pants_army", "tshirt", "jacket_army", "socks", "boots_combat", "wristwatch", "smart_phone" ] },
+      "both": { "items": [ "pants_army", "undershirt", "jacket_army", "socks", "boots_combat", "wristwatch", "smart_phone" ] },
       "male": [ "boxer_shorts" ],
       "female": [ "sports_bra", "boxer_shorts" ]
     }

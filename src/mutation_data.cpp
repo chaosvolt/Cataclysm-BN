@@ -293,6 +293,7 @@ void mutation_branch::load( const JsonObject &jo, const std::string & )
     optional( jo, was_loaded, "visibility", visibility, 0 );
     optional( jo, was_loaded, "ugliness", ugliness, 0 );
     optional( jo, was_loaded, "starting_trait", startingtrait, false );
+    optional( jo, was_loaded, "random_starting_trait", randomstartingtrait, startingtrait );
     optional( jo, was_loaded, "mixed_effect", mixed_effect, false );
     optional( jo, was_loaded, "active", activated, false );
     optional( jo, was_loaded, "starts_active", starts_active, false );
@@ -642,8 +643,12 @@ void mutation_branch::check_consistency()
         for( const enchantment_id &ench : mdata.enchantments ) {
             ench->check();
         }
+        std::set<enchantment_condition_type> incompatible_cond_types = {
+            enchantment_condition_type::ITEM,
+            enchantment_condition_type::ITEM_CHARACTER
+        };
         for( const auto &ench : mdata.mut_enchantments ) {
-            ench.check();
+            ench.check( incompatible_cond_types );
         }
         for( const auto &flag : mdata.flags ) {
             if( !flag.is_valid() ) {

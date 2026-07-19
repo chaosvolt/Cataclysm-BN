@@ -9,6 +9,7 @@
 #include "catalua_hooks.h"
 #include "catalua_sol.h"
 #include "computer.h"
+#include "coordinates.h"
 #include "debug.h"
 #include "field.h"
 #include "field_type.h"
@@ -1404,18 +1405,99 @@ auto mapgen_constructor::make_rubble( const point_omt_ms &p,
     make_rubble( p, rubble_type, t_dirt, false );
 }
 
-auto mapgen_constructor::bash( const point_omt_ms &p, const int /*str*/,
+auto mapgen_constructor::bash( const point_omt_ms &p, const int str,
                                const bool destroy, const bool /*bash_floor*/,
                                const vehicle * /*bashing_vehicle*/ ) -> void
 {
-    if( has_furn( p ) ) {
-        furn_set( p, f_null );
+    bool bashed_sealed = false;
+    if( has_flag( "SEALED", p ) ) {
+        bash_ter_furn( p, destroy );
+        bashed_sealed = true;
+    }
+
+    bash_field( p );
+
+    // Don't bash items inside terrain/furniture with SEALED flag
+    if( !bashed_sealed ) {
+        bash_items( p );
+    }
+
+    const vehicle *veh = veh_pointer_or_null( veh_at( p ) );
+    if( veh != nullptr ) {
+        bash_vehicle( p, str );
+    } else if( !bashed_sealed ) {
+        // If we still didn't bash anything solid (a vehicle) or a tile with SEALED flag, bash ter/furn
+        bash_ter_furn( p, destroy );
+    }
+
+    return;
+}
+
+void mapgen_constructor::bash_items( const point_omt_ms &p )
+{
+    auto bashed_items = i_clear( p );
+    if( bashed_items.empty() ) {
         return;
     }
-    if( destroy || ter( p ).obj().bash.str_max != -1 ) {
-        ter_set( p, t_dirt );
+
+    for( auto &bashed_item : bashed_items ) {
+        // the check for active suppresses Molotovs smashing themselves with their own explosion
+        if( bashed_item->can_shatter() && !bashed_item->is_active() && one_in( 2 ) ) {
+            spawn_items( p, bashed_item->contents.clear_items() );
+        } else {
+            add_item( p, std::move( bashed_item ) );
+        }
     }
 }
+
+void mapgen_constructor::bash_vehicle( const point_omt_ms &p, int str )
+{
+    // Smash vehicle if present
+    if( const optional_vpart_position vp = veh_at( p ) ) {
+        vp->vehicle().damage( vp->part_index(), str, DT_BASH, true );
+    }
+}
+
+void mapgen_constructor::bash_field( const point_omt_ms &p )
+{
+    remove_field( p, fd_web );
+}
+
+void mapgen_constructor::bash_ter_furn( const point_omt_ms &p, bool destroy )
+{
+    const auto &ter_obj = ter( p ).obj();
+    const auto &furn_obj = furn( p ).obj();
+    bool smash_ter = false;
+    const map_bash_info *bash = nullptr;
+
+    if( furn_obj.id && furn_obj.bash.str_max != -1 ) {
+        bash = &furn_obj.bash;
+    } else if( ter_obj.bash.str_max != -1 ) {
+        bash = &ter_obj.bash;
+        smash_ter = true;
+    }
+
+    if( bash == nullptr || ( bash->destroy_only && !destroy ) ) {
+        // Nothing bashable here
+        return;
+    }
+
+    spawn_items( p, item_group::items_from( bash->drop_group, calendar::turn ) );
+    if( smash_ter ) {
+        if( bash->ter_set ) {
+            ter_set( p, bash->ter_set );
+        } else if( destroy ) {
+            ter_set( p, t_dirt );
+        }
+    } else {
+        if( bash->furn_set ) {
+            furn_set( p, bash->furn_set );
+        } else if( destroy ) {
+            furn_set( p, f_null );
+        }
+    }
+}
+
 
 auto mapgen_constructor::destroy( const point_omt_ms &p ) -> void
 {

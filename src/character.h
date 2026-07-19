@@ -125,6 +125,7 @@ enum character_movemode : int {
     CMM_WALK = 0,
     CMM_RUN,
     CMM_CROUCH,
+    CMM_PRONE,
     CMM_COUNT
 };
 
@@ -937,6 +938,10 @@ class Character : public Creature, public location_visitable<Character>
         void rebuild_mutation_cache();
 
         /**
+         * Checks weather we have an enchantment flag
+         */
+        bool has_enchantment_flag( enchantment_flag_id value ) const;
+        /**
          * Calculate bonus from enchantments for given base value.
          */
         double bonus_from_enchantments( double base, enchantment_value_id value, bool round = false ) const;
@@ -1292,8 +1297,6 @@ class Character : public Creature, public location_visitable<Character>
         void inv_restack();
 
         detached_ptr<item> inv_remove_item( item * );
-
-        units::volume inv_volume() const;
 
         void inv_unsort();
 
@@ -1665,7 +1668,6 @@ class Character : public Creature, public location_visitable<Character>
         bool is_rad_immune() const;
         /** Returns true if the player is immune to throws */
         bool is_throw_immune() const;
-
         /**
          * Returns >0 if character is sitting/lying and relatively inactive.
          * 1 represents sleep on comfortable bed, so anything above that should be rare.

@@ -535,6 +535,8 @@ class game : public submap_load_listener
          */
         std::vector<Creature *> get_creatures_if( const std::function<bool( const Creature & )> &pred );
         std::vector<npc *> get_npcs_if( const std::function<bool( const npc & )> &pred );
+        std::vector<weak_ptr_fast<npc>> get_npcs_pointers_if( const std::function<bool( const npc & )>
+                                     &pred );
         /**
          * Returns a creature matching a predicate. Only living (not dead) creatures
          * are checked. Returns `nullptr` if no creature matches the predicate.
@@ -741,10 +743,16 @@ class game : public submap_load_listener
         void reenter_fullscreen();
         void zoom_in_overmap();
         void zoom_out_overmap();
+        /// Applies the stored overmap zoom to the overmap tile context; call when the overmap opens.
+        auto reapply_overmap_zoom() -> void;
+        /// Resets the stored overmap zoom to the default and applies it to the overmap tile context.
+        auto reset_overmap_zoom() -> void;
         void zoom_in();
         void zoom_out();
         void reset_zoom();
         void set_zoom( float level );
+        /// Applies the stored main-view zoom to the tile context even when the value is unchanged.
+        auto reapply_zoom() -> void;
         float get_zoom() const;
         int get_moves_since_last_save() const;
         int get_user_action_counter() const;

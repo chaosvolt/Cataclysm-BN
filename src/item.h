@@ -12,6 +12,7 @@
 #include <vector>
 
 #include "calendar.h"
+#include "catalua_icallback_actor.h"
 #include "coordinates.h"
 #include "damage.h"
 #include "detached_ptr.h"
@@ -589,6 +590,8 @@ class item : public location_visitable<item>, public game_object<item>
                             bool debug ) const;
         void final_info( std::vector<iteminfo> &info, const iteminfo_query &parts, int batch,
                          bool debug ) const;
+        void enchantment_info( std::vector<iteminfo> &info, const iteminfo_query &parts, int batch,
+                               bool debug ) const;
 
         /**
          * Calculate all burning calculations, but don't actually apply them to item.
@@ -1360,7 +1363,7 @@ class item : public location_visitable<item>, public game_object<item>
         bool is_tool() const;
         bool is_transformable() const;
         bool is_artifact() const;
-        bool is_relic() const;
+        bool is_relic( bool not_itype = false ) const;
         bool is_pocket_dimension_key() const;
         bool is_bucket() const;
         bool is_bucket_nonempty() const;
@@ -1727,6 +1730,9 @@ class item : public location_visitable<item>, public game_object<item>
 
         /**If item made out of glass, or has the SHATTERS flag?*/
         bool can_shatter() const;
+
+        /** If the item is non-rigid: either has rigid = false or max_encumber higher than encumber */
+        bool is_non_rigid() const;
 
         /**
          * @name Item properties
@@ -2425,10 +2431,10 @@ class item : public location_visitable<item>, public game_object<item>
 
         /**
          * Calculate bonus from enchantments that affect this item only,
-         * assume it's wielded and all enchantments' conditions are satisfied.
+         * Only supports item only conditions.
          */
-        double bonus_from_enchantments_wielded( double base, enchantment_value_id value,
-                                                bool round = false ) const;
+        double bonus_from_enchantments( double base, enchantment_value_id value,
+                                        bool round = false ) const;
 
         /** Returns the type of location where the item is found */
         item_location_type where() const;

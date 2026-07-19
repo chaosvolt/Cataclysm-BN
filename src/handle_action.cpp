@@ -93,6 +93,7 @@
 #include "string_id.h"
 #include "string_input_popup.h"
 #include "translations.h"
+#include "type_id.h"
 #include "travel/travel_destination.h"
 #include "ui.h"
 #include "ui_manager.h"
@@ -821,7 +822,7 @@ static void smash()
         !query_yn( _( "Are you sure you want to smash with an item that might shatter?" ) ) ) {
         return;
     }
-    const int move_cost = !u.is_armed() ? 80 : weapon.attack_cost() * 0.8;
+    const int move_cost = !u.is_armed() ? 80 : u.attack_cost( weapon ) * 0.8;
 
     bool didit = false;
     bool mech_smash = false;
@@ -868,7 +869,7 @@ static void smash()
         } else if( smashskill >= rng( bash_info.str_min, bash_info.str_max ) ) {
             sound_event se;
             se.origin = smashp;
-            se.volume = bash_info.sound_vol.value_or( 0 );
+            se.volume = units::to_decibel( bash_info.sound_vol.value_or( 0_dB ) );
             se.category = sounds::sound_t::combat;
             se.description = bash_info.sound.translated();
             se.id = "smash";
@@ -883,7 +884,7 @@ static void smash()
         } else {
             sound_event se;
             se.origin = smashp;
-            se.volume = bash_info.sound_fail_vol.value_or( 0 );
+            se.volume = units::to_decibel( bash_info.sound_fail_vol.value_or( 0_dB ) );
             se.category = sounds::sound_t::combat;
             se.description = bash_info.sound_fail.translated();
             se.id = "smash";
@@ -1329,7 +1330,7 @@ static void sleep()
     time_duration try_sleep_dur = 24_hours;
     std::string deaf_text;
     // Infolink alarm is silent and works even if deaf
-    if( g->u.is_deaf() && !g->u.has_bionic( bionic_id( "bio_infolink" ) ) ) {
+    if( g->u.is_deaf() && !g->u.has_enchantment_flag( enchantment_flag_id( "INTERNAL_ALARMCLOCK" ) ) ) {
         deaf_text = _( "<color_c_red> (DEAF!)</color>" );
     }
     if( u.has_alarm_clock() ) {
@@ -1659,7 +1660,8 @@ static void open_movement_mode_menu()
     as_m.entries.emplace_back( CMM_RUN, true, 'r', _( "Run" ) );
     as_m.entries.emplace_back( CMM_WALK, true, 'w', _( "Walk" ) );
     as_m.entries.emplace_back( CMM_CROUCH, true, 'c', _( "Crouch" ) );
-    as_m.entries.emplace_back( CMM_COUNT, true, '"', _( "Cycle move mode (run/walk/crouch)" ) );
+    as_m.entries.emplace_back( CMM_PRONE, true, 'p', _( "Prone" ) );
+    as_m.entries.emplace_back( CMM_COUNT, true, '"', _( "Cycle move mode" ) );
     as_m.selected = 1;
     as_m.query();
 
@@ -2109,6 +2111,10 @@ bool game::handle_action()
 
             case ACTION_TOGGLE_CROUCH:
                 u.toggle_crouch_mode();
+                break;
+
+            case ACTION_TOGGLE_PRONE:
+                u.toggle_prone_mode();
                 break;
 
             case ACTION_OPEN_MOVEMENT:

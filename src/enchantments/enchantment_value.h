@@ -1,13 +1,9 @@
 #pragma once
 
-#include "hsv_color.h"
+#include "enchantment_condition.h"
 #include "json.h"
-#include "mapgen.h"
 #include "string_id.h"
 #include "type_id.h"
-#include "units_angle.h"
-#include "vehicle_group.h"
-#include "weighted_list.h"
 
 #include <memory>
 #include <optional>
@@ -36,10 +32,15 @@ public:
 
     enchantment_value_id id;
 
+    std::set<enchantment_condition_type> unsupported_conditions;
+
     bool was_loaded = false;
     bool can_add = true;
     bool can_mult = true;
     bool can_max = false;
+
+    translation desc;
+    bool increase_good = true;
 
     bool has_parent() const;
     enchantment_value_id get_parent() const;

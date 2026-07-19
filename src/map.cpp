@@ -78,7 +78,7 @@
 #include "iuse_actor.h"
 #include "lightmap.h"
 #include "line.h"
-#include "map_functions.h"
+#include "map/utils/map_functions.h"
 #include "map_iterator.h"
 #include "map_memory.h"
 #include "map_selector.h"
@@ -942,10 +942,9 @@ void map::add_vehicle_to_cache( vehicle *veh )
         level_cache &ch = get_cache( p.z() );
         ch.veh_in_active_range = true;
 
-        // DANGER: Unlike what you think where you can just use vpr.has_flag( VPFLAG_NOCOLLIDE )
-        // THAT DOES NOT WORK DO NOT TRY AND CHANGE THIS MESS
         if( !ch.veh_cached_parts.contains( p ) ||
-            ( !veh->part_info( vpr.part_index() ).has_flag( VPFLAG_NOCOLLIDE ) ) ) {
+            !veh->part_info( vpr.part_index() ).has_flag( VPFLAG_NOCOLLIDE ) ||
+            ch.veh_cached_parts.at( p ).first == veh ) {
             ch.veh_cached_parts[p] = std::make_pair( veh,  static_cast<int>( vpr.part_index() ) );
         }
         if( inbounds( p ) ) {
@@ -4289,7 +4288,8 @@ static auto get_sound_volume( const map_bash_info &bash, const bash_params &para
     // Set maxvol to 140dB, which can be deafening for extreme impacts.
     const auto maxvol = 140;
     const auto impact_strength = params.destroy ? bash.str_max : params.strength;
-    return bash.sound_vol.value_or( std::clamp( minvol + impact_strength, minvol, maxvol ) );
+    return units::to_decibel( bash.sound_vol.value_or(
+                                  units::from_decibel( std::clamp( minvol + impact_strength, minvol, maxvol ) ) ) );
 }
 
 static void set_bash_sound_source( sound_event &se, const bash_params &params )
@@ -4673,7 +4673,8 @@ bash_results map::bash_ter_furn( const tripoint_bub_ms &p, const bash_params &pa
 
     if( !result.success ) {
         // Cap out bash volume to 120dB for sanity checking.
-        int sound_volume = std::min( 120, bash->sound_fail_vol.value_or( 70 ) );
+        const auto sound_volume =
+            std::min( 120, units::to_decibel( bash->sound_fail_vol.value_or( 70_dB ) ) );
 
         result.did_bash = true;
         if( !params.silent ) {
@@ -4688,7 +4689,7 @@ bash_results map::bash_ter_furn( const tripoint_bub_ms &p, const bash_params &pa
             sounds::sound( se );
         }
 
-        if( !smash_ter && smax > 0 ) {
+        if( !smash_ter && has_flag( TFLAG_BASH_TRANSFORM, p ) && smax > 0 ) {
             const auto flipped_version = get_furn_transforms_into( p );
             if( flipped_version != furn_str_id::NULL_ID() ) {
                 const int damage_percent = ( params.strength * 100 ) / smax;

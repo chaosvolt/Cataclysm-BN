@@ -1,9 +1,11 @@
 #pragma once
 
 #include "calendar.h"
+#include "enchantment_condition.h"
 #include "magic/magic.h"
 #include "type_id.h"
 
+#include <iomanip>
 #include <map>
 #include <optional>
 #include <string>
@@ -16,28 +18,11 @@ class item;
 class JsonOut;
 class JsonIn;
 class JsonObject;
-
+enum enchantment_condition_type : unsigned int;
 // an "enchantment" is what passive artifact effects used to be:
 // under certain conditions, the effect persists upon the appropriate Character
 class enchantment {
 public:
-    // if a Character "has" an enchantment, it is viable to check for the condition
-    enum has { WIELD, WORN, HELD, NUM_HAS };
-    // the condition at which the enchantment is giving passive effects
-    enum condition {
-        ALWAYS,
-        UNDERGROUND,
-        ABOVEGROUND,
-        UNDERWATER,
-        NIGHT,
-        DAY,
-        DUSK,
-        DAWN,
-        ACTIVE, // the item, mutation, etc. is active
-        INACTIVE,
-        NUM_CONDITION
-    };
-
     static void load_enchantment(const JsonObject& jo, const std::string& src);
     void load(const JsonObject& jo, const std::string& src = "");
     static void reset();
@@ -49,9 +34,15 @@ public:
     // adds two enchantments together and ignores their conditions
     void force_add(const enchantment& rhs);
 
+    // Check if the enchantment has a certain value
+    bool has_value(enchantment_value_id value) const;
+
     int get_value_add(enchantment_value_id value) const;
     double get_value_multiply(enchantment_value_id value) const;
     int get_value_max(enchantment_value_id value) const;
+
+    // Gets weather the enchantment has a flag or not
+    bool has_flag(enchantment_flag_id flag) const;
 
     /**
      * Calculate bonus provided by this enchantment for given base value.
@@ -61,16 +52,11 @@ public:
     // this enchantment has a valid condition and is in the right location
     bool is_active(const Character& guy, const item& parent) const;
 
+    // this enchantment has a valid condition and is in the right location
+    bool is_active(const item& parent) const;
+
     // @active means the container for the enchantment is active, for comparison to active flag.
     bool is_active(const Character& guy, bool active) const;
-
-    /**
-     * Whether this enchantment will be active if parent item is wielded.
-     * Assumes condition is satisfied.
-     */
-    bool is_active_when_wielded() const {
-        return has::WIELD == active_conditions.first || has::HELD == active_conditions.first;
-    }
 
     // modifies character stats, or does other passive effects
     void activate_passive(Character& guy) const;
@@ -94,13 +80,21 @@ public:
 
     const std::set<trait_id>& get_mutations() const { return mutations; }
 
+    bool is_immune_effect(const efftype_id& eff) const { return immune_effects.contains(eff); }
+
+    bool is_immune_field(const field_type_id& fd) const { return immune_fields.contains(fd); }
+
     bool operator==(const enchantment& rhs) const;
 
     static void check_consistency();
-    void check() const;
+    void check(
+        std::set<enchantment_condition_type> cond_types = std::set<enchantment_condition_type>())
+        const;
 
     static void finalize_all();
     void finalize();
+
+    std::vector<std::string> get_effect_string(bool is_item) const;
 
 private:
     std::set<trait_id> mutations;
@@ -120,7 +114,13 @@ private:
 
     std::map<time_duration, std::vector<fake_spell>> intermittent_activation;
 
-    std::pair<has, condition> active_conditions;
+    std::set<enchantment_condition_id> conditions;
+
+    std::set<efftype_id> immune_effects;
+
+    std::set<field_type_id> immune_fields;
+
+    std::map<enchantment_flag_id, int> flags;
 
     void add_activation(const time_duration& freq, const fake_spell& fake);
 

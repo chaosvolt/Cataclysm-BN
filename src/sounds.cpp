@@ -98,6 +98,8 @@ static const itype_id fuel_type_battery( "battery" );
 
 static const itype_id itype_weapon_fire_suppressed( "weapon_fire_suppressed" );
 
+static const enchantment_value_id ench_val_SLEEP_DB_RESIST( "SLEEP_DB_RESIST" );
+
 // For use with the floodfill logic.
 static constexpr auto tile_structure_sound_absorption_tier = std::array<short, 4>
 {
@@ -2732,8 +2734,7 @@ void sounds::process_sound_markers( Character *who )
             if( who->has_effect( effect_sleep ) ) {
                 const int diff_db_vol = mdBspl_to_dBspl( tile_vol - passive_sound_dampening - tile_vol );
                 int wake_up_vol = 10;
-                wake_up_vol += who->bonus_from_enchantments( wake_up_vol,
-                               enchantment_value_id( "SLEEP_DB_RESIST" ) );
+                wake_up_vol += who->bonus_from_enchantments( wake_up_vol, ench_val_SLEEP_DB_RESIST );
 
                 if( rng( wake_up_vol / 2, wake_up_vol ) <= db_vol && !who->has_effect( effect_narcosis ) ) {
                     who->wake_up();
@@ -2746,14 +2747,16 @@ void sounds::process_sound_markers( Character *who )
                                              element.sound.description;
 
             // don't print our own noise or things without descriptions
-            if( ( element.sound.from_monster || element.sound.from_player || element.sound.from_npc ) &&
-                ( element.sound.origin != who->bub_pos() ) &&
-                !get_map().pl_sees( element.sound.origin, distance_to_sound ) ) {
-                if( !who->activity->is_distraction_ignored( distraction_type::noise ) &&
-                    !get_safemode().is_sound_safe( element.sound.description, distance_to_sound ) ) {
-                    const std::string final_description = ensure_punctuation( description, '!' );
-                    const std::string query = string_format( _( "Heard %s!" ), final_description );
-                    g->cancel_activity_or_ignore_query( distraction_type::noise, query );
+            if( !element.sound.from_player ) {
+                if( ( element.sound.from_monster || element.sound.from_npc ) &&
+                    ( element.sound.origin != who->bub_pos() ) &&
+                    !get_map().pl_sees( element.sound.origin, distance_to_sound ) ) {
+                    if( !who->activity->is_distraction_ignored( distraction_type::noise ) &&
+                        !get_safemode().is_sound_safe( element.sound.description, distance_to_sound ) ) {
+                        const std::string final_description = ensure_punctuation( description, '!' );
+                        const std::string query = string_format( _( "Heard %s!" ), final_description );
+                        g->cancel_activity_or_ignore_query( distraction_type::noise, query );
+                    }
                 }
             }
 
@@ -2778,7 +2781,7 @@ void sounds::process_sound_markers( Character *who )
             }
 
             if( !who->has_effect( effect_sleep ) && who->has_effect( effect_alarm_clock ) &&
-                !who->has_bionic( bionic_id( "bio_infolink" ) ) ) {
+                !who->has_enchantment_flag( enchantment_flag_id( "INTERNAL_ALARMCLOCK" ) ) ) {
                 // if we don't have effect_sleep but we're in_sleep_state, either
                 // we were trying to fall asleep for so long our alarm is now going
                 // off or something disturbed us while trying to sleep

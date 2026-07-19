@@ -40,6 +40,7 @@
 #include "line.h"
 #include "make_static.h"
 #include "map.h"
+#include "map/utils/map_functions.h"
 #include "map_iterator.h"
 #include "mapdata.h"
 #include "mattack_common.h"
@@ -159,10 +160,6 @@ auto run_lua_monster_ai( monster &mon ) -> bool
 
 } // namespace
 static const std::string flag_LIQUID( "LIQUID" );
-
-enum {
-    MONSTER_FOLLOW_DIST = 8
-};
 
 bool monster::is_wandering() const
 {
@@ -1178,8 +1175,9 @@ monster_action_t monster::decide_action() const
             current_attitude = attitude( nullptr );
         }
         if( current_attitude == MATT_IGNORE ||
-            ( current_attitude == MATT_FOLLOW &&
-              rl_dist( pos, goal ) <= MONSTER_FOLLOW_DIST ) ) {
+            ( ( current_attitude == MATT_FOLLOW ||
+                ( has_flag( MF_KEEP_DISTANCE ) && current_attitude != MATT_FLEE ) ) &&
+              rl_dist( pos, goal ) <= type->tracking_distance ) ) {
             // Consume 100 moves and stumble; execute_action handles the writes.
             action.kind          = monster_action_kind::idle;
             action.move_cost     = 100;
@@ -2335,18 +2333,16 @@ bool monster::attack_at( const tripoint_bub_ms &p )
     if( has_flag( MF_PACIFIST ) ) {
         return false;
     }
-    if( p.z() != bub_pos().z() ) {
-        auto &here = get_map();
-        const auto upper_z = std::max( p.z(), bub_pos().z() );
-        const auto vehicle_floor_between =
-            here.veh_at( tripoint_bub_ms( bub_pos().xy(), upper_z ) ).part_with_feature( "BOARDABLE",
-                    true ).has_value() ||
-            here.veh_at( tripoint_bub_ms( p.xy(), upper_z ) ).part_with_feature( "BOARDABLE",
-                    true ).has_value();
-
-        if( here.floor_between( bub_pos(), p ) || vehicle_floor_between ) {
-            return false;
-        }
+    if( p.z() != bub_pos().z() && !map_funcs::physical_clear_path( {
+    .m = get_map(),
+        .from = bub_pos(),
+        .to = p,
+        .range = rl_dist( bub_pos(), p ),
+        .cost_min = 0,
+        .cost_max = 100,
+        .require_clear_path = false,
+    } ) ) {
+        return false;
     }
 
     if( p == g->u.bub_pos() ) {
