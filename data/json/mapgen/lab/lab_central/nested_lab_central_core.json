@@ -227,7 +227,7 @@
         "Y": "f_eyewash"
       },
       "nested": { "C": { "chunks": [ "null", "central_lab_crate_1x1" ] } },
-      "place_nested": [ { "chunks": [ [ "null", 50 ], [ "central_lab_reactor_meltdown_20x20", 5000 ] ], "x": 0, "y": 0 } ],
+      "place_nested": [ { "chunks": [ [ "null", 50 ], [ "central_lab_reactor_meltdown_20x20", 50 ] ], "x": 0, "y": 0 } ],
       "items": {
         "d": { "item": "office", "chance": 50, "repeat": 4 },
         "L": { "item": "reactor_gear", "chance": 25, "repeat": 3 },
@@ -248,6 +248,10 @@
       "mapgensize": [ 20, 20 ],
       "set": [
         { "point": "bash", "x": [ 9, 10 ], "y": [ 9, 10 ], "repeat": [ 1, 2 ] },
+        { "point": "bash", "x": 8, "y": 13 },
+        { "point": "bash", "x": 9, "y": 13 },
+        { "point": "bash", "x": 10, "y": 13 },
+        { "point": "bash", "x": 11, "y": 13 },
         { "square": "radiation", "amount": 100, "x": 0, "y": 0, "x2": 19, "y2": 19 }
       ]
     }
@@ -877,7 +881,7 @@
         "LLLL"
       ],
       "terrain": { "u": [ "t_metal_floor", "t_metal_floor_olight" ] },
-      "furniture": { "b": "f_bench", "t": "f_locker", "S": "f_shower", "Y": "f_eyewash" },
+      "furniture": { "b": "f_bench", "L": "f_locker", "S": "f_shower", "Y": "f_eyewash" },
       "items": { "L": [ { "item": "cleaning", "chance": 50, "repeat": 4 }, { "item": "rad_gear", "chance": 50, "repeat": 2 } ] },
       "place_loot": [ { "item": "eyedrops", "x": 1, "y": 0, "chance": 75, "repeat": 2 } ]
     }
@@ -1027,6 +1031,22 @@
       },
       "furniture": { "#": "f_sandbag_half", "B": "f_bed", "s": "f_sink", "t": "f_trashcan" },
       "toilets": { "T": {  } },
+      "place_monster": [ { "monster": [ "mon_mutant_alpha", "mon_mutant_medical" ], "x": [ 6, 7 ], "y": [ 6, 7 ] } ],
+      "place_nested": [
+        {
+          "chunks": [ [ "central_lab_miniboss_contained_14x14", 50 ], [ "central_lab_miniboss_escaped_14x14", 50 ] ],
+          "x": 0,
+          "y": 0
+        }
+      ]
+    }
+  },
+  {
+    "type": "mapgen",
+    "method": "json",
+    "nested_mapgen_id": "central_lab_miniboss_contained_14x14",
+    "object": {
+      "mapgensize": [ 14, 14 ],
       "place_monster": [
         { "monster": "mon_turret_medium", "x": 4, "y": 0 },
         { "monster": "mon_turret_medium", "x": 9, "y": 0 },
@@ -1035,8 +1055,44 @@
         { "monster": "mon_turret_medium", "x": 13, "y": 4 },
         { "monster": "mon_turret_medium", "x": 13, "y": 9 },
         { "monster": "mon_turret_medium", "x": 4, "y": 13 },
-        { "monster": "mon_turret_medium", "x": 9, "y": 13 },
-        { "monster": [ "mon_mutant_alpha", "mon_mutant_medical" ], "x": [ 6, 7 ], "y": [ 6, 7 ] }
+        { "monster": "mon_turret_medium", "x": 9, "y": 13 }
+      ]
+    }
+  },
+  {
+    "type": "mapgen",
+    "method": "json",
+    "nested_mapgen_id": "central_lab_miniboss_escaped_14x14",
+    "object": {
+      "mapgensize": [ 14, 14 ],
+      "set": [
+        { "point": "bash", "x": [ 6, 7 ], "y": 4 },
+        { "point": "bash", "x": [ 3, 5 ], "y": 1, "repeat": [ 1, 2 ] },
+        { "point": "bash", "x": [ 8, 10 ], "y": 1, "repeat": [ 1, 2 ] },
+        { "point": "bash", "x": 1, "y": [ 3, 5 ], "repeat": [ 1, 2 ] },
+        { "point": "bash", "x": 1, "y": [ 8, 10 ], "repeat": [ 1, 2 ] },
+        { "point": "bash", "x": 12, "y": [ 3, 5 ], "repeat": [ 1, 2 ] },
+        { "point": "bash", "x": 12, "y": [ 8, 10 ], "repeat": [ 1, 2 ] },
+        { "point": "bash", "x": [ 3, 5 ], "y": 12, "repeat": [ 1, 2 ] },
+        { "point": "bash", "x": [ 8, 10 ], "y": 12, "repeat": [ 1, 2 ] }
+      ],
+      "place_loot": [
+        { "item": "broken_turret_medium", "x": 4, "y": 0 },
+        { "item": "broken_turret_medium", "x": 9, "y": 0 },
+        { "item": "broken_turret_medium", "x": 0, "y": 4 },
+        { "item": "broken_turret_medium", "x": 0, "y": 9 },
+        { "item": "broken_turret_medium", "x": 13, "y": 4 },
+        { "item": "broken_turret_medium", "x": 13, "y": 9 },
+        { "item": "broken_turret_medium", "x": 4, "y": 13 },
+        { "item": "broken_turret_medium", "x": 9, "y": 13 },
+        { "item": "223_casing", "x": 4, "y": 0, "chance": 75, "repeat": 50 },
+        { "item": "223_casing", "x": 9, "y": 0, "chance": 75, "repeat": 50 },
+        { "item": "223_casing", "x": 0, "y": 4, "chance": 75, "repeat": 50 },
+        { "item": "223_casing", "x": 0, "y": 9, "chance": 75, "repeat": 50 },
+        { "item": "223_casing", "x": 13, "y": 4, "chance": 75, "repeat": 50 },
+        { "item": "223_casing", "x": 13, "y": 9, "chance": 75, "repeat": 50 },
+        { "item": "223_casing", "x": 4, "y": 13, "chance": 75, "repeat": 50 },
+        { "item": "223_casing", "x": 9, "y": 13, "chance": 75, "repeat": 50 }
       ]
     }
   },
@@ -1048,18 +1104,18 @@
       "mapgensize": [ 14, 14 ],
       "rows": [
         "ff|ff|  |ff|ff",
-        "  |  |  |  |  ",
-        "              ",
-        "ff|ff|  |ff|ff",
-        "||||||  ||||||",
-        "ff|ff|  |ff|ff",
         "              ",
         "              ",
         "ff|ff|  |ff|ff",
         "||||||  ||||||",
         "ff|ff|  |ff|ff",
         "              ",
-        "  |  |     |  ",
+        "              ",
+        "ff|ff|  |ff|ff",
+        "||||||  ||||||",
+        "ff|ff|  |ff|ff",
+        "              ",
+        "              ",
         "ff|ff|  |ff|ff"
       ],
       "terrain": { "|": "t_strconc_wall", "u": [ "t_metal_floor", "t_metal_floor_olight" ] },
