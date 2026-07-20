@@ -3248,5 +3248,17 @@
         ]
       }
     ]
+  },
+  {
+    "id": "everyday_m6_asw",
+    "type": "item_group",
+    "//": "this is a distribution for the gun, reasonable number of backup mags, and some ammo to repack",
+    "subtype": "collection",
+    "ammo": 100,
+    "entries": [
+      { "item": "m6_asw", "ammo-group": "on_hand_22", "charges": [ 0, 1 ] },
+      { "group": "on_hand_22" },
+      { "group": "on_hand_410shot" }
+    ]
   }
 ]
