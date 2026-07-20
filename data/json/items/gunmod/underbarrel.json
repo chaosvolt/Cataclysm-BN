@@ -452,7 +452,7 @@
     "location": "underbarrel",
     "mod_target_category": [ [ "RIFLES" ], [ "MACHINE_GUNS" ], [ "GATLING_GUNS" ] ],
     "gun_data": {
-      "ammo": "410",
+      "ammo": "410shot",
       "skill": "shotgun",
       "range": 1,
       "dispersion": 320,

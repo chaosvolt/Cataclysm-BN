@@ -24,6 +24,7 @@
     "loudness": 2,
     "valid_mod_locations": [
       [ "accessories", 1 ],
+      [ "bore", 1 ],
       [ "grip", 1 ],
       [ "stock", 1 ],
       [ "mechanism", 4 ],

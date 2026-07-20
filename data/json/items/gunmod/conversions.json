@@ -437,7 +437,7 @@
     "location": "bore",
     "mod_targets": [ "ashot", "pipe_shotgun", "pipe_double_shotgun" ],
     "install_time": "5 m",
-    "ammo_modifier": "410",
+    "ammo_modifier": "410shot",
     "min_skills": [ [ "weapon", 1 ], [ "mechanics", 1 ] ]
   }
 ]
