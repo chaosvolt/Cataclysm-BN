@@ -6,6 +6,7 @@
 #include "damage.h"
 #include "enum_bitset.h"
 #include "event_bus.h"
+#include "magic/spell_selector.h"
 #include "sounds.h"
 #include "translations.h"
 #include "type_id.h"
@@ -523,9 +524,12 @@ private:
     // list of spells known
     std::map<spell_id, spell> spellbook;
     // invlets assigned to spell_id
-    std::map<spell_id, int> invlets;
+    std::map<spell_id, int, spell_id::LexCmp> invlets;
     // the last known spell selected for casting
     std::optional<spell_id> last_cast_spell_id;
+    // per-Character spell selector preferences
+    std::set<spell_id, spell_id::LexCmp> favorite_spells;
+    spell_selector_category_id last_spell_selector_category;
     // the base mana a Character would start with
     int mana_base = 0;
     // current mana
@@ -556,6 +560,7 @@ public:
     spell& get_spell(const spell_id& sp);
     auto last_cast_spell() const -> std::optional<spell_id>;
     auto set_last_cast_spell(const spell_id& sp) -> void;
+    auto toggle_favorite_spell(const spell_id& sp) -> bool;
     // opens up a ui that the Character can choose a spell from
     // returns the index of the spell in the vector of spells
     int select_spell(Character& guy);
@@ -580,14 +585,15 @@ public:
     void serialize(JsonOut& json) const;
     void deserialize(JsonIn& jsin);
 
-    // returns false if invlet is already used
+    // returns false if the spell or invlet is unavailable
     bool set_invlet(const spell_id& sp, int invlet, const std::set<int>& used_invlets);
     void rem_invlet(const spell_id& sp);
 
 private:
-    // gets length of longest spell name
-    int get_spellname_max_width();
-    // gets invlet if assigned, or -1 if not
+    auto set_spell_selector_category(spell_selector_category_id category) -> void;
+    // Drops malformed/conflicting active invlets and returns the keys reserved by active spells.
+    auto sanitize_invlets(const std::set<int>& reserved_invlets) -> std::set<int>;
+    // returns the assigned invlet or selects an unused active invlet
     int get_invlet(const spell_id& sp, std::set<int>& used_invlets);
 };
 

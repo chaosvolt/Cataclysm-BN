@@ -51,6 +51,7 @@
 #include <cmath>
 #include <cstdlib>
 #include <memory>
+#include <ranges>
 #include <set>
 #include <tuple>
 #include <utility>
@@ -1395,11 +1396,45 @@ void known_magic::serialize(JsonOut& json) const {
     json.end_array();
     json.member("invlets", invlets);
 
+    if (!favorite_spells.empty()) {
+        json.member("favorite_spells");
+        json.start_array();
+        for (const auto& favorite_spell : favorite_spells) { json.write(favorite_spell.str()); }
+        json.end_array();
+    }
+
+    const auto saved_category = normalize_spell_selector_category(last_spell_selector_category);
+    auto saved_category_type = std::string{};
+    switch (saved_category.kind) {
+        case spell_selector_category_kind::all:
+            break;
+        case spell_selector_category_kind::favorites:
+            saved_category_type = "favorites";
+            break;
+        case spell_selector_category_kind::spell_class:
+            saved_category_type = "spell_class";
+            break;
+        case spell_selector_category_kind::other:
+            saved_category_type = "other";
+            break;
+    }
+    if (!saved_category_type.empty()) {
+        json.member("last_spell_selector_category");
+        json.start_object();
+        json.member("type", saved_category_type);
+        if (saved_category.kind == spell_selector_category_kind::spell_class) {
+            json.member("spell_class", saved_category.spell_class.str());
+        }
+        json.end_object();
+    }
+
     json.end_object();
 }
 
 void known_magic::deserialize(JsonIn& jsin) {
     auto data = jsin.get_object();
+    favorite_spells.clear();
+    last_spell_selector_category = {};
     data.read("mana", mana);
     last_cast_spell_id.reset();
 
@@ -1407,18 +1442,53 @@ void known_magic::deserialize(JsonIn& jsin) {
     data.read("last_cast_spell", last_cast_spell_str);
 
     for (JsonObject jo : data.get_array("spellbook")) {
-        auto id = jo.get_string("id");
-        auto sp = spell_id(id);
+        const auto id = jo.get_string("id");
+        const auto sp = spell_id(id);
         const auto xp = jo.get_int("xp");
         if (!sp.is_valid()) {
             debugmsg("Skipping spell with invalid id: %s", sp.c_str());
-        } else if (knows_spell(sp)) {
-            spellbook[sp].set_exp(xp);
         } else {
-            spellbook.emplace(sp, spell(sp, xp));
+            if (knows_spell(sp)) {
+                spellbook[sp].set_exp(xp);
+            } else {
+                spellbook.emplace(sp, spell(sp, xp));
+            }
         }
     }
-    data.read("invlets", invlets);
+    invlets.clear();
+    data.read("invlets", invlets, false);
+    sanitize_invlets({});
+
+    if (data.has_array("favorite_spells")) {
+        const auto saved_favorites = data.get_array("favorite_spells");
+        for (const auto favorite_index : std::views::iota(std::size_t{}, saved_favorites.size())) {
+            if (!saved_favorites.has_string(favorite_index)) { continue; }
+            const auto favorite_id = saved_favorites.get_string(favorite_index);
+            if (!favorite_id.empty()) { favorite_spells.insert(spell_id(favorite_id)); }
+        }
+    }
+
+    if (data.has_object("last_spell_selector_category")) {
+        const auto saved_category = data.get_object("last_spell_selector_category");
+        const auto category_type =
+            saved_category.has_string("type") ? saved_category.get_string("type") : std::string{};
+        if (category_type == "favorites") {
+            set_spell_selector_category({
+                .kind = spell_selector_category_kind::favorites,
+                .spell_class = trait_id{},
+            });
+        } else if (category_type == "other") {
+            set_spell_selector_category({
+                .kind = spell_selector_category_kind::other,
+                .spell_class = trait_id{},
+            });
+        } else if (category_type == "spell_class" && saved_category.has_string("spell_class")) {
+            set_spell_selector_category({
+                .kind = spell_selector_category_kind::spell_class,
+                .spell_class = trait_id(saved_category.get_string("spell_class")),
+            });
+        }
+    }
 
     if (!last_cast_spell_str.empty()) {
         const auto spell = spell_id(last_cast_spell_str);
@@ -1529,6 +1599,22 @@ auto known_magic::set_last_cast_spell(const spell_id& sp) -> void {
     if (knows_spell(sp)) { last_cast_spell_id = sp; }
 }
 
+auto known_magic::toggle_favorite_spell(const spell_id& sp) -> bool {
+    if (!knows_spell(sp)) { return false; }
+
+    const auto favorite = favorite_spells.find(sp);
+    if (favorite != favorite_spells.end()) {
+        favorite_spells.erase(favorite);
+        return false;
+    }
+    favorite_spells.insert(sp);
+    return true;
+}
+
+auto known_magic::set_spell_selector_category(spell_selector_category_id category) -> void {
+    last_spell_selector_category = normalize_spell_selector_category(std::move(category));
+}
+
 std::vector<spell*> known_magic::get_spells() {
     std::vector<spell*> spells;
     spells.reserve(spellbook.size());
@@ -1629,73 +1715,200 @@ int known_magic::time_to_learn_spell(const Character& guy, const spell_id& sp) c
             + (guy.get_skill_level(sp->skill) / 10.0));
 }
 
-int known_magic::get_spellname_max_width() {
-    int width = 0;
-    for (const spell* sp : get_spells()) { width = std::max(width, utf8_width(sp->name())); }
-    return width;
+namespace {
+
+constexpr auto spell_selector_input_category = "SPELL_SELECT";
+constexpr auto toggle_favorite_action = "TOGGLE_FAVORITE";
+constexpr auto toggle_distractions_action = "TOGGLE_CASTING_DISTRACTIONS";
+constexpr auto assign_spell_hotkey_action = "ASSIGN_SPELL_HOTKEY";
+
+auto make_spell_selector_input_context() -> input_context {
+    auto ctxt = input_context(spell_selector_input_category);
+    ctxt.register_updown();
+    ctxt.register_leftright();
+    ctxt.register_action("PAGE_UP");
+    ctxt.register_action("PAGE_DOWN");
+    ctxt.register_action("HOME");
+    ctxt.register_action("END");
+    ctxt.register_action("SCROLL_UP");
+    ctxt.register_action("SCROLL_DOWN");
+    ctxt.register_action("QUIT");
+    ctxt.register_action("SELECT");
+    ctxt.register_action("CONFIRM");
+    ctxt.register_action("FILTER");
+    ctxt.register_action("ANY_INPUT");
+    ctxt.register_action("HELP_KEYBINDINGS");
+    ctxt.register_action(toggle_favorite_action);
+    ctxt.register_action(toggle_distractions_action);
+    ctxt.register_action(assign_spell_hotkey_action);
+    return ctxt;
 }
+
+auto spell_selector_reserved_invlets(const input_context& ctxt) -> std::set<int> {
+    auto reserved_invlets = std::set<int>{'*'};
+    for (const auto& action : ctxt.get_registered_actions_copy()) {
+        for (const auto bound_key : ctxt.keys_bound_to(action)) {
+            reserved_invlets.insert(bound_key);
+        }
+    }
+    return reserved_invlets;
+}
+
+} // namespace
 
 class spellcasting_callback: public uilist_callback {
 private:
-    std::vector<spell*> known_spells;
-    void draw_spell_info(const spell& sp, const uilist* menu);
+    known_magic& magic;
+    Character& guy;
+    const std::vector<spell*>& known_spells;
+    spell_selector_categories& categories;
+    const spell_selector_category_names& category_names;
+    const std::set<int>& reserved_invlets;
+    const std::string ignore_distractions_hint;
+    const std::string popup_distractions_hint;
+    const std::string assign_hotkey_hint;
+    const int assign_hotkey_hint_width;
+    auto draw_spell_info(const spell& sp, const uilist* menu) -> void;
+    auto update_categories(
+        uilist* menu, const spell_selector_category_id& requested_category, bool rebuild_topology)
+        -> void;
 
 public:
-    // invlets reserved for special functions
-    const std::set<int> reserved_invlets{'I', '='};
     bool casting_ignore;
 
-    spellcasting_callback(std::vector<spell*>& spells, bool casting_ignore)
-        : known_spells(spells),
-          casting_ignore(casting_ignore) {}
-    bool key(
-        const input_context&, const input_event& event, int entnum, uilist* /*menu*/) override {
-        if (event.get_first_input() == 'I') {
+    struct options {
+        known_magic& magic;
+        Character& guy;
+        const std::vector<spell*>& known_spells;
+        spell_selector_categories& categories;
+        const spell_selector_category_names& category_names;
+        const std::set<int>& reserved_invlets;
+        std::string distraction_action_hint;
+        std::string assign_hotkey_action_hint;
+        bool casting_ignore = false;
+    };
+
+    explicit spellcasting_callback(options opts)
+        : magic(opts.magic),
+          guy(opts.guy),
+          known_spells(opts.known_spells),
+          categories(opts.categories),
+          category_names(opts.category_names),
+          reserved_invlets(opts.reserved_invlets),
+          ignore_distractions_hint(
+              string_format("[%s] %s", opts.distraction_action_hint, _("Ignore Distractions"))),
+          popup_distractions_hint(
+              string_format("[%s] %s", opts.distraction_action_hint, _("Popup Distractions"))),
+          assign_hotkey_hint(string_format(_("Assign Hotkey [%s]"), opts.assign_hotkey_action_hint)),
+          assign_hotkey_hint_width(utf8_width(assign_hotkey_hint)),
+          casting_ignore(opts.casting_ignore) {}
+    auto key(const input_context& ctxt, const input_event& event, int entnum, uilist* menu)
+        -> bool override {
+        const auto& action = ctxt.input_to_action(event);
+        if (action == toggle_favorite_action) {
+            if (entnum < 0) {
+                popup(_("No spell selected."));
+                return true;
+            }
+            const auto entry_index = static_cast<std::size_t>(entnum);
+            if (entry_index >= known_spells.size() || entry_index >= categories.spells.size()
+                || entry_index >= menu->entries.size()) {
+                popup(_("No spell selected."));
+                return true;
+            }
+
+            const auto current_category =
+                spell_selector_category_at(categories, menu->get_current_category());
+            const auto selected_spell_id = known_spells[entry_index]->id();
+            const auto now_favorite = magic.toggle_favorite_spell(selected_spell_id);
+            menu->entries[entry_index].extratxt.txt = now_favorite ? "*" : "";
+            const auto rebuild_topology =
+                set_spell_selector_favorite(categories, entry_index, now_favorite);
+            update_categories(menu, current_category, rebuild_topology);
+            return true;
+        }
+        if (action == toggle_distractions_action) {
             casting_ignore = !casting_ignore;
             return true;
         }
-        if (event.get_first_input() == '=') {
-            int invlet = 0;
-            invlet = popup_getkey(_("Choose a new hotkey for this spell."));
+        if (action == assign_spell_hotkey_action) {
+            if (entnum < 0) { return true; }
+            const auto entry_index = static_cast<std::size_t>(entnum);
+            if (entry_index >= known_spells.size() || entry_index >= menu->entries.size()) {
+                return true;
+            }
+            const auto invlet = popup_getkey(_("Choose a new hotkey for this spell."));
             if (inv_chars.valid(invlet)) {
-                const bool invlet_set =
-                    g->u.magic->set_invlet(known_spells[entnum]->id(), invlet, reserved_invlets);
-                if (!invlet_set) {
+                auto used_invlets = reserved_invlets;
+                for (const auto other_entry_index :
+                     std::views::iota(std::size_t{}, menu->entries.size())) {
+                    if (other_entry_index != entry_index
+                        && menu->entries[other_entry_index].hotkey > 0) {
+                        used_invlets.insert(menu->entries[other_entry_index].hotkey);
+                    }
+                }
+                const auto previous_hotkey = menu->entries[entry_index].hotkey;
+                if (!menu->set_entry_hotkey(entry_index, invlet)) {
+                    popup(_("Hotkey already used."));
+                } else if (
+                    !magic.set_invlet(known_spells[entry_index]->id(), invlet, used_invlets)) {
+                    menu->set_entry_hotkey(entry_index, previous_hotkey);
                     popup(_("Hotkey already used."));
                 } else {
-                    popup(_("%c set.  Close and reopen spell menu to refresh list with changes."),
-                          invlet);
+                    popup(_("%c set."), invlet);
                 }
             } else {
                 popup(_("Hotkey removed."));
-                g->u.magic->rem_invlet(known_spells[entnum]->id());
+                magic.rem_invlet(known_spells[entry_index]->id());
+                menu->set_entry_hotkey(entry_index, 0);
             }
             return true;
         }
         return false;
     }
 
-    void refresh(uilist* menu) override {
-        mvwputch(menu->window, point(menu->w_width - menu->pad_right, 0), c_magenta, LINE_OXXX);
-        mvwputch(menu->window, point(menu->w_width - menu->pad_right, menu->w_height - 1),
-                 c_magenta, LINE_XXOX);
-        for (int i = 1; i < menu->w_height - 1; i++) {
-            mvwputch(menu->window, point(menu->w_width - menu->pad_right, i), c_magenta, LINE_XOXO);
+    auto refresh(uilist* menu) -> void override {
+        if (menu->pad_right < 8 || menu->pad_right >= menu->w_width) {
+            wnoutrefresh(menu->window);
+            return;
         }
-        std::string ignore_string =
-            casting_ignore ? _("Ignore Distractions") : _("Popup Distractions");
-        mvwprintz(
-            menu->window, point(menu->w_width - menu->pad_right + 2, 0),
-            casting_ignore ? c_red : c_light_green, string_format("%s %s", "[I]", ignore_string));
-        const std::string assign_letter = _("Assign Hotkey [=]");
-        mvwprintz(menu->window, point(menu->w_width - assign_letter.length() - 1, 0), c_yellow,
-                  assign_letter);
-        if (menu->selected >= 0 && static_cast<size_t>(menu->selected) < known_spells.size()) {
+
+        const auto divider_x = menu->w_width - menu->pad_right;
+        mvwputch(menu->window, point(divider_x, 0), c_magenta, LINE_OXXX);
+        mvwputch(menu->window, point(divider_x, menu->w_height - 1), c_magenta, LINE_XXOX);
+        for (int i = 1; i < menu->w_height - 1; i++) {
+            mvwputch(menu->window, point(divider_x, i), c_magenta, LINE_XOXO);
+        }
+        mvwprintz(menu->window, point(divider_x + 2, 0), casting_ignore ? c_red : c_light_green,
+                  casting_ignore ? ignore_distractions_hint : popup_distractions_hint);
+        const auto assign_hotkey_x = std::max(0, menu->w_width - assign_hotkey_hint_width - 1);
+        mvwprintz(menu->window, point(assign_hotkey_x, 0), c_yellow, assign_hotkey_hint);
+        if (menu->selected >= 0 && static_cast<std::size_t>(menu->selected) < known_spells.size()
+            && static_cast<std::size_t>(menu->selected) < categories.spells.size()) {
             draw_spell_info(*known_spells[menu->selected], menu);
         }
         wnoutrefresh(menu->window);
     }
 };
+
+auto spellcasting_callback::update_categories(
+    uilist* menu, const spell_selector_category_id& requested_category, const bool rebuild_topology)
+    -> void {
+    if (!rebuild_topology) {
+        menu->refresh_category_filter();
+        return;
+    }
+
+    categories = make_spell_selector_categories(std::move(categories.spells), category_names);
+    const auto requested_index = spell_selector_category_index(categories, requested_category);
+    menu->set_categories(
+        spell_selector_category_labels(categories),
+        [category_model = &categories](const auto& entry, const auto category_index) {
+            return spell_matches_spell_selector_category(
+                *category_model, entry.retval, category_index);
+        },
+        requested_index);
+}
 
 static bool casting_time_encumbered(const spell& sp, const Character& guy) {
     int encumb = 0;
@@ -1779,7 +1992,7 @@ static std::string enumerate_traits(const std::set<trait_id> st) {
 }
 
 
-void spellcasting_callback::draw_spell_info(const spell& sp, const uilist* menu) {
+auto spellcasting_callback::draw_spell_info(const spell& sp, const uilist* menu) -> void {
     const int h_offset = menu->w_width - menu->pad_right + 1;
     // includes spaces on either side for readability
     const int info_width = menu->pad_right - 4;
@@ -1794,9 +2007,13 @@ void spellcasting_callback::draw_spell_info(const spell& sp, const uilist* menu)
     nc_color light_green = c_light_green;
     nc_color yellow = c_yellow;
 
-    print_colored_text(
-        w_menu, point(h_col1, line++), yellow, yellow,
-        sp.spell_class() == trait_NONE ? _("Classless") : sp.spell_class()->name());
+    const auto spell_class = sp.spell_class();
+    const auto spell_class_name =
+        spell_class == trait_NONE ? _("Classless")
+        : spell_class.is_valid()
+            ? spell_class->name()
+            : string_format(pgettext("spell selector", "Unknown class (%s)"), spell_class.str());
+    print_colored_text(w_menu, point(h_col1, line++), yellow, yellow, spell_class_name);
 
     line += fold_and_print(w_menu, point(h_col1, line), info_width, gray, sp.description());
 
@@ -1820,7 +2037,7 @@ void spellcasting_callback::draw_spell_info(const spell& sp, const uilist* menu)
         w_menu, point(h_col2, line++), gray, gray,
         string_format("%s: %d", _("Max Level"), sp.get_max_level()));
 
-    print_colored_text(w_menu, point(h_col1, line), gray, gray, sp.colorized_fail_percent(g->u));
+    print_colored_text(w_menu, point(h_col1, line), gray, gray, sp.colorized_fail_percent(guy));
     print_colored_text(
         w_menu, point(h_col2, line++), gray, gray,
         string_format("%s: %d", _("Difficulty"), sp.get_difficulty()));
@@ -1835,26 +2052,26 @@ void spellcasting_callback::draw_spell_info(const spell& sp, const uilist* menu)
 
     if (line <= win_height / 2) { line++; }
 
-    const bool cost_encumb = energy_cost_encumbered(sp, g->u);
+    const bool cost_encumb = energy_cost_encumbered(sp, guy);
     std::string cost_string = cost_encumb ? _("Casting Cost (impeded)") : _("Casting Cost");
     std::string energy_cur =
         sp.energy_source() == hp_energy
             ? ""
-            : string_format(_(" (%s current)"), sp.energy_cur_string(g->u));
-    if (!sp.can_cast(g->u)) {
+            : string_format(_(" (%s current)"), sp.energy_cur_string(guy));
+    if (!sp.can_cast(guy)) {
         cost_string = colorize(_("Not Enough Energy"), c_red);
         energy_cur = "";
     }
     print_colored_text(
         w_menu, point(h_col1, line++), gray, gray,
-        string_format("%s: %s %s%s", cost_string, sp.energy_cost_string(g->u), sp.energy_string(),
+        string_format("%s: %s %s%s", cost_string, sp.energy_cost_string(guy), sp.energy_string(),
                       energy_cur));
-    const bool c_t_encumb = casting_time_encumbered(sp, g->u);
+    const bool c_t_encumb = casting_time_encumbered(sp, guy);
     print_colored_text(
         w_menu, point(h_col1, line++), gray, gray,
         colorize(
             string_format("%s: %s", c_t_encumb ? _("Casting Time (impeded)") : _("Casting Time"),
-                          moves_to_string(sp.casting_time(g->u))),
+                          moves_to_string(sp.casting_time(guy))),
             c_t_encumb ? c_red : c_light_gray));
 
     if (line <= win_height * 3 / 4) { line++; }
@@ -1878,7 +2095,7 @@ void spellcasting_callback::draw_spell_info(const spell& sp, const uilist* menu)
 
     if (line <= win_height * 3 / 4) { line++; }
 
-    const int damage = sp.damage_as_character(g->u);
+    const int damage = sp.damage_as_character(guy);
     std::string damage_string;
     std::string aoe_string;
     // if it's any type of attack spell, the stats are normal.
@@ -1886,11 +2103,11 @@ void spellcasting_callback::draw_spell_info(const spell& sp, const uilist* menu)
         || fx == "line_attack") {
         if (damage > 0) {
             damage_string = string_format(
-                "%s: %s %s", _("Damage"), colorize(sp.damage_string(g->u), sp.damage_type_color()),
+                "%s: %s %s", _("Damage"), colorize(sp.damage_string(guy), sp.damage_type_color()),
                 colorize(sp.damage_type_string(), sp.damage_type_color()));
         } else if (damage < 0) {
-            damage_string = string_format(
-                "%s: %s", _("Healing"), colorize(sp.damage_string(g->u), light_green));
+            damage_string =
+                string_format("%s: %s", _("Healing"), colorize(sp.damage_string(guy), light_green));
         }
         if (sp.aoe() > 0) {
             std::string aoe_string_temp = _("Spell Radius");
@@ -1942,81 +2159,146 @@ void spellcasting_callback::draw_spell_info(const spell& sp, const uilist* menu)
     if (sp.has_components()) {
         if (!sp.components().get_components().empty()) {
             print_vec_string(sp.components().get_folded_components_list(
-                info_width - 2, gray, get_player_character().crafting_inventory(),
-                return_true<item>));
+                info_width - 2, gray, guy.crafting_inventory(), return_true<item>));
         }
         if (!(sp.components().get_tools().empty() && sp.components().get_qualities().empty())) {
             print_vec_string(sp.components().get_folded_tools_list(
-                info_width - 2, gray, get_player_character().crafting_inventory()));
+                info_width - 2, gray, guy.crafting_inventory()));
         }
     }
 }
 
 bool known_magic::set_invlet(const spell_id& sp, int invlet, const std::set<int>& used_invlets) {
-    if (used_invlets.contains(invlet)) { return false; }
+    if (!knows_spell(sp) || !inv_chars.valid(invlet) || used_invlets.contains(invlet)) {
+        return false;
+    }
     invlets[sp] = invlet;
     return true;
 }
 
 void known_magic::rem_invlet(const spell_id& sp) { invlets.erase(sp); }
 
+auto known_magic::sanitize_invlets(const std::set<int>& reserved_invlets) -> std::set<int> {
+    auto used_invlets = reserved_invlets;
+    std::erase_if(invlets, [this, &used_invlets](const auto& entry) {
+        if (!inv_chars.valid(entry.second)) { return true; }
+        if (!knows_spell(entry.first)) { return false; }
+        return !used_invlets.insert(entry.second).second;
+    });
+    return used_invlets;
+}
+
 int known_magic::get_invlet(const spell_id& sp, std::set<int>& used_invlets) {
-    auto found = invlets.find(sp);
+    if (!knows_spell(sp)) { return 0; }
+
+    const auto found = invlets.find(sp);
     if (found != invlets.end()) { return found->second; }
-    for (const std::pair<const spell_id, int>& invlet_pair : invlets) {
-        used_invlets.emplace(invlet_pair.second);
-    }
-    for (int i = 'a'; i <= 'z'; i++) {
-        if (!used_invlets.contains(i)) {
-            used_invlets.emplace(i);
-            return i;
+
+    for (const auto invlet : inv_chars) {
+        if (!used_invlets.contains(invlet)) {
+            used_invlets.insert(invlet);
+            return invlet;
         }
     }
-    for (int i = 'A'; i <= 'Z'; i++) {
-        if (!used_invlets.contains(i)) {
-            used_invlets.emplace(i);
-            return i;
-        }
-    }
-    for (int i = '!'; i <= '-'; i++) {
-        if (!used_invlets.contains(i)) {
-            used_invlets.emplace(i);
-            return i;
+    for (const auto invlet : std::views::iota(static_cast<int>('!'), static_cast<int>('-') + 1)) {
+        if (!used_invlets.contains(invlet)) {
+            used_invlets.insert(invlet);
+            return invlet;
         }
     }
     return 0;
 }
 
 int known_magic::select_spell(Character& guy) {
-    // max width of spell names
-    const int max_spell_name_length = get_spellname_max_width();
-    std::vector<spell*> known_spells = get_spells();
+    const auto known_spells = get_spells();
+    if (known_spells.empty() || !std::in_range<int>(known_spells.size())) { return UILIST_ERROR; }
+
+    using namespace std::views;
+    const auto spell_names =
+        known_spells | transform(&spell::name) | std::ranges::to<std::vector>();
+    const auto max_spell_name_length = std::ranges::max(
+        spell_names | transform([](const auto& name) { return utf8_width(name); }));
+    const auto category_names = spell_selector_category_names{
+        .all = pgettext("spell selector category", "All"),
+        .favorites = pgettext("spell selector category", "Favorites"),
+        .other = pgettext("spell selector category", "Other"),
+    };
+    auto selector_spells =
+        known_spells | transform([this](const auto* known_spell) {
+            return spell_selector_spell{
+                .spell_class = known_spell->spell_class(),
+                .primary_category = std::nullopt,
+                .favorite = favorite_spells.contains(known_spell->id()),
+            };
+        })
+        | std::ranges::to<std::vector>();
+    auto categories = make_spell_selector_categories(std::move(selector_spells), category_names);
+    const auto known_spell_count = static_cast<int>(known_spells.size());
+    const auto calc_width = []() -> int { return std::max(80, TERMX * 3 / 8); };
+    const auto spell_input_context = make_spell_selector_input_context();
+    const auto reserved_invlets = spell_selector_reserved_invlets(spell_input_context);
+    auto used_invlets = sanitize_invlets(reserved_invlets);
+
+    auto cb = spellcasting_callback({
+        .magic = *this,
+        .guy = guy,
+        .known_spells = known_spells,
+        .categories = categories,
+        .category_names = category_names,
+        .reserved_invlets = reserved_invlets,
+        .distraction_action_hint = spell_input_context.get_desc(toggle_distractions_action, 1),
+        .assign_hotkey_action_hint = spell_input_context.get_desc(assign_spell_hotkey_action, 1),
+        .casting_ignore = casting_ignore,
+    });
 
     uilist spell_menu;
-    spell_menu.w_height_setup = [&]() -> int {
-        return clamp(static_cast<int>(known_spells.size()), 24, TERMY * 9 / 10);
+    spell_menu.w_height_setup = [known_spell_count]() -> int {
+        return clamp(known_spell_count, 24, TERMY * 9 / 10);
     };
-    const auto calc_width = []() -> int { return std::max(80, TERMX * 3 / 8); };
     spell_menu.w_width_setup = calc_width;
-    spell_menu.pad_right_setup = [&]() -> int { return calc_width() - max_spell_name_length - 5; };
+    spell_menu.pad_right_setup = [calc_width, max_spell_name_length]() -> int {
+        return std::max(0, calc_width() - max_spell_name_length - 5);
+    };
     spell_menu.title = _("Choose a Spell");
     spell_menu.hilight_disabled = true;
-    spellcasting_callback cb(known_spells, casting_ignore);
+    spell_menu.input_category = spell_selector_input_category;
+    spell_menu.additional_actions = {
+        {toggle_favorite_action, to_translation("Toggle favorite")},
+        {toggle_distractions_action, to_translation("Toggle casting distractions")},
+        {assign_spell_hotkey_action, to_translation("Assign spell hotkey")},
+    };
+    spell_menu.enable_dynamic_categories();
     spell_menu.callback = &cb;
+    spell_menu.set_categories(
+        spell_selector_category_labels(categories),
+        [&categories](const auto& entry, const auto category_index) {
+            return spell_matches_spell_selector_category(categories, entry.retval, category_index);
+        },
+        spell_selector_category_index(categories, last_spell_selector_category));
 
-    std::set<int> used_invlets{cb.reserved_invlets};
-
-    for (size_t i = 0; i < known_spells.size(); i++) {
+    for (const auto i : iota(std::size_t{}, known_spells.size())) {
         spell_menu.addentry(
             static_cast<int>(i), known_spells[i]->can_cast(guy),
-            get_invlet(known_spells[i]->id(), used_invlets), known_spells[i]->name());
+            get_invlet(known_spells[i]->id(), used_invlets), spell_names[i]);
+        spell_menu.entries.back().extratxt = {
+            .left = 0,
+            .color = c_yellow,
+            .txt = categories.spells[i].favorite ? "*" : "",
+        };
     }
 
     spell_menu.query();
 
-    casting_ignore = static_cast<spellcasting_callback*>(spell_menu.callback)->casting_ignore;
+    casting_ignore = cb.casting_ignore;
 
-    return spell_menu.ret;
+    const auto selected_spell = spell_menu.ret;
+    const auto valid_selection =
+        selected_spell >= 0 && static_cast<std::size_t>(selected_spell) < known_spells.size();
+    if (selected_spell == UILIST_CANCEL || valid_selection) {
+        set_spell_selector_category(
+            spell_selector_category_at(categories, spell_menu.get_current_category()));
+    }
+    return selected_spell == UILIST_CANCEL || valid_selection ? selected_spell : UILIST_ERROR;
 }
 
 void known_magic::on_mutation_gain(const trait_id& mid, Character& guy) {
