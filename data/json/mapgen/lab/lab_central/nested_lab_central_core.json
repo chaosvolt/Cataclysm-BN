@@ -874,17 +874,36 @@
     "object": {
       "mapgensize": [ 7, 7 ],
       "rows": [
-        "       ",
-        "       ",
-        "  ###  ",
-        "  #u#  ",
-        "  ###  ",
-        "       ",
-        "       "
+        "  C C  ",
+        " !!!!! ",
+        "C!###!C",
+        " !#u#! ",
+        "C!###!C",
+        " !!!!! ",
+        "  C C  "
       ],
-      "terrain": { "u": [ "t_metal_floor", "t_metal_floor_olight" ] },
+      "terrain": { "!": "t_floor_red", "u": [ "t_metal_floor", "t_metal_floor_olight" ] },
       "furniture": { "#": "f_sandbag_half" },
+      "nested": { "C": { "chunks": [ [ "null", 3 ], "central_lab_ammo_rack_1x1" ] } },
       "place_monster": [ { "monster": "mon_turret_medium", "x": 3, "y": 3 } ]
+    }
+  },
+  {
+    "type": "mapgen",
+    "method": "json",
+    "nested_mapgen_id": "central_lab_ammo_rack_1x1",
+    "//": "Place a single shelf with military ammo storage.",
+    "object": {
+      "mapgensize": [ 1, 1 ],
+      "rows": [ "C" ],
+      "furniture": { "C": "f_utility_shelf" },
+      "items": {
+        "C": [
+          { "item": "ammo_milspec", "chance": 75 },
+          { "item": "ammo_milspec", "chance": 50 },
+          { "item": "military", "chance": 25 }
+        ]
+      }
     }
   },
   {
@@ -948,24 +967,25 @@
     "object": {
       "mapgensize": [ 14, 14 ],
       "rows": [
-        "u  # #  # #  u",
+        "u C# #!!# #C u",
         "   ###  ###   ",
-        "              ",
+        "C            C",
         "##          ##",
         " #  ||==7|  # ",
         "##  |t   |  ##",
-        "    |s   |    ",
-        "    |   B|    ",
+        "!   |s   |   !",
+        "!   |   B|   !",
         "##  |T  B|  ##",
         " #  ||||||  # ",
         "##          ##",
-        "              ",
+        "C            C",
         "   ###  ###   ",
-        "u  # #  # #  u"
+        "u C# #!!# #C u"
       ],
       "terrain": {
         "|": "t_strconc_wall",
         "=": "t_door_metal_locked",
+        "!": "t_floor_red",
         "7": "t_card_science",
         "u": [ "t_metal_floor", "t_metal_floor_olight" ]
       },
@@ -978,7 +998,8 @@
           "x": 0,
           "y": 0
         }
-      ]
+      ],
+      "nested": { "C": { "chunks": [ "central_lab_ammo_rack_1x1" ] } }
     }
   },
   {
@@ -1105,17 +1126,18 @@
     "object": {
       "mapgensize": [ 14, 7 ],
       "rows": [
-        "              ",
-        "              ",
-        "  ###b  b###  ",
-        "  #u#b  b#u#  ",
-        "  ###b  b###  ",
-        "              ",
-        "              "
+        "C    !  !    C",
+        "C    !!!!    C",
+        "##          ##",
+        "u#          #u",
+        "##          ##",
+        "C    !!!!    C",
+        "C    !  !    C"
       ],
-      "terrain": { "u": [ "t_metal_floor", "t_metal_floor_olight" ] },
-      "furniture": { "#": "f_sandbag_half", "b": "f_bench" },
-      "place_monster": [ { "monster": "mon_turret_medium", "x": 3, "y": 3 }, { "monster": "mon_turret_medium", "x": 10, "y": 3 } ]
+      "terrain": { "!": "t_floor_red", "u": [ "t_metal_floor", "t_metal_floor_olight" ] },
+      "furniture": { "#": "f_sandbag_half" },
+      "place_monster": [ { "monster": "mon_turret_medium", "x": 0, "y": 3 }, { "monster": "mon_turret_medium", "x": 13, "y": 3 } ],
+      "nested": { "C": { "chunks": [ "null", "central_lab_ammo_rack_1x1" ] } }
     }
   },
   {
@@ -1164,24 +1186,25 @@
     "object": {
       "mapgensize": [ 7, 14 ],
       "rows": [
+        "CC#u#CC",
+        "  ###  ",
+        "       ",
+        "       ",
+        "       ",
+        "!!   !!",
+        " !   ! ",
+        " !   ! ",
+        "!!   !!",
+        "       ",
         "       ",
         "       ",
         "  ###  ",
-        "  #u#  ",
-        "  ###  ",
-        "  bbb  ",
-        "       ",
-        "       ",
-        "  bbb  ",
-        "  ###  ",
-        "  #u#  ",
-        "  ###  ",
-        "       ",
-        "       "
+        "CC#u#CC"
       ],
-      "terrain": { "u": [ "t_metal_floor", "t_metal_floor_olight" ] },
-      "furniture": { "#": "f_sandbag_half", "b": "f_bench" },
-      "place_monster": [ { "monster": "mon_turret_medium", "x": 3, "y": 3 }, { "monster": "mon_turret_medium", "x": 3, "y": 10 } ]
+      "terrain": { "!": "t_floor_red", "u": [ "t_metal_floor", "t_metal_floor_olight" ] },
+      "furniture": { "#": "f_sandbag_half" },
+      "place_monster": [ { "monster": "mon_turret_medium", "x": 3, "y": 0 }, { "monster": "mon_turret_medium", "x": 13, "y": 3 } ],
+      "nested": { "C": { "chunks": [ "null", "central_lab_ammo_rack_1x1" ] } }
     }
   },
   {
