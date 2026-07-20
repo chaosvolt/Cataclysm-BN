@@ -4156,7 +4156,7 @@ void activity_handlers::chop_tree_finish( player_activity *act, player *p )
     here.collapse_at( pos, false, true, false );
     // sound of falling tree
     sfx::play_variant_sound( "misc", "timber",
-                             sfx::get_heard_volume( pos, 95 ) );
+                             sfx::get_heard_volume( pos, 95 ), false );
     act->set_to_null();
 
     // Quality of tool used and assistants can together both reduce intensity of work.
