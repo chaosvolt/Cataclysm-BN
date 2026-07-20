@@ -8,7 +8,7 @@
       "rows": [
         "---------|    |---------",
         "-|||||||||    |||||||||-",
-        "-|U                  U|-",
+        "-|u                  u|-",
         "-|                    |-",
         "-|                    |-",
         "-|                    |-",
@@ -27,11 +27,11 @@
         "-|                    |-",
         "-|                    |-",
         "-|                    |-",
-        "-|U                  U|-",
+        "-|u                  u|-",
         "-|||||||||    |||||||||-",
         "---------|    |---------"
       ],
-      "terrain": { "|": "t_rock_smooth", "-": "t_rock", "U": [ "t_metal_floor", "t_metal_floor_olight" ] },
+      "terrain": { "|": "t_rock_smooth", "-": "t_rock", "u": [ "t_metal_floor", "t_metal_floor_olight" ] },
       "place_nested": [
         {
           "chunks": [
@@ -77,7 +77,7 @@
       "rows": [
         "------------------------",
         "-||||||||||||||||||||||-",
-        "-|U                  U|-",
+        "-|u                  u|-",
         "-|                    |-",
         "-|                    |-",
         "-|                    |-",
@@ -96,11 +96,11 @@
         "-|                    |-",
         "-|                    |-",
         "-|                    |-",
-        "-|U                  U|-",
+        "-|u                  u|-",
         "-|||||||||    |||||||||-",
         "---------|    |---------"
       ],
-      "terrain": { "|": "t_rock_smooth", "-": "t_rock", "U": [ "t_metal_floor", "t_metal_floor_olight" ] },
+      "terrain": { "|": "t_rock_smooth", "-": "t_rock", "u": [ "t_metal_floor", "t_metal_floor_olight" ] },
       "place_nested": [
         {
           "chunks": [
@@ -141,7 +141,7 @@
       "rows": [
         "------------------------",
         "-||||||||||||||||||||||-",
-        "-|U                  U|-",
+        "-|u                  u|-",
         "-|                    |-",
         "-|                    |-",
         "-|                    |-",
@@ -160,11 +160,11 @@
         "-|                    |-",
         "-|                    |-",
         "-|                    |-",
-        "-|U                  U|-",
+        "-|u                  u|-",
         "-|||||||||    |||||||||-",
         "---------|    |---------"
       ],
-      "terrain": { "|": "t_rock_smooth", "-": "t_rock", "U": [ "t_metal_floor", "t_metal_floor_olight" ] },
+      "terrain": { "|": "t_rock_smooth", "-": "t_rock", "u": [ "t_metal_floor", "t_metal_floor_olight" ] },
       "place_nested": [
         {
           "chunks": [
@@ -200,7 +200,7 @@
       "rows": [
         "------------------------",
         "-||||||||||||||||||||||-",
-        "-|U                  U|-",
+        "-|u                  u|-",
         "-|                    |-",
         "-|                    |-",
         "-|                    |-",
@@ -219,11 +219,11 @@
         "-|                    |-",
         "-|                    |-",
         "-|                    |-",
-        "-|U                  U|-",
+        "-|u                  u|-",
         "-|||||||||    |||||||||-",
         "---------|    |---------"
       ],
-      "terrain": { "|": "t_rock_smooth", "-": "t_rock", "<": "t_stairs_up", "U": [ "t_metal_floor", "t_metal_floor_olight" ] },
+      "terrain": { "|": "t_rock_smooth", "-": "t_rock", "<": "t_stairs_up", "u": [ "t_metal_floor", "t_metal_floor_olight" ] },
       "place_nested": [
         {
           "chunks": [ [ "null", 50 ], [ "central_lab_locked_s_4x4", 40 ], [ "central_lab_blockage_s_4x4", 10 ] ],
@@ -252,7 +252,7 @@
       "rows": [
         "------------------------",
         "-||||||||||||||||||||||-",
-        "-|U                  U|-",
+        "-|u                  u|-",
         "-|                    |-",
         "-|                    |-",
         "-|                    |-",
@@ -271,11 +271,11 @@
         "-|                    |-",
         "-|                    |-",
         "-|                    |-",
-        "-|U                  U|-",
+        "-|u                  u|-",
         "-|||||||||    |||||||||-",
         "---------|    |---------"
       ],
-      "terrain": { "|": "t_rock_smooth", "-": "t_rock", ">": "t_stairs_down", "U": [ "t_metal_floor", "t_metal_floor_olight" ] },
+      "terrain": { "|": "t_rock_smooth", "-": "t_rock", ">": "t_stairs_down", "u": [ "t_metal_floor", "t_metal_floor_olight" ] },
       "place_nested": [
         {
           "chunks": [ [ "null", 50 ], [ "central_lab_locked_s_4x4", 40 ], [ "central_lab_blockage_s_4x4", 10 ] ],
@@ -293,6 +293,188 @@
           "y": 10
         }
       ]
+    }
+  },
+  {
+    "type": "mapgen",
+    "method": "json",
+    "om_terrain": [ "central_lab_finale_edge" ],
+    "object": {
+      "fill_ter": "t_metal_floor_no_roof",
+      "rows": [
+        "---------||==7|---------",
+        "||||||||||    ||||||||||",
+        "66666666        66666666",
+        "  h  h            h  h  ",
+        "                        ",
+        "                        ",
+        "                        ",
+        "                        ",
+        "                        ",
+        "                        ",
+        "                        ",
+        "                        ",
+        "                        ",
+        "                        ",
+        "                        ",
+        "                        ",
+        "                        ",
+        "                        ",
+        "                        ",
+        "                        ",
+        "    h  h        h  h    ",
+        "  66666666    66666666  ",
+        "GGGGGGGGGGGGGGGGGGGGGGGG",
+        "GGGGGGGGGGGGGGGGGGGGGGGG"
+      ],
+      "terrain": {
+        " ": [ [ "t_metal_floor_no_roof", 90 ], [ "t_platform_resin", 8 ], [ "t_lava", 2 ] ],
+        "|": "t_strconc_wall",
+        "-": "t_wall_metal",
+        "=": "t_door_metal_locked",
+        "7": "t_card_science",
+        "G": "t_grate"
+      },
+      "furniture": { "6": "f_console_broken_table", "h": "f_chair" },
+      "place_monster": [ { "group": "GROUP_ENDGAME_FINALE", "x": [ 1, 22 ], "y": [ 4, 22 ], "repeat": [ 3, 6 ] } ]
+    }
+  },
+  {
+    "type": "mapgen",
+    "method": "json",
+    "om_terrain": [ "central_lab_finale_corner" ],
+    "object": {
+      "fill_ter": "t_metal_floor_no_roof",
+      "rows": [
+        "------------------------",
+        "|||||||||||||||||||||||-",
+        "  SSSSSSSSSSSSSSSSSS  |-",
+        "                      |-",
+        "                     S|-",
+        "                     S|-",
+        "                     S|-",
+        "                     S|-",
+        "        RR  RR       S|-",
+        "        R    R       S|-",
+        "      RRI    IRR     S|-",
+        "      R        R     S|-",
+        "          <<         S|-",
+        "          <<         S|-",
+        "      R        R     S|-",
+        "      RRI    IRR     S|-",
+        "        R    R       S|-",
+        "        RR  RR       S|-",
+        "                     S|-",
+        "                     S|-",
+        "                     S|-",
+        "                     S|-",
+        "                      |-",
+        "                      |-"
+      ],
+      "terrain": {
+        " ": [ [ "t_metal_floor_no_roof", 90 ], [ "t_platform_resin", 8 ], [ "t_lava", 2 ] ],
+        "|": "t_strconc_wall",
+        "-": "t_wall_metal",
+        "<": "t_ladder_up",
+        "I": "t_column",
+        "R": "t_concrete_railing",
+        "S": "t_metal_floor_no_roof"
+      },
+      "furniture": { "S": "f_server" },
+      "place_monster": [ { "group": "GROUP_ENDGAME_FINALE", "x": [ 4, 22 ], "y": [ 1, 20 ], "repeat": [ 3, 6 ] } ]
+    }
+  },
+  {
+    "type": "mapgen",
+    "method": "json",
+    "om_terrain": [ "central_lab_finale_2_center" ],
+    "object": { "fill_ter": "t_open_air_rooved" }
+  },
+  {
+    "type": "mapgen",
+    "method": "json",
+    "om_terrain": [ "central_lab_finale_2_edge" ],
+    "object": {
+      "fill_ter": "t_open_air_rooved",
+      "rows": [
+        "|__77777777uu77777777__|",
+        "||WWWWWWWWWWWWWWWWWWWW||",
+        "                        ",
+        "                        ",
+        "                        ",
+        "                        ",
+        "                        ",
+        "                        ",
+        "                        ",
+        "                        ",
+        "                        ",
+        "                        ",
+        "                        ",
+        "                        ",
+        "                        ",
+        "                        ",
+        "                        ",
+        "                        ",
+        "                        ",
+        "                        ",
+        "                        ",
+        "                        ",
+        "                        ",
+        "                        "
+      ],
+      "terrain": {
+        "|": "t_strconc_wall",
+        "_": "t_metal_floor",
+        "7": "t_metal_floor",
+        "u": [ "t_metal_floor", "t_metal_floor_olight" ],
+        "W": "t_ballistic_glass"
+      },
+      "furniture": { "7": "f_control_station" }
+    }
+  },
+  {
+    "type": "mapgen",
+    "method": "json",
+    "om_terrain": [ "central_lab_finale_2_corner" ],
+    "object": {
+      "fill_ter": "t_open_air_rooved",
+      "rows": [
+        "------------------------",
+        "|||||||||||||||||||||||-",
+        "                      |-",
+        "                      |-",
+        "                      |-",
+        "                      |-",
+        "                      |-",
+        "                      |-",
+        "        RRRRRR        |-",
+        "        R7777R        |-",
+        "      RRIhGGhIRR      |-",
+        "      R7hGGGGh7R      |-",
+        "      R7GG>>GG7R      |-",
+        "      R7GG>>GG7R      |-",
+        "      R7hGGGGh7R      |-",
+        "      RRIhGGhIRR      |-",
+        "        R7777R        |-",
+        "        RRRRRR        |-",
+        "                      |-",
+        "                      |-",
+        "                      |-",
+        "                      |-",
+        "                      |-",
+        "                      |-"
+      ],
+      "terrain": {
+        "|": "t_strconc_wall",
+        "-": "t_wall_metal",
+        ">": "t_ladder_down",
+        "7": "t_grate",
+        "G": "t_grate",
+        "h": "t_grate",
+        "I": "t_column",
+        "R": "t_concrete_railing"
+      },
+      "furniture": { "7": "f_control_station", "h": "f_chair" }
     }
   }
 ]

@@ -274,7 +274,34 @@
       { "point": [ 0, 2, -7 ], "overmap": "central_lab_down_south" },
       { "point": [ 1, 2, -7 ], "overmap": "central_lab_core_edge_south" },
       { "point": [ 2, 2, -7 ], "overmap": "central_lab_core_corner_east" },
-      { "point": [ 0, 0, -10 ], "overmap": "central_lab_endgame" }
+
+
+
+      { "point": [ -1, -1, -9 ], "overmap": "central_lab_finale_2_corner_west" },
+      { "point": [ 0, -1, -9 ], "overmap": "central_lab_finale_2_edge_north" },
+      { "point": [ 1, -1, -9 ], "overmap": "central_lab_finale_2_corner_north" },
+      { "point": [ -1, 0, -9 ], "overmap": "central_lab_finale_2_edge_west" },
+      { "point": [ 0, 0, -9 ], "overmap": "central_lab_finale_2_center_north" },
+      { "point": [ 1, 0, -9 ], "overmap": "central_lab_finale_2_edge_east" },
+      { "point": [ -1, 1, -9 ], "overmap": "central_lab_finale_2_corner_south" },
+      { "point": [ 0, 1, -9 ], "overmap": "central_lab_finale_2_edge_south" },
+      { "point": [ 1, 1, -9 ], "overmap": "central_lab_finale_2_corner_east" },
+
+
+
+
+      { "point": [ -1, -1, -10 ], "overmap": "central_lab_finale_corner_west" },
+      { "point": [ 0, -1, -10 ], "overmap": "central_lab_finale_edge_north" },
+      { "point": [ 1, -1, -10 ], "overmap": "central_lab_finale_corner_north" },
+
+      { "point": [ -1, 0, -10 ], "overmap": "central_lab_finale_edge_west" },
+      { "point": [ 0, 0, -10 ], "overmap": "central_lab_endgame" },
+      { "point": [ 1, 0, -10 ], "overmap": "central_lab_finale_edge_east" },
+
+      { "point": [ -1, 1, -10 ], "overmap": "central_lab_finale_corner_south" },
+      { "point": [ 0, 1, -10 ], "overmap": "central_lab_finale_edge_south" },
+      { "point": [ 1, 1, -10 ], "overmap": "central_lab_finale_corner_east" }
+
     ],
     "connections": [
       { "point": [ 0, 4, 0 ], "connection": "local_road", "from": [ 0, 3, 0 ] },
