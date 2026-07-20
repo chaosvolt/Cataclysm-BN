@@ -683,6 +683,10 @@ class monster : public Creature, public location_visitable<monster>
 
         // Ammunition if we use a gun.
         std::map<itype_id, int> ammo;
+        auto ammo_slot_items( const itype_id &ammo_id ) const -> std::vector<itype_id>;
+        auto ammo_capacity_for_slot( const itype_id &ammo_id ) const -> int;
+        auto ammo_count_for_slot( const itype_id &ammo_id ) const -> int;
+        auto loaded_ammo_for_slot( const itype_id &ammo_id ) const -> itype_id;
 
         /**
          * Convert this monster into an item (see @ref mtype::revert_to_itype).

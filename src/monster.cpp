@@ -37,6 +37,7 @@
 #include "int_id.h"
 #include "init.h"
 #include "item_group.h"
+#include "item_factory.h"
 #include "item.h"
 #include "item_category.h"
 #include "itype.h"
@@ -56,6 +57,7 @@
 #include "mondefense.h"
 #include "monfaction.h"
 #include "mongroup.h"
+#include "mattack_actors.h"
 #include "morale_types.h"
 #include "mtype.h"
 #include "mutation.h"
@@ -92,6 +94,43 @@ static const efftype_id effect_corroding( "corroding" );
 static const efftype_id effect_dazed( "dazed" );
 static const efftype_id effect_deaf( "deaf" );
 static const efftype_id effect_docile( "docile" );
+
+namespace
+{
+
+auto compatible_ammo_for_gun( const gun_actor &gun_attack ) -> std::vector<itype_id>
+{
+    namespace ranges = std::ranges;
+
+    if( !gun_attack.ammo_types.empty() ) {
+        return gun_attack.ammo_types;
+    }
+
+    const auto gun = item::spawn_temporary( gun_attack.gun_type );
+    if( !gun ) {
+        return {};
+    }
+
+    auto compatible_ammo = std::vector<itype_id> {};
+    const auto default_ammo = gun->ammo_default();
+    if( !default_ammo.is_null() ) {
+        compatible_ammo.push_back( default_ammo );
+    }
+
+    const auto gun_ammo_types = gun->ammo_types();
+    for( const auto *const ammo_item : item_controller->find( [&gun_ammo_types](
+    const itype & candidate ) {
+    return candidate.ammo != nullptr && gun_ammo_types.contains( candidate.ammo->type );
+    } ) ) {
+        if( !ranges::contains( compatible_ammo, ammo_item->get_id() ) ) {
+            compatible_ammo.push_back( ammo_item->get_id() );
+        }
+    }
+
+    return compatible_ammo;
+}
+
+} // namespace
 static const efftype_id effect_downed( "downed" );
 static const efftype_id effect_emp( "emp" );
 static const efftype_id effect_feral_infighting_punishment( "feral_infighting_punishment" );
@@ -780,6 +819,68 @@ auto monster::spawn( const tripoint_bub_ms &p ) -> void
 {
     pos_abs = map_local_to_abs( get_map(), p );
     unset_dest();
+}
+
+auto monster::ammo_slot_items( const itype_id &ammo_id ) const -> std::vector<itype_id>
+{
+    namespace ranges = std::ranges;
+
+    auto slot_items = std::vector<itype_id> { ammo_id };
+    for( const auto &[special_name, special_attack] : type->special_attacks ) {
+        static_cast<void>( special_name );
+        if( special_attack->id != "gun" ) {
+            continue;
+        }
+        const auto *const gun_attack = dynamic_cast<const gun_actor *>( special_attack.get() );
+        if( gun_attack == nullptr ) {
+            continue;
+        }
+        const auto compatible_ammo = compatible_ammo_for_gun( *gun_attack );
+        if( !ranges::contains( compatible_ammo, ammo_id ) ) {
+            continue;
+        }
+        for( const auto &compatible_ammo_id : compatible_ammo ) {
+            if( !ranges::contains( slot_items, compatible_ammo_id ) ) {
+                slot_items.push_back( compatible_ammo_id );
+            }
+        }
+    }
+    return slot_items;
+}
+
+auto monster::ammo_capacity_for_slot( const itype_id &ammo_id ) const -> int
+{
+    if( const auto iter = type->starting_ammo.find( ammo_id ); iter != type->starting_ammo.end() ) {
+        return iter->second;
+    }
+    return 0;
+}
+
+auto monster::ammo_count_for_slot( const itype_id &ammo_id ) const -> int
+{
+    auto total_ammo = 0;
+    for( const auto &slot_ammo_id : ammo_slot_items( ammo_id ) ) {
+        if( const auto iter = ammo.find( slot_ammo_id ); iter != ammo.end() ) {
+            total_ammo += iter->second;
+        }
+    }
+    return total_ammo;
+}
+
+auto monster::loaded_ammo_for_slot( const itype_id &ammo_id ) const -> itype_id
+{
+    auto selected_ammo = itype_id {};
+    auto selected_count = 0;
+    for( const auto &slot_ammo_id : ammo_slot_items( ammo_id ) ) {
+        const auto current_count = ammo.contains( slot_ammo_id ) ? ammo.at( slot_ammo_id ) : 0;
+        const auto prefer_current = current_count > selected_count ||
+                                    ( current_count == selected_count && slot_ammo_id == ammo_id );
+        if( prefer_current ) {
+            selected_ammo = slot_ammo_id;
+            selected_count = current_count;
+        }
+    }
+    return selected_count > 0 ? selected_ammo : itype_id {};
 }
 
 std::string monster::get_name() const

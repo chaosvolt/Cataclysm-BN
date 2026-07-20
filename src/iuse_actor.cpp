@@ -1294,25 +1294,40 @@ int place_monster_iuse::use( player &p, item &it, bool, const tripoint_bub_ms &p
         p.moves -= moves;
     }
     if( !newmon.has_flag( MF_INTERIOR_AMMO ) ) {
-        for( auto &amdef : newmon.ammo ) {
-            item &ammo_item = *item::spawn_temporary( amdef.first, calendar::start_of_cataclysm );
-            const int available = p.charges_of( amdef.first );
-            if( available == 0 ) {
-                amdef.second = 0;
+        for( const auto &[slot_ammo_id, max_ammo] : newmon.type->starting_ammo ) {
+            for( const auto &compatible_ammo_id : newmon.ammo_slot_items( slot_ammo_id ) ) {
+                newmon.ammo[compatible_ammo_id] = 0;
+            }
+
+            auto remaining_capacity = max_ammo;
+            auto loaded_any_ammo = false;
+            for( const auto &compatible_ammo_id : newmon.ammo_slot_items( slot_ammo_id ) ) {
+                if( remaining_capacity <= 0 ) {
+                    break;
+                }
+                item &ammo_item = *item::spawn_temporary( compatible_ammo_id, calendar::start_of_cataclysm );
+                const auto available = p.charges_of( compatible_ammo_id );
+                if( available <= 0 ) {
+                    continue;
+                }
+                ammo_item.charges = std::min( available, remaining_capacity );
+                p.use_charges( compatible_ammo_id, ammo_item.charges );
+                //~ First %s is the ammo item (with plural form and count included), second is the monster name
+                p.add_msg_if_player( vgettext( "You load %1$d x %2$s round into the %3$s.",
+                                               "You load %1$d x %2$s rounds into the %3$s.", ammo_item.charges ),
+                                     ammo_item.charges, ammo_item.type_name( ammo_item.charges ),
+                                     newmon.name() );
+                newmon.ammo[compatible_ammo_id] = ammo_item.charges;
+                remaining_capacity -= ammo_item.charges;
+                loaded_any_ammo = true;
+            }
+
+            if( !loaded_any_ammo ) {
+                item &slot_ammo_item = *item::spawn_temporary( slot_ammo_id, calendar::start_of_cataclysm );
                 p.add_msg_if_player( m_info,
                                      _( "If you had standard factory-built %1$s bullets, you could load the %2$s." ),
-                                     ammo_item.type_name( 2 ), newmon.name() );
-                continue;
+                                     slot_ammo_item.type_name( 2 ), newmon.name() );
             }
-            // Don't load more than the default from the monster definition.
-            ammo_item.charges = std::min( available, amdef.second );
-            p.use_charges( amdef.first, ammo_item.charges );
-            //~ First %s is the ammo item (with plural form and count included), second is the monster name
-            p.add_msg_if_player( vgettext( "You load %1$d x %2$s round into the %3$s.",
-                                           "You load %1$d x %2$s rounds into the %3$s.", ammo_item.charges ),
-                                 ammo_item.charges, ammo_item.type_name( ammo_item.charges ),
-                                 newmon.name() );
-            amdef.second = ammo_item.charges;
         }
     }
     int skill_offset = 0;
