@@ -281,6 +281,14 @@ public:
     // if spell_class is empty, spell is unrestricted
     trait_id spell_class;
 
+    // can the spell be chosen on chargen
+    bool starting_spell;
+    // How many points to choose the spell
+    int starting_points;
+    // How many points for each additional level
+    int increase_points;
+    // Max level of starting spell
+    int max_starting_level;
     // the difficulty of casting a spell
     int difficulty = 0;
 

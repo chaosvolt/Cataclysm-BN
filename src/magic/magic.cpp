@@ -389,6 +389,12 @@ void spell_type::load(const JsonObject& jo, const std::string&) {
              -255); // -255 used as default because it would never be set that low on purpose
                     // otherwise
 
+    optional(jo, was_loaded, "starting_spell", starting_spell, false);
+    optional(jo, was_loaded, "starting_points", starting_points, 0);
+    optional(jo, was_loaded, "increase_points", increase_points, 0);
+    optional(jo, was_loaded, "max_starting_level", max_starting_level, max_level);
+
+
     std::vector<std::string> temp_vector;
     std::vector<std::string> default_vector;
     optional(jo, was_loaded, "melee_dam", temp_vector, default_vector);
@@ -493,6 +499,9 @@ void spell_type::check_consistency() {
         }
         if (sp_t.spell_tags[spell_flag::WONDER] && sp_t.additional_spells.empty()) {
             debugmsg("ERROR: %s has WONDER flag but no spells to choose from!", sp_t.id.c_str());
+        }
+        if (sp_t.max_level < sp_t.max_starting_level) {
+            debugmsg("ERROR: %s has higher starting level then max level!", sp_t.id.str());
         }
     }
 }
