@@ -968,7 +968,6 @@
     "type": "item_group",
     "subtype": "collection",
     "entries": [
-      { "group": "everyday_m6_asw", "prob": 25 },
       { "item": "flotation_vest", "prob": 25 },
       { "item": "premium_survival_kit", "prob": 25 },
       { "item": "mil_gps_device", "prob": 25 },
