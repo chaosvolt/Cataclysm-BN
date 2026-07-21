@@ -709,7 +709,8 @@
       { "group": "nested_rifle_flintlock", "prob": 90 },
       { "group": "everyday_combination_gun", "prob": 150 },
       { "group": "nested_steyr_aug", "prob": 40 },
-      { "group": "nested_m7", "prob": 20 }
+      { "group": "nested_m7", "prob": 20 },
+      { "group": "everyday_m6_asw", "prob": 10 }
     ]
   },
   {
@@ -730,7 +731,8 @@
       { "group": "everyday_rifle_flintlock", "prob": 90 },
       { "group": "everyday_combination_gun", "prob": 150 },
       { "group": "everyday_steyr_aug", "prob": 40 },
-      { "group": "everyday_m7", "prob": 20 }
+      { "group": "everyday_m7", "prob": 20 },
+      { "group": "everyday_m6_asw", "prob": 10 }
     ]
   },
   {
@@ -1126,6 +1128,7 @@
       { "group": "carried_guns_archery", "prob": 200 },
       { "group": "guns_improvised", "prob": 200 },
       { "group": "carried_guns_rifle_common", "prob": 100 },
+      { "group": "everyday_m6_asw", "prob": 10 },
       { "group": "everyday_carbon_rifle", "prob": 5 },
       { "group": "everyday_carbon_pistol", "prob": 5 },
       { "group": "carried_guns_shotgun_common", "prob": 60 },
@@ -1162,6 +1165,7 @@
       { "group": "nested_savage_111f", "prob": 10 },
       { "group": "nested_marlin_9a", "prob": 20 },
       { "group": "nested_ruger_1022", "prob": 10 },
+      { "group": "everyday_m6_asw", "prob": 5 },
       { "group": "nested_colt_lightning", "prob": 10 },
       { "group": "nested_ar_357sig", "prob": 10 },
       { "group": "nested_hipoint_3895", "prob": 10 },
@@ -1214,7 +1218,8 @@
       { "collection": [ { "item": "garand" }, { "item": "garandclip", "count": [ 1, 2 ] } ], "prob": 20 },
       { "collection": [ { "item": "m1903" }, { "item": "3006_clip", "count": [ 1, 2 ], "prob": 50 } ], "prob": 15 },
       { "collection": [ { "item": "m1918" }, { "group": "display_m1918_mag", "count": [ 1, 2 ] } ], "prob": 15 },
-      { "item": "winchester_1897", "prob": 10 },
+      { "item": "winchester_1897", "prob": 8 },
+      { "item": "m6_asw", "prob": 2 },
       { "collection": [ { "item": "m60" }, { "item": "ammolink308", "count": [ 100, 200 ] } ], "prob": 10 },
       { "collection": [ { "item": "m2browning" }, { "item": "ammolink50", "count": [ 100, 200 ] } ], "prob": 5 },
       { "collection": [ { "item": "m1874_gatling" }, { "item": "gatlingdrum240", "count": [ 1, 2 ] } ], "prob": 5 },
