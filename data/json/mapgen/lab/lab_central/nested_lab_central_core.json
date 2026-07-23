@@ -573,7 +573,7 @@
         "%%%%",
         " %% "
       ],
-      "terrain": { "#": "t_rock", "|": [ "t_rock", "t_rock_smooth" ], "%": "t_rock_floor" },
+      "terrain": { "#": "t_rock", "|": [ "t_rock", "t_wall_metal" ], "%": "t_rock_floor" },
       "furniture": { "%": [ [ "f_rubble_rock", 3 ], "f_null" ] }
     }
   },
@@ -589,7 +589,7 @@
         "####",
         "%##%"
       ],
-      "terrain": { "#": "t_rock", "|": [ "t_rock", "t_rock_smooth" ], "%": "t_rock_floor" },
+      "terrain": { "#": "t_rock", "|": [ "t_rock", "t_wall_metal" ], "%": "t_rock_floor" },
       "furniture": { "%": [ [ "f_rubble_rock", 3 ], "f_null" ] }
     }
   },
@@ -605,7 +605,7 @@
         "%%##",
         " %#%"
       ],
-      "terrain": { "#": "t_rock", "|": [ "t_rock", "t_rock_smooth" ], "%": "t_rock_floor" },
+      "terrain": { "#": "t_rock", "|": [ "t_rock", "t_wall_metal" ], "%": "t_rock_floor" },
       "furniture": { "%": [ [ "f_rubble_rock", 3 ], "f_null" ] }
     }
   },
@@ -621,7 +621,7 @@
         "##%%",
         "%#% "
       ],
-      "terrain": { "#": "t_rock", "|": [ "t_rock", "t_rock_smooth" ], "%": "t_rock_floor" },
+      "terrain": { "#": "t_rock", "|": [ "t_rock", "t_wall_metal" ], "%": "t_rock_floor" },
       "furniture": { "%": [ [ "f_rubble_rock", 3 ], "f_null" ] }
     }
   },

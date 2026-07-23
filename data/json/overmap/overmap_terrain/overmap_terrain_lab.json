@@ -191,6 +191,14 @@
   },
   {
     "type": "overmap_terrain",
+    "id": "central_lab_shaft_bottom",
+    "name": "central lab",
+    "sym": "L",
+    "color": "blue",
+    "see_cost": 5
+  },
+  {
+    "type": "overmap_terrain",
     "abstract": "generic_central_lab",
     "name": "central lab",
     "sym": "L",
@@ -386,12 +394,12 @@
     "copy-from": "central_lab_core_center",
     "id": "central_lab_down",
     "name": "central lab - stairs",
-    "color": "light_blue"
+    "color": "blue"
   },
   {
     "type": "overmap_terrain",
     "copy-from": "central_lab_down",
-    "id": [ "central_lab_up" ]
+    "id": [ "central_lab_up", "central_lab_up_center" ]
   },
   {
     "type": "overmap_terrain",
