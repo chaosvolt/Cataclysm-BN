@@ -560,71 +560,7 @@
       ],
       "terrain": { "|": "t_strconc_wall", "=": "t_door_metal_locked", "7": "t_card_science" }
     }
-  },
-  {
-    "type": "mapgen",
-    "method": "json",
-    "nested_mapgen_id": "central_lab_blockage_n_4x4",
-    "object": {
-      "mapgensize": [ 4, 4 ],
-      "rows": [
-        "%##%",
-        "####",
-        "%%%%",
-        " %% "
-      ],
-      "terrain": { "#": "t_rock", "|": [ "t_rock", "t_wall_metal" ], "%": "t_rock_floor" },
-      "furniture": { "%": [ [ "f_rubble_rock", 3 ], "f_null" ] }
-    }
-  },
-  {
-    "type": "mapgen",
-    "method": "json",
-    "nested_mapgen_id": "central_lab_blockage_s_4x4",
-    "object": {
-      "mapgensize": [ 4, 4 ],
-      "rows": [
-        " %% ",
-        "%%%%",
-        "####",
-        "%##%"
-      ],
-      "terrain": { "#": "t_rock", "|": [ "t_rock", "t_wall_metal" ], "%": "t_rock_floor" },
-      "furniture": { "%": [ [ "f_rubble_rock", 3 ], "f_null" ] }
-    }
-  },
-  {
-    "type": "mapgen",
-    "method": "json",
-    "nested_mapgen_id": "central_lab_blockage_e_4x4",
-    "object": {
-      "mapgensize": [ 4, 4 ],
-      "rows": [
-        " %#%",
-        "%%##",
-        "%%##",
-        " %#%"
-      ],
-      "terrain": { "#": "t_rock", "|": [ "t_rock", "t_wall_metal" ], "%": "t_rock_floor" },
-      "furniture": { "%": [ [ "f_rubble_rock", 3 ], "f_null" ] }
-    }
-  },
-  {
-    "type": "mapgen",
-    "method": "json",
-    "nested_mapgen_id": "central_lab_blockage_w_4x4",
-    "object": {
-      "mapgensize": [ 4, 4 ],
-      "rows": [
-        "%#% ",
-        "##%%",
-        "##%%",
-        "%#% "
-      ],
-      "terrain": { "#": "t_rock", "|": [ "t_rock", "t_wall_metal" ], "%": "t_rock_floor" },
-      "furniture": { "%": [ [ "f_rubble_rock", 3 ], "f_null" ] }
-    }
-  },
+  },\
   {
     "type": "mapgen",
     "method": "json",
