@@ -174,9 +174,10 @@
   {
     "type": "overmap_terrain",
     "id": "central_lab_entrance",
-    "name": "access shaft",
-    "sym": "0",
-    "color": "light_gray",
+    "name": "forest?",
+    "sym": "F",
+    "color": "green",
+    "looks_like": "forest",
     "see_cost": 3,
     "flags": [ "NO_ROTATE", "RISK_HIGH" ]
   },
@@ -191,7 +192,7 @@
   },
   {
     "type": "overmap_terrain",
-    "id": "central_lab_shaft_bottom",
+    "id": [ "central_lab_shaft_bottom", "central_lab_subway_entrance" ],
     "name": "central lab",
     "sym": "L",
     "color": "blue",
