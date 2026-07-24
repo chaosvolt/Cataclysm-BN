@@ -413,8 +413,8 @@
       ],
       "terrain": { "|": "t_strconc_wall", "-": "t_wall_metal", "+": "t_door_metal_lab_c" },
       "place_nested": [
-        { "chunks": [ [ "null", 10 ], [ "central_lab_mini_room_14x7", 90 ] ], "x": 0, "y": 0 },
-        { "chunks": [ [ "null", 10 ], [ "central_lab_mini_room_14x7", 90 ] ], "x": 0, "y": 13 },
+        { "chunks": [ [ "null", 10 ], [ "central_lab_mini_room_20x7", 90 ] ], "x": 0, "y": 0 },
+        { "chunks": [ [ "null", 10 ], [ "central_lab_mini_room_20x7", 90 ] ], "x": 0, "y": 13 },
         {
           "chunks": [
             [ "null", 50 ],
@@ -474,8 +474,8 @@
       ],
       "terrain": { "|": "t_strconc_wall", "-": "t_wall_metal", "+": "t_door_metal_lab_c" },
       "place_nested": [
-        { "chunks": [ [ "null", 10 ], [ "central_lab_mini_room_7x14", 90 ] ], "x": 0, "y": 0 },
-        { "chunks": [ [ "null", 10 ], [ "central_lab_mini_room_7x14", 90 ] ], "x": 13, "y": 0 },
+        { "chunks": [ [ "null", 10 ], [ "central_lab_mini_room_7x20", 90 ] ], "x": 0, "y": 0 },
+        { "chunks": [ [ "null", 10 ], [ "central_lab_mini_room_7x20", 90 ] ], "x": 13, "y": 0 },
         {
           "chunks": [
             [ "null", 50 ],
@@ -1061,39 +1061,40 @@
   {
     "type": "mapgen",
     "method": "json",
-    "nested_mapgen_id": "central_lab_mini_room_14x7",
+    "nested_mapgen_id": "central_lab_mini_room_20x7",
     "//": "These are hallway spaces used by the horizontal divided rooms.",
     "object": {
-      "mapgensize": [ 14, 7 ],
+      "mapgensize": [ 20, 7 ],
       "rows": [
-        "C    !  !    C",
-        "C    !!!!    C",
-        "##          ##",
-        "u#          #u",
-        "##          ##",
-        "C    !!!!    C",
-        "C    !  !    C"
+        "C       !  !       C",
+        "C       !!!!       C",
+        "##                ##",
+        "u#                #u",
+        "##                ##",
+        "C       !!!!       C",
+        "C       !  !       C"
       ],
-      "terrain": { "!": "t_floor_red", "u": [ "t_metal_floor", "t_metal_floor_olight" ] },
+      "terrain": { "!": "t_floor_red", "/": "t_floor_red", "u": [ "t_metal_floor", "t_metal_floor_olight" ] },
       "furniture": { "#": "f_sandbag_half" },
-      "place_monster": [ { "monster": "mon_turret_medium", "x": 0, "y": 3 }, { "monster": "mon_turret_medium", "x": 13, "y": 3 } ],
+      "monster": { "u": { "monster": "mon_turret_medium" } },
+      "signs": { "/": { "signage": "Warning!\nLive Fire Zone\nAvoid In Case of Lockdown!" } },
       "nested": { "C": { "chunks": [ "null", "central_lab_ammo_rack_1x1" ] } }
     }
   },
   {
     "type": "mapgen",
     "method": "json",
-    "nested_mapgen_id": "central_lab_mini_room_14x7",
+    "nested_mapgen_id": "central_lab_mini_room_20x7",
     "object": {
-      "mapgensize": [ 14, 7 ],
+      "mapgensize": [ 20, 7 ],
       "rows": [
-        "              ",
-        " dddd    dddd ",
-        " dh h    h hd ",
-        " d          d ",
-        " dh h    h hd ",
-        " dddd    dddd ",
-        "              "
+        "                    ",
+        "  dddd  dddd  dddd  ",
+        "  dh h  h  h  h hd  ",
+        "  d              d  ",
+        "  dh h  h  h  h hd  ",
+        "  dddd  dddd  dddd  ",
+        "                    "
       ],
       "furniture": { "d": "f_desk", "h": "f_chair" },
       "items": { "d": { "item": "office", "chance": 50, "repeat": 4 } }
@@ -1102,17 +1103,17 @@
   {
     "type": "mapgen",
     "method": "json",
-    "nested_mapgen_id": "central_lab_mini_room_14x7",
+    "nested_mapgen_id": "central_lab_mini_room_20x7",
     "object": {
-      "mapgensize": [ 14, 7 ],
+      "mapgensize": [ 20, 7 ],
       "rows": [
-        "    tp  pt    ",
-        "hh   p  p   hh",
-        "eeh        hee",
-        "eeh        hee",
-        "eeh        hee",
-        "hh   p  p   hh",
-        "    tp  pt    "
+        "      tp    pt      ",
+        "  hh   p    p   hh  ",
+        " heeh          heeh ",
+        " heeh          heeh ",
+        " heeh          heeh ",
+        "  hh   p    p   hh  ",
+        "       p    pt      "
       ],
       "furniture": { "e": "f_table", "h": "f_chair", "p": [ "f_indoor_plant", "f_indoor_plant_y" ], "t": "f_trashcan" },
       "items": { "t": { "item": "trash_cart", "chance": 25, "repeat": 3 } }
@@ -1121,52 +1122,65 @@
   {
     "type": "mapgen",
     "method": "json",
-    "nested_mapgen_id": "central_lab_mini_room_7x14",
+    "nested_mapgen_id": "central_lab_mini_room_7x20",
     "//": "Vertical counterpart to the other divided room interior.",
     "object": {
-      "mapgensize": [ 7, 14 ],
+      "mapgensize": [ 7, 20 ],
       "rows": [
         "CC#u#CC",
         "  ###  ",
         "       ",
         "       ",
         "       ",
-        "!!   !!",
+        "       ",
+        "       ",
+        "       ",
+        "!!   /!",
         " !   ! ",
         " !   ! ",
-        "!!   !!",
+        "!/   !!",
+        "       ",
+        "       ",
+        "       ",
         "       ",
         "       ",
         "       ",
         "  ###  ",
         "CC#u#CC"
       ],
-      "terrain": { "!": "t_floor_red", "u": [ "t_metal_floor", "t_metal_floor_olight" ] },
+      "terrain": { "!": "t_floor_red", "/": "t_floor_red", "u": [ "t_metal_floor", "t_metal_floor_olight" ] },
       "furniture": { "#": "f_sandbag_half" },
-      "place_monster": [ { "monster": "mon_turret_medium", "x": 3, "y": 0 }, { "monster": "mon_turret_medium", "x": 13, "y": 3 } ],
+      "monster": { "u": { "monster": "mon_turret_medium" } },
+      "signs": { "/": { "signage": "Warning!\nLive Fire Zone\nAvoid In Case of Lockdown!" } },
       "nested": { "C": { "chunks": [ "null", "central_lab_ammo_rack_1x1" ] } }
     }
   },
   {
     "type": "mapgen",
     "method": "json",
-    "nested_mapgen_id": "central_lab_mini_room_7x14",
+    "nested_mapgen_id": "central_lab_mini_room_7x20",
     "object": {
-      "mapgensize": [ 7, 14 ],
+      "mapgensize": [ 7, 20 ],
       "rows": [
         "       ",
+        "       ",
         " ddddd ",
         " dh hd ",
         " d   d ",
         " dh hd ",
         "       ",
         "       ",
+        " dh hd ",
+        " d   d ",
+        " d   d ",
+        " dh hd ",
         "       ",
         "       ",
         " dh hd ",
         " d   d ",
         " dh hd ",
         " ddddd ",
+        "       ",
         "       "
       ],
       "furniture": { "d": "f_desk", "h": "f_chair" },
@@ -1176,11 +1190,13 @@
   {
     "type": "mapgen",
     "method": "json",
-    "nested_mapgen_id": "central_lab_mini_room_7x14",
+    "nested_mapgen_id": "central_lab_mini_room_7x20",
     "//": "Todo: Potential room variants include: rows of chemical storage shelves, central conference table, bionic storage room",
     "object": {
-      "mapgensize": [ 7, 14 ],
+      "mapgensize": [ 7, 20 ],
       "rows": [
+        "       ",
+        "  hhh  ",
         " heeeh ",
         " heeeh ",
         "  hhh  ",
@@ -1189,12 +1205,16 @@
         "pp   pp",
         "       ",
         "       ",
+        "       ",
+        "       ",
         "pp   pp",
         "t     t",
         "       ",
         "  hhh  ",
         " heeeh ",
-        " heeeh "
+        " heeeh ",
+        "  hhh  ",
+        "       "
       ],
       "furniture": { "e": "f_table", "h": "f_chair", "p": [ "f_indoor_plant", "f_indoor_plant_y" ], "t": "f_trashcan" },
       "items": { "t": { "item": "trash_cart", "chance": 25, "repeat": 3 } }
