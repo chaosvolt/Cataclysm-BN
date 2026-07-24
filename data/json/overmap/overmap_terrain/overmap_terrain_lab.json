@@ -414,11 +414,7 @@
   {
     "type": "overmap_terrain",
     "copy-from": "central_lab_core_center",
-    "id": [
-      "central_lab_melchior_center",
-      "central_lab_melchior_edge",
-      "central_lab_melchior_corner"
-    ],
+    "id": [ "central_lab_melchior_center", "central_lab_melchior_edge", "central_lab_melchior_corner" ],
     "name": "central lab - central processing",
     "color": "light_gray"
   },
