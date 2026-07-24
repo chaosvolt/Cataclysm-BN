@@ -410,6 +410,40 @@
       { "point": [ 0, 2, -7 ], "overmap": "central_lab_down_south" },
       { "point": [ 1, 2, -7 ], "overmap": "central_lab_core_edge_south" },
       { "point": [ 2, 2, -7 ], "overmap": "central_lab_core_corner_east" },
+
+
+
+      { "point": [ -2, -2, -8 ], "overmap": "central_lab_melchior_down_west" },
+      { "point": [ -1, -2, -8 ], "overmap": "central_lab_melchior_edge_north" },
+      { "point": [ 0, -2, -8 ], "overmap": "central_lab_melchior_edge_north" },
+      { "point": [ 1, -2, -8 ], "overmap": "central_lab_melchior_edge_north" },
+      { "point": [ 2, -2, -8 ], "overmap": "central_lab_melchior_down_north" },
+
+      { "point": [ -2, -1, -8 ], "overmap": "central_lab_melchior_edge_west" },
+      { "point": [ -1, -1, -8 ], "overmap": "central_lab_melchior_center_north" },
+      { "point": [ 0, -1, -8 ], "overmap": "central_lab_melchior_center_north" },
+      { "point": [ 1, -1, -8 ], "overmap": "central_lab_melchior_center_north" },
+      { "point": [ 2, -1, -8 ], "overmap": "central_lab_melchior_edge_east" },
+
+      { "point": [ -2, 0, -8 ], "overmap": "central_lab_melchior_edge_west" },
+      { "point": [ -1, 0, -8 ], "overmap": "central_lab_melchior_center_north" },
+      { "point": [ 0, 0, -8 ], "overmap": "central_lab_melchior_center_north" },
+      { "point": [ 1, 0, -8 ], "overmap": "central_lab_melchior_center_north" },
+      { "point": [ 2, 0, -8 ], "overmap": "central_lab_melchior_edge_east" },
+
+      { "point": [ -2, 1, -8 ], "overmap": "central_lab_melchior_edge_west" },
+      { "point": [ -1, 1, -8 ], "overmap": "central_lab_melchior_center_north" },
+      { "point": [ 0, 1, -8 ], "overmap": "central_lab_melchior_center_north" },
+      { "point": [ 1, 1, -8 ], "overmap": "central_lab_melchior_center_north" },
+      { "point": [ 2, 1, -8 ], "overmap": "central_lab_melchior_edge_east" },
+
+      { "point": [ -2, 2, -8 ], "overmap": "central_lab_melchior_corner_south" },
+      { "point": [ -1, 2, -8 ], "overmap": "central_lab_melchior_edge_south" },
+      { "point": [ 0, 2, -8 ], "overmap": "central_lab_melchior_up_south" },
+      { "point": [ 1, 2, -8 ], "overmap": "central_lab_melchior_edge_south" },
+      { "point": [ 2, 2, -8 ], "overmap": "central_lab_melchior_corner_east" },
+
+
       { "point": [ -2, -2, -9 ], "overmap": "central_lab_finale_access_up_west" },
       { "point": [ -1, -2, -9 ], "overmap": "central_lab_finale_access_edge_north" },
       { "point": [ 0, -2, -9 ], "overmap": "central_lab_finale_observation_north" },
@@ -435,6 +469,8 @@
       { "point": [ 0, 2, -9 ], "overmap": "central_lab_finale_observation_south" },
       { "point": [ 1, 2, -9 ], "overmap": "central_lab_finale_access_edge_south" },
       { "point": [ 2, 2, -9 ], "overmap": "central_lab_finale_access_down_east" },
+
+
       { "point": [ -2, -2, -10 ], "overmap": "central_lab_finale_access_corner_west" },
       { "point": [ -1, -2, -10 ], "overmap": "central_lab_finale_access_edge_north" },
       { "point": [ 0, -2, -10 ], "overmap": "central_lab_finale_access_bay_north" },
