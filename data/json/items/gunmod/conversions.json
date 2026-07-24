@@ -419,5 +419,25 @@
     "magazine_adaptor": [ [ "9mm", [ "9mm_speedloader6" ] ] ],
     "min_skills": [ [ "weapon", 2 ], [ "mechanics", 2 ] ],
     "flags": [ "INSTALL_DIFFICULT" ]
+  },
+  {
+    "id": "retool_pipe_410",
+    "type": "GUNMOD",
+    "name": { "str": ".410 pipe shotgun conversion kit" },
+    "description": "A replacement barrel and chamber assembly for a pipe shotgun, bored out to fire .410 shells.",
+    "weight": "250 g",
+    "volume": "125 ml",
+    "integral_volume": "0 ml",
+    "integral_weight": "0 g",
+    "price": "100 USD",
+    "price_postapoc": "5 USD",
+    "material": "steel",
+    "symbol": ":",
+    "color": "green",
+    "location": "bore",
+    "mod_targets": [ "ashot", "pipe_shotgun", "pipe_double_shotgun" ],
+    "install_time": "5 m",
+    "ammo_modifier": "410shot",
+    "min_skills": [ [ "weapon", 1 ], [ "mechanics", 1 ] ]
   }
 ]

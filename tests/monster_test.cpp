@@ -154,6 +154,38 @@ TEST_CASE("MONSTER_SPEED scales monster move credit", "[monster][speed]") {
     CHECK(test_monster.type->speed == base_speed);
 }
 
+TEST_CASE("monster ammo slots accept configured alternate ammo items", "[monster][ammo]") {
+    clear_all_state();
+    move_player_out_of_the_way();
+
+    auto& test_monster = spawn_test_monster("mon_test_ammo_variants", tripoint_bub_ms(60, 60, 0));
+
+    CHECK(test_monster.ammo_slot_items(itype_id("9mmfmj"))
+          == std::vector<itype_id>({itype_id("9mmfmj"), itype_id("9mm")}));
+    CHECK(test_monster.ammo_capacity_for_slot(itype_id("9mmfmj")) == 10);
+    CHECK(test_monster.ammo_count_for_slot(itype_id("9mmfmj")) == 10);
+
+    test_monster.ammo[itype_id("9mmfmj")] = 1;
+    test_monster.ammo[itype_id("9mm")] = 4;
+
+    CHECK(test_monster.ammo_count_for_slot(itype_id("9mmfmj")) == 5);
+    CHECK(test_monster.loaded_ammo_for_slot(itype_id("9mmfmj")) == itype_id("9mm"));
+}
+
+TEST_CASE(
+    "monster ammo slots derive compatible ammo from the gun when no override is set",
+    "[monster][ammo]") {
+    clear_all_state();
+    move_player_out_of_the_way();
+
+    auto& test_monster = spawn_test_monster("mon_test_gun_ammo_compat", tripoint_bub_ms(60, 60, 0));
+    const auto slot_items = test_monster.ammo_slot_items(itype_id("9mmfmj"));
+
+    CHECK(std::ranges::contains(slot_items, itype_id("9mmfmj")));
+    CHECK(std::ranges::contains(slot_items, itype_id("9mm")));
+    CHECK(slot_items.size() > 1);
+}
+
 static int moves_to_destination(
     const std::string& monster_type, const tripoint_bub_ms& start, const tripoint_bub_ms& end) {
     clear_creatures();

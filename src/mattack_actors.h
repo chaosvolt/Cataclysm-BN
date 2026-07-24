@@ -132,8 +132,8 @@ class gun_actor : public mattack_actor
         // Item type of the gun we're using
         itype_id gun_type;
 
-        /** Specific ammo type to use or for gun default if unspecified */
-        itype_id ammo_type = itype_id::NULL_ID();
+        /** Specific ammo item ids to use, with the first entry as the default loaded ammo */
+        std::vector<itype_id> ammo_types;
 
         /*@{*/
         /** Balanced against player. If fake_skills unspecified defaults to GUN 4, WEAPON 8 */
@@ -222,4 +222,3 @@ class deployer_actor : public mattack_actor
         bool call( monster & ) const override;
         std::unique_ptr<mattack_actor> clone() const override;
 };
-

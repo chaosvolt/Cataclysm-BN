@@ -2384,21 +2384,26 @@ class jmapgen_spawn_item : public jmapgen_piece
 
             // 100% chance = exactly 1 item, otherwise scale by item spawn rate.
             const float spawn_rate = get_option<float>( "ITEM_SPAWNRATE" );
-            const int spawn_count = ( c == 100 ) ? 1 : roll_remainder( c * spawn_rate / 100.0f );
-            const int quantity = amount.get();
+            const int spawn_count = ( ( c == 100 ) ? 1 : roll_remainder( c * spawn_rate / 100.0f ) ) *
+                                    amount.get();
 
             const point_omt_ms p = { x.get(), y.get() };
 
-            for( int i = 0; i < spawn_count; i++ ) {
-                for( int j = 0; j < quantity; j++ ) {
-                    detached_ptr<item> new_item = item::spawn( chosen_id, calendar::start_of_cataclysm );
-                    if( activate_on_spawn ) {
-                        new_item->activate();
-                    }
+            detached_ptr<item> itm = item::spawn( chosen_id, calendar::start_of_cataclysm );
 
-                    dat.m.spawn_an_item( p, std::move( new_item ), 0, 0 );
-                }
+            const int spawns = dat.m.edit_item_for_spawn_rate( *itm );
+            const int total_spawns = spawn_count * spawns;
+            if( total_spawns == 0 ) {
+                return;
             }
+            for( int i = 1; i < spawns; i++ ) {
+                detached_ptr<item> tmp = item::spawn( *itm );
+                if( activate_on_spawn ) {
+                    tmp->activate();
+                }
+                dat.m.add_item_or_charges( p, std::move( tmp ) );
+            }
+            dat.m.add_item_or_charges( p, std::move( itm ) );
         }
 
         void check( const std::string &oter_name, const mapgen_parameters &parameters

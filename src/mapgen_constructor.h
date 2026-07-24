@@ -123,6 +123,7 @@ class mapgen_constructor
         auto place_items( const item_group_id &loc, int chance, const point_omt_ms &p1,
                           const point_omt_ms &p2, bool ongrass, const time_point &turn,
                           int magazine = 0, int ammo = 0 ) -> std::vector<item *>;
+        auto edit_item_for_spawn_rate( item &itm ) -> int;
         auto item_category_spawn_rate( const item &itm ) -> float;
         auto flammable_items_at( const point_omt_ms &p, int threshold = 0 ) -> bool;
 

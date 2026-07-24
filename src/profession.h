@@ -71,9 +71,12 @@ class profession
         std::vector<trait_id> _starting_traits;
         std::set<trait_id> _forbidden_traits;
         std::set<bionic_id> _forbidden_bionics;
+        std::set<spell_id> _forbidden_spells;
         std::set<trait_id> _allowed_traits;
         std::set<bionic_id> _allowed_bionics;
+        std::set<spell_id> _allowed_spells;
         bool _forbids_bionics;
+        bool _forbids_spells;
         std::vector<mtype_id> _starting_pets;
         std::vector<npc_class_id> _starting_npcs;
         vproto_id _starting_vehicle = vproto_id::NULL_ID();
@@ -149,4 +152,10 @@ class profession
         std::vector<bionic_id> get_locked_bionics() const;
         std::set<bionic_id> get_forbidden_bionics() const;
         std::set<bionic_id> get_allowed_bionics() const;
+
+        bool is_forbidden_spell( const spell_id &spell ) const;
+        bool is_allowed_spell( const spell_id &spell ) const;
+        bool forbids_spells() const;
+        std::set<spell_id> get_forbidden_spells() const;
+        std::set<spell_id> get_allowed_spells() const;
 };

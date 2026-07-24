@@ -242,9 +242,12 @@ void profession::load( const JsonObject &jo, const std::string & )
     optional( jo, was_loaded, "traits", _starting_traits, auto_flags_reader<trait_id> {} );
     optional( jo, was_loaded, "forbidden_traits", _forbidden_traits, auto_flags_reader<trait_id> {} );
     optional( jo, was_loaded, "forbidden_bionics", _forbidden_bionics, auto_flags_reader<bionic_id> {} );
+    optional( jo, was_loaded, "forbidden_spells", _forbidden_spells, auto_flags_reader<spell_id> {} );
     optional( jo, was_loaded, "allowed_traits", _allowed_traits, auto_flags_reader<trait_id> {} );
     optional( jo, was_loaded, "allowed_bionics", _allowed_bionics, auto_flags_reader<bionic_id> {} );
+    optional( jo, was_loaded, "allowed_spells", _allowed_spells, auto_flags_reader<spell_id> {} );
     optional( jo, was_loaded, "forbids_bionics", _forbids_bionics );
+    optional( jo, was_loaded, "forbids_spells", _forbids_spells );
     optional( jo, was_loaded, "flags", flags, auto_flags_reader<> {} );
 
     optional( jo, was_loaded, "missions", _missions, auto_flags_reader<mission_type_id> {} );
@@ -357,6 +360,18 @@ void profession::check_definition() const
     for( auto &t : _allowed_bionics ) {
         if( !t.is_valid() ) {
             debugmsg( "bionic %s for profession %s does not exist", t.c_str(), id.c_str() );
+        }
+    }
+
+    for( auto &t : _forbidden_spells ) {
+        if( !t.is_valid() ) {
+            debugmsg( "spell %s for profession %s does not exist", t.c_str(), id.c_str() );
+        }
+    }
+
+    for( auto &t : _allowed_spells ) {
+        if( !t.is_valid() ) {
+            debugmsg( "spell %s for profession %s does not exist", t.c_str(), id.c_str() );
         }
     }
     for( const auto &elem : _starting_pets ) {
@@ -579,6 +594,16 @@ bool profession::forbids_bionics() const
 {
     return _forbids_bionics;
 }
+
+std::set<spell_id> profession::get_allowed_spells() const
+{
+    return _allowed_spells;
+}
+
+bool profession::forbids_spells() const
+{
+    return _forbids_spells;
+}
 profession::StartingSkillList profession::skills() const
 {
     return _starting_skills;
@@ -623,6 +648,16 @@ bool profession::is_forbidden_bionic( const bionic_id &bionic ) const
 bool profession::is_allowed_bionic( const bionic_id &bionic ) const
 {
     return _allowed_bionics.contains( bionic );
+}
+
+bool profession::is_forbidden_spell( const spell_id &spell ) const
+{
+    return _forbidden_spells.contains( spell );
+}
+
+bool profession::is_allowed_spell( const spell_id &spell ) const
+{
+    return _allowed_spells.contains( spell );
 }
 
 std::map<spell_id, int> profession::spells() const

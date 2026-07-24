@@ -513,7 +513,17 @@ void gun_actor::load_internal( const JsonObject &obj, const std::string & )
 {
     obj.read( "gun_type", gun_type, true );
 
-    obj.read( "ammo_type", ammo_type );
+    ammo_types.clear();
+    if( obj.has_array( "ammo_type" ) ) {
+        for( JsonValue ammo_entry : obj.get_array( "ammo_type" ) ) {
+            const auto ammo_id = itype_id( ammo_entry.get_string() );
+            if( !std::ranges::contains( ammo_types, ammo_id ) ) {
+                ammo_types.push_back( ammo_id );
+            }
+        }
+    } else if( obj.has_string( "ammo_type" ) ) {
+        ammo_types.push_back( itype_id( obj.get_string( "ammo_type" ) ) );
+    }
 
     if( obj.has_array( "fake_skills" ) ) {
         for( JsonArray cur : obj.get_array( "fake_skills" ) ) {
@@ -772,7 +782,9 @@ void gun_actor::shoot( monster &z, const tripoint_bub_ms &target, const gun_mode
     detached_ptr<item> gun = item::spawn( gun_type );
     gun->gun_set_mode( mode );
 
-    itype_id ammo = ammo_type ? ammo_type : gun->ammo_default();
+    const auto ammo_slot = !ammo_types.empty() ? ammo_types.front() : gun->ammo_default();
+    const auto loaded_ammo = z.loaded_ammo_for_slot( ammo_slot );
+    const auto ammo = loaded_ammo.is_empty() ? ammo_slot : loaded_ammo;
     if( ammo ) {
         gun->ammo_set( ammo, z.ammo[ammo] );
     }
