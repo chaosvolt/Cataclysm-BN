@@ -383,7 +383,13 @@
   },
   {
     "type": "overmap_terrain",
-    "id": [ "central_lab_core_center", "central_lab_core_edge", "central_lab_core_corner" ],
+    "id": [
+      "central_lab_core_center",
+      "central_lab_core_edge",
+      "central_lab_core_corner",
+      "central_lab_finale_access_edge",
+      "central_lab_finale_access_corner"
+    ],
     "name": "central lab - core",
     "sym": "L",
     "color": "cyan",
@@ -393,14 +399,27 @@
   {
     "type": "overmap_terrain",
     "copy-from": "central_lab_core_center",
-    "id": "central_lab_down",
+    "id": [
+      "central_lab_down",
+      "central_lab_up",
+      "central_lab_up_center",
+      "central_lab_finale_access_up",
+      "central_lab_finale_access_down"
+    ],
     "name": "central lab - stairs",
     "color": "blue"
   },
   {
     "type": "overmap_terrain",
-    "copy-from": "central_lab_down",
-    "id": [ "central_lab_up", "central_lab_up_center" ]
+    "copy-from": "central_lab_core_center",
+    "id": [ "central_lab_finale_access_bay" ],
+    "name": "central lab - access bay"
+  },
+  {
+    "type": "overmap_terrain",
+    "copy-from": "central_lab_core_center",
+    "id": [ "central_lab_finale_observation" ],
+    "name": "central lab - observation"
   },
   {
     "type": "overmap_terrain",
@@ -411,7 +430,7 @@
       "central_lab_finale_2_edge",
       "central_lab_finale_2_corner"
     ],
-    "name": "central lab",
+    "name": "central lab - superportal chamber",
     "sym": "L",
     "color": "red",
     "see_cost": 5
@@ -419,7 +438,7 @@
   {
     "type": "overmap_terrain",
     "id": "central_lab_endgame",
-    "name": "central lab",
+    "name": "central lab - superportal",
     "sym": "L",
     "color": "red",
     "see_cost": 5,

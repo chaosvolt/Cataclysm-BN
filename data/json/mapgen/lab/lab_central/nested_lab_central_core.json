@@ -413,6 +413,8 @@
       ],
       "terrain": { "|": "t_strconc_wall", "-": "t_wall_metal", "+": "t_door_metal_lab_c" },
       "place_nested": [
+        { "chunks": [ [ "null", 10 ], [ "central_lab_mini_room_14x7", 90 ] ], "x": 0, "y": 0 },
+        { "chunks": [ [ "null", 10 ], [ "central_lab_mini_room_14x7", 90 ] ], "x": 0, "y": 13 },
         {
           "chunks": [
             [ "null", 50 ],
@@ -472,6 +474,8 @@
       ],
       "terrain": { "|": "t_strconc_wall", "-": "t_wall_metal", "+": "t_door_metal_lab_c" },
       "place_nested": [
+        { "chunks": [ [ "null", 10 ], [ "central_lab_mini_room_7x14", 90 ] ], "x": 0, "y": 0 },
+        { "chunks": [ [ "null", 10 ], [ "central_lab_mini_room_7x14", 90 ] ], "x": 13, "y": 0 },
         {
           "chunks": [
             [ "null", 50 ],
@@ -560,7 +564,7 @@
       ],
       "terrain": { "|": "t_strconc_wall", "=": "t_door_metal_locked", "7": "t_card_science" }
     }
-  },\
+  },
   {
     "type": "mapgen",
     "method": "json",
@@ -820,7 +824,7 @@
       ],
       "terrain": { "!": "t_floor_red", "u": [ "t_metal_floor", "t_metal_floor_olight" ] },
       "furniture": { "#": "f_sandbag_half" },
-      "nested": { "C": { "chunks": [ [ "null", 3 ], "central_lab_ammo_rack_1x1" ] } },
+      "nested": { "C": { "chunks": [ [ "null", 75 ], [ "central_lab_ammo_rack_1x1", 25 ] ] } },
       "place_monster": [ { "monster": "mon_turret_medium", "x": 3, "y": 3 } ]
     }
   },
