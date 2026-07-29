@@ -421,9 +421,160 @@
   {
     "type": "mapgen",
     "method": "json",
-    "om_terrain": [ "central_lab_melchior_center" ],
-    "//": "Most of the below is a WIP skeletal framework of the last few floors.",
-    "object": { "fill_ter": "t_metal_floor" }
+    "om_terrain": [ "central_lab_melchior_core_center" ],
+    "object": {
+      "fill_ter": "t_metal_floor",
+      "rows": [
+        "-A                    A-",
+        "A|                    |A",
+        "                        ",
+        "                        ",
+        "                        ",
+        "                        ",
+        "                        ",
+        "                        ",
+        "                        ",
+        "                        ",
+        "                        ",
+        "                        ",
+        "                        ",
+        "                        ",
+        "                        ",
+        "                        ",
+        "                        ",
+        "                        ",
+        "                        ",
+        "                        ",
+        "                        ",
+        "                        ",
+        "A|                    |A",
+        "-A                    A-"
+      ],
+      "terrain": { "|": "t_wall_metal", "-": "t_rock", "A": "t_wall_metal" },
+      "furniture": { "A": "f_metal_cold_vent" }
+    }
+  },
+  {
+    "type": "mapgen",
+    "method": "json",
+    "om_terrain": [ "central_lab_melchior_core_edge" ],
+    "object": {
+      "fill_ter": "t_metal_floor",
+      "rows": [
+        "                        ",
+        "                        ",
+        "                        ",
+        "                        ",
+        "                        ",
+        "                        ",
+        "                        ",
+        "                        ",
+        "                        ",
+        "                        ",
+        "                        ",
+        "                        ",
+        "                        ",
+        "                        ",
+        "                        ",
+        "                        ",
+        "                        ",
+        "                        ",
+        "                        ",
+        "                        ",
+        "                        ",
+        "                        ",
+        "A|                    |A",
+        "-A                    A-"
+      ],
+      "terrain": { "|": "t_wall_metal", "-": "t_rock", "A": "t_wall_metal" },
+      "furniture": { "A": "f_metal_cold_vent" }
+    }
+  },
+  {
+    "type": "mapgen",
+    "method": "json",
+    "om_terrain": [ "central_lab_melchior_control_room" ],
+    "object": {
+      "fill_ter": "t_metal_floor",
+      "rows": [
+        "-A                    A-",
+        "A|                    |A",
+        "                        ",
+        "                        ",
+        "                        ",
+        "||WWWWWWWWWWWWWWWWWWWW||",
+        "|u 777777777777777777 u|",
+        "W   h h h h  h h h h   W",
+        "W6h                  h6W",
+        "W6   77777    77777   6W",
+        "W6h   h h      h h   h6W",
+        "W6                    6W",
+        "W    77777    77777    W",
+        "|     h h      h h     |",
+        "+                      +",
+        "+                      +",
+        "|                      |",
+        "W     hh        hh     W",
+        "W6h  heeh      heeh  h6W",
+        "W6   heeh      heeh   6W",
+        "W6h  heeh      heeh  h6W",
+        "W6   heeh      heeh   6W",
+        "W     hh        hh     W",
+        "|                      |"
+      ],
+      "terrain": {
+        "|": "t_wall_metal",
+        "-": "t_rock",
+        "+": "t_door_metal_lab_c",
+        "A": "t_wall_metal",
+        "u": [ "t_metal_floor", "t_metal_floor_olight" ],
+        "W": "t_ballistic_glass"
+      },
+      "furniture": {
+        "6": "f_console_broken_table",
+        "7": "f_control_station",
+        "A": "f_metal_cold_vent",
+        "e": "f_table",
+        "F": "f_filing_cabinet",
+        "h": "f_chair"
+      }
+    }
+  },
+  {
+    "type": "mapgen",
+    "method": "json",
+    "om_terrain": [ "central_lab_melchior_core_corner" ],
+    "object": {
+      "fill_ter": "t_metal_floor",
+      "rows": [
+        "                        ",
+        "                        ",
+        "                        ",
+        "                        ",
+        "                        ",
+        "                        ",
+        "                        ",
+        "                        ",
+        "                        ",
+        "                        ",
+        "                        ",
+        "                        ",
+        "                        ",
+        "                        ",
+        "                        ",
+        "                        ",
+        "                        ",
+        "                        ",
+        "                        ",
+        "                        ",
+        "                        ",
+        "                        ",
+        "A|                      ",
+        "-A                      "
+      ],
+      "terrain": { "|": "t_wall_metal", "-": "t_rock", "A": "t_wall_metal" },
+      "furniture": { "A": "f_metal_cold_vent" }
+    }
   },
   {
     "type": "mapgen",
@@ -454,7 +605,7 @@
         "-|                    |-",
         "-|                    |-",
         "-|u                  u|-",
-        "-|WWWWWWWWWWWWWWWWWWWW|-",
+        "-||WWWWWWW|++|WWWWWWW||-",
         "A|                    |A"
       ],
       "terrain": {
@@ -509,7 +660,9 @@
         { "chunks": [ "central_lab_mini_room_7x7" ], "x": 2, "y": 2 },
         { "chunks": [ "central_lab_mini_room_7x7" ], "x": 15, "y": 2 },
         { "chunks": [ "central_lab_mini_room_7x7" ], "x": 2, "y": 15 },
-        { "chunks": [ "central_lab_mini_room_7x7" ], "x": 15, "y": 15 }
+        { "chunks": [ "central_lab_mini_room_7x7" ], "x": 15, "y": 15 },
+        { "chunks": [ [ "null", 50 ], [ "central_lab_locked_s_4x4", 50 ] ], "x": 10, "y": 20 },
+        { "chunks": [ [ "null", 50 ], [ "central_lab_locked_w_4x4", 50 ] ], "x": 0, "y": 10 }
       ]
     }
   },
@@ -537,13 +690,13 @@
         "|||||||||||++|||||||||||",
         "-|u                  u|-",
         "-|                    |-",
+        "-|  dh h hd  dh h hd  |-",
+        "-|  ddddddd  ddddddd  |-",
         "-|                    |-",
         "-|                    |-",
-        "-|                    |-",
-        "-|                    |-",
-        "-|                    |-",
-        "-|                    |-",
-        "A|                    |A"
+        "-|  dh h hd  dh h hd  |-",
+        "-|  ddddddd  ddddddd  |-",
+        "||                    ||"
       ],
       "terrain": {
         "|": "t_wall_metal",
@@ -554,7 +707,8 @@
         "u": [ "t_metal_floor", "t_metal_floor_olight" ],
         "W": "t_ballistic_glass"
       },
-      "furniture": { "A": "f_metal_cold_vent" },
+      "furniture": { "A": "f_metal_cold_vent", "d": "f_desk", "h": "f_chair" },
+      "items": { "d": { "item": "office", "chance": 50, "repeat": 4 }, "e": { "item": "lab_bookshelves", "chance": 25, "repeat": 2 } },
       "place_nested": [ { "chunks": [ "central_lab_melchior_mini_room_20x7" ], "x": 2, "y": 2 } ]
     }
   },
@@ -595,7 +749,9 @@
         { "chunks": [ "central_lab_mini_room_7x7" ], "x": 2, "y": 2 },
         { "chunks": [ "central_lab_mini_room_7x7" ], "x": 15, "y": 2 },
         { "chunks": [ "central_lab_mini_room_7x7" ], "x": 2, "y": 15 },
-        { "chunks": [ "central_lab_mini_room_7x7" ], "x": 15, "y": 15 }
+        { "chunks": [ "central_lab_mini_room_7x7" ], "x": 15, "y": 15 },
+        { "chunks": [ [ "null", 50 ], [ "central_lab_locked_s_4x4", 50 ] ], "x": 10, "y": 20 },
+        { "chunks": [ [ "null", 50 ], [ "central_lab_locked_w_4x4", 50 ] ], "x": 0, "y": 10 }
       ]
     }
   },
@@ -603,6 +759,7 @@
     "type": "mapgen",
     "method": "json",
     "om_terrain": [ "central_lab_finale_access_edge" ],
+    "//": "Most of the below is a WIP skeletal framework of the last few floors.",
     "object": {
       "fill_ter": "t_metal_floor",
       "rows": [

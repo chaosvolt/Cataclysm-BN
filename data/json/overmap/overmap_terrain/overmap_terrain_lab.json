@@ -414,9 +414,21 @@
   {
     "type": "overmap_terrain",
     "copy-from": "central_lab_core_center",
-    "id": [ "central_lab_melchior_center", "central_lab_melchior_edge", "central_lab_melchior_corner" ],
+    "id": [ "central_lab_melchior_edge", "central_lab_melchior_corner" ],
     "name": "central lab - central processing",
     "color": "light_gray"
+  },
+  {
+    "type": "overmap_terrain",
+    "copy-from": "central_lab_core_center",
+    "id": [
+      "central_lab_melchior_control_room",
+      "central_lab_melchior_core_center",
+      "central_lab_melchior_core_edge",
+      "central_lab_melchior_core_corner"
+    ],
+    "name": "central lab - Melchior",
+    "color": "dark_gray"
   },
   {
     "type": "overmap_terrain",
