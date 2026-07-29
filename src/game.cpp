@@ -2814,9 +2814,10 @@ auto game::run_activity_skip_batch_turns( const int skipped_turns ) -> void
     }
 
     {
-        ZoneScopedN( "activity_fixed_window_flush_items" );
-        m.process_items();
+        ZoneScopedN( "do_map_process_items" );
+        m.process_items( skipped_turns );
     }
+
     explosion_handler::get_explosion_queue().execute();
     cleanup_dead();
     Pathfinding::clear_d_maps();
