@@ -469,7 +469,8 @@
         "7": "f_control_station",
         "A": "f_metal_cold_vent",
         "S": "f_server"
-      }
+      },
+      "place_monster": [ { "group": "GROUP_LAB_ROBOTS", "x": [ 1, 22 ], "y": [ 1, 22 ], "repeat": [ 1, 3 ] } ]
     }
   },
   {
@@ -505,7 +506,8 @@
         "-A                    A-"
       ],
       "terrain": { "|": "t_wall_metal", "-": "t_rock", "A": "t_wall_metal" },
-      "furniture": { "7": "f_control_station", "A": "f_metal_cold_vent", "S": "f_server" }
+      "furniture": { "7": "f_control_station", "A": "f_metal_cold_vent", "S": "f_server" },
+      "place_monster": [ { "group": "GROUP_LAB_ROBOTS", "x": [ 1, 22 ], "y": [ 1, 22 ], "repeat": [ 1, 3 ] } ]
     }
   },
   {
@@ -605,7 +607,8 @@
         "s": "t_switchgear_s",
         "T": "t_support_l"
       },
-      "furniture": { "7": "f_control_station", "A": "f_metal_cold_vent", "b": "f_battery_huge" }
+      "furniture": { "7": "f_control_station", "A": "f_metal_cold_vent", "b": "f_battery_huge" },
+      "place_monster": [ { "group": "GROUP_LAB_ROBOTS", "x": [ 1, 22 ], "y": [ 1, 22 ], "repeat": [ 1, 3 ] } ]
     }
   },
   {
