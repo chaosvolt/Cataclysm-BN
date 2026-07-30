@@ -61,6 +61,7 @@ void do_lab_finale_test() {
     const oter_id labt_endgame("central_lab_endgame");
     const point_abs_om origin;
     auto batch = overmap_specials::get_default_batch(origin);
+    ACTIVE_OVERMAP_BUFFER.clear();
     ACTIVE_OVERMAP_BUFFER.create_custom_overmap(origin, batch);
     overmap* test_overmap = ACTIVE_OVERMAP_BUFFER.get_existing(origin);
     int endgame_count = 0;
@@ -79,7 +80,6 @@ void do_lab_finale_test() {
 
 TEST_CASE("Exactly one endgame lab finale is generated in 0,0 overmap", "[overmap][slow]") {
     clear_all_state();
-    clear_overmap();
     do_lab_finale_test();
 }
 
