@@ -1272,6 +1272,195 @@
   {
     "type": "mapgen",
     "method": "json",
+    "nested_mapgen_id": "central_lab_stairway_20x20",
+    "//": "These chunks provide a random variation on rooms surrounding stairs.",
+    "object": {
+      "mapgensize": [ 20, 20 ],
+      "rows": [
+        "                    ",
+        "                    ",
+        "  dddddd    dddddd  ",
+        "  dh h h    h h hd  ",
+        "  d              d  ",
+        "  dh            hd  ",
+        "  d   FF    FF   d  ",
+        "  dh  FF    FF  hd  ",
+        "                    ",
+        "                    ",
+        "                    ",
+        "                    ",
+        "  dh  FF    FF  hd  ",
+        "  d   FF    FF   d  ",
+        "  dh            hd  ",
+        "  d              d  ",
+        "  dh h h    h h hd  ",
+        "  dddddd    dddddd  ",
+        "                    ",
+        "                    "
+      ],
+      "furniture": { "d": "f_desk", "e": "f_table", "F": "f_filing_cabinet", "h": "f_chair" },
+      "items": { "d": { "item": "office", "chance": 50, "repeat": 4 }, "F": { "item": "file_room", "chance": 75, "repeat": 6 } }
+    }
+  },
+  {
+    "type": "mapgen",
+    "method": "json",
+    "nested_mapgen_id": "central_lab_stairway_20x20",
+    "object": {
+      "mapgensize": [ 20, 20 ],
+      "rows": [
+        "                    ",
+        "                    ",
+        "  |||||||++|||||||  ",
+        "  |Vvt       bb L|  ",
+        "  |             L|  ",
+        "  |             L|  ",
+        "  |ccs       bb L|  ",
+        "  ||||||    ||||||  ",
+        "  Wdh  |    |  hdW  ",
+        "  Wd   +    +   dW  ",
+        "  Wd   +    +   dW  ",
+        "  Wdh  |    |  hdW  ",
+        "  ||||||    ||||||  ",
+        "  |L bb       scc|  ",
+        "  |L             |  ",
+        "  |L             |  ",
+        "  |L bb       tvV|  ",
+        "  |||||||++|||||||  ",
+        "                    ",
+        "                    "
+      ],
+      "terrain": { "|": "t_strconc_wall", "+": "t_door_metal_interior_locked", "W": "t_ballistic_glass" },
+      "furniture": {
+        "b": "f_bench",
+        "c": "f_counter",
+        "d": "f_desk",
+        "e": "f_table",
+        "h": "f_chair",
+        "L": "f_locker",
+        "s": "f_sink",
+        "t": "f_trashcan",
+        "V": "f_vending_c",
+        "v": "f_vending_c"
+      },
+      "items": {
+        "e": { "item": "magazines", "chance": 50, "repeat": 4 },
+        "L": { "item": "gear_labsecurity", "chance": 50, "repeat": 2 },
+        "t": { "item": "trash_cart", "chance": 50, "repeat": 6 },
+        "V": { "item": "vending_food", "chance": 80 },
+        "v": { "item": "vending_drink", "chance": 80 }
+      }
+    }
+  },
+  {
+    "type": "mapgen",
+    "method": "json",
+    "nested_mapgen_id": "central_lab_stairway_20x20",
+    "object": {
+      "mapgensize": [ 20, 20 ],
+      "rows": [
+        "                    ",
+        "                    ",
+        "  ||++||    ||++||  ",
+        "  |    |    |    |  ",
+        "  |    |    |    |  ",
+        "  |    |    |    |  ",
+        "  |    |    |    |  ",
+        "  |||||||++|||||||  ",
+        "       |    |       ",
+        "       +    +       ",
+        "       +    +       ",
+        "       |    |       ",
+        "  |||||||++|||||||  ",
+        "  |    |    |    |  ",
+        "  |    |    |    |  ",
+        "  |    |    |    |  ",
+        "  |    |    |    |  ",
+        "  ||++||    ||++||  ",
+        "                    ",
+        "                    "
+      ],
+      "terrain": { "|": "t_strconc_wall", "+": "t_door_metal_lab_c" },
+      "place_nested": [
+        { "chunks": [ "central_lab_mini_room_4x4", "central_lab_mini_room_ns_4x4" ], "x": 3, "y": 3 },
+        { "chunks": [ "central_lab_mini_room_4x4", "central_lab_mini_room_ns_4x4" ], "x": 13, "y": 3 },
+        { "chunks": [ "central_lab_mini_room_4x4", "central_lab_mini_room_ns_4x4" ], "x": 3, "y": 13 },
+        { "chunks": [ "central_lab_mini_room_4x4", "central_lab_mini_room_ns_4x4" ], "x": 13, "y": 13 }
+      ]
+    }
+  },
+  {
+    "type": "mapgen",
+    "method": "json",
+    "nested_mapgen_id": "central_lab_stairway_20x20",
+    "object": {
+      "mapgensize": [ 20, 20 ],
+      "rows": [
+        "                    ",
+        "                    ",
+        "      RRRGGRRR      ",
+        "     RRGGGGGGRR     ",
+        "    RRGGGGGGGGRR    ",
+        "   RR7777GG7777RR   ",
+        "  RRG7h hGGh h7GRR  ",
+        "  RGG7   GG   7GGR  ",
+        "  RGG7h IGGI h7GGR  ",
+        "  GGGGGGG  GGGGGGG  ",
+        "  GGGGGGG  GGGGGGG  ",
+        "  RGG7h IGGI h7GGR  ",
+        "  RGG7   GG   7GGR  ",
+        "  RRG7h hGGh h7GRR  ",
+        "   RR7777GG7777RR   ",
+        "    RRGGGGGGGGRR    ",
+        "     RRGGGGGGRR     ",
+        "      RRRGGRRR      ",
+        "                    ",
+        "                    "
+      ],
+      "terrain": { "G": "t_grate", "I": "t_column", "R": "t_concrete_railing" },
+      "furniture": { "7": "f_control_station", "h": "f_chair" }
+    }
+  },
+  {
+    "type": "mapgen",
+    "method": "json",
+    "nested_mapgen_id": "central_lab_stairway_20x20",
+    "object": {
+      "mapgensize": [ 20, 20 ],
+      "rows": [
+        "                    ",
+        "                    ",
+        "  ||WWWW|++|WWWW||  ",
+        "  |u 77      77 u|  ",
+        "  W              W  ",
+        "  W7            7W  ",
+        "  W7  SS    SS  7W  ",
+        "  W   SS    SS   W  ",
+        "  |              |  ",
+        "  +              +  ",
+        "  +              +  ",
+        "  |              |  ",
+        "  W   SS    SS   W  ",
+        "  W7  SS    SS  7W  ",
+        "  W7            7W  ",
+        "  W              W  ",
+        "  |u 77      77 u|  ",
+        "  ||WWWW|++|WWWW||  ",
+        "                    ",
+        "                    "
+      ],
+      "terrain": {
+        "|": "t_strconc_wall",
+        "+": "t_door_metal_lab_c",
+        "u": [ "t_metal_floor", "t_metal_floor_olight" ],
+        "W": "t_ballistic_glass"
+      },
+      "furniture": { "7": "f_control_station", "S": "f_server" }
+    }
+  },
+  {
+    "type": "mapgen",
+    "method": "json",
     "nested_mapgen_id": "central_lab_melchior_mini_room_20x7",
     "//": "Additional room variations for the Melchior layer, with more focus on computer stuff.",
     "object": {
