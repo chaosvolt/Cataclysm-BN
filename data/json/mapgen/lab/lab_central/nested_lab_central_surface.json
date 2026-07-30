@@ -196,11 +196,11 @@
     "object": {
       "mapgensize": [ 22, 5 ],
       "rows": [
-        "hd ddd ddd  ddd ddd dd",
-        "dd  h   h    h   h  hd",
+        "dd ddd ddd  ddd ddd dd",
+        "dh  h   h    h   h  hd",
         "                      ",
-        "dd  h   h    h   h  hd",
-        "hd ddd ddd  ddd ddd dd"
+        "dh  h   h    h   h  hd",
+        "dd ddd ddd  ddd ddd dd"
       ],
       "furniture": { "d": "f_desk", "h": "f_chair" },
       "items": { "d": { "item": "office", "chance": 50, "repeat": 4 } }
