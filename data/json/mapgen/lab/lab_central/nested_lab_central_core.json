@@ -42,7 +42,8 @@
         "e": { "item": "magazines", "chance": 50, "repeat": 4 },
         "d": { "item": "office", "chance": 50, "repeat": 4 },
         "F": { "item": "file_room", "chance": 75, "repeat": 6 }
-      }
+      },
+      "place_monster": [ { "group": "GROUP_CENTRAL_LAB", "x": [ 5, 14 ], "y": [ 5, 14 ], "chance": 50 } ]
     }
   },
   {
@@ -92,7 +93,8 @@
         "t": { "item": "trash_cart", "chance": 50, "repeat": 6 },
         "V": { "item": "vending_food", "chance": 80 },
         "v": { "item": "vending_drink", "chance": 80 }
-      }
+      },
+      "place_monster": [ { "group": "GROUP_CENTRAL_LAB", "x": [ 5, 14 ], "y": [ 5, 14 ], "repeat": [ 1, 2 ] } ]
     }
   },
   {
@@ -133,7 +135,8 @@
         "W": "t_ballistic_glass"
       },
       "furniture": { "#": "f_sandbag_half", "c": "f_counter", "r": "f_rack", "T": "f_target" },
-      "items": { "c": { "item": "ear_protection", "chance": 25 }, "r": { "item": "energy_weapon_armory", "chance": 50, "repeat": 2 } }
+      "items": { "c": { "item": "ear_protection", "chance": 25 }, "r": { "item": "energy_weapon_armory", "chance": 50, "repeat": 2 } },
+      "place_monster": [ { "group": "GROUP_CENTRAL_LAB", "x": [ 6, 13 ], "y": [ 7, 12 ], "repeat": [ 1, 2 ] } ]
     }
   },
   {
@@ -173,7 +176,8 @@
       },
       "furniture": { "c": "f_charger", "j": "f_cable_connector", "r": "f_utility_shelf" },
       "items": { "c": { "item": "gas_charging_rack", "chance": 25 }, "r": { "item": "mechanics", "chance": 50, "repeat": 3 } },
-      "place_vehicles": [ { "vehicle": "experimental_military_vehicles", "x": 6, "y": 7, "chance": 75, "rotation": 270 } ]
+      "place_vehicles": [ { "vehicle": "experimental_military_vehicles", "x": 6, "y": 7, "chance": 75, "rotation": 270 } ],
+      "place_monster": [ { "group": "GROUP_CENTRAL_LAB", "x": [ 5, 18 ], "y": [ 5, 18 ], "repeat": [ 1, 2 ] } ]
     }
   },
   {
@@ -237,7 +241,8 @@
       "place_loot": [
         { "item": "eyedrops", "x": 7, "y": 5, "chance": 75, "repeat": 2 },
         { "item": "eyedrops", "x": 12, "y": 5, "chance": 75, "repeat": 2 }
-      ]
+      ],
+      "place_monster": [ { "group": "GROUP_CENTRAL_LAB", "x": [ 5, 18 ], "y": [ 5, 18 ], "repeat": [ 1, 2 ] } ]
     }
   },
   {
@@ -727,7 +732,8 @@
       "terrain": { "u": [ "t_metal_floor", "t_metal_floor_olight" ] },
       "furniture": { "b": "f_bench", "L": "f_locker", "S": "f_shower", "Y": "f_eyewash" },
       "items": { "L": [ { "item": "cleaning", "chance": 50, "repeat": 4 }, { "item": "rad_gear", "chance": 50, "repeat": 2 } ] },
-      "place_loot": [ { "item": "eyedrops", "x": 0, "y": 2, "chance": 75, "repeat": 2 } ]
+      "place_loot": [ { "item": "eyedrops", "x": 0, "y": 2, "chance": 75, "repeat": 2 } ],
+      "place_monster": [ { "group": "GROUP_CENTRAL_LAB", "x": [ 2, 3 ], "y": [ 2, 3 ], "chance": 50 } ]
     }
   },
   {
@@ -745,7 +751,8 @@
       "terrain": { "u": [ "t_metal_floor", "t_metal_floor_olight" ] },
       "furniture": { "s": "f_sink", "t": "f_trashcan" },
       "toilets": { "T": {  } },
-      "items": { "s": { "item": "cleaning", "chance": 50, "repeat": 2 }, "t": { "item": "trash_cart", "chance": 25, "repeat": 3 } }
+      "items": { "s": { "item": "cleaning", "chance": 50, "repeat": 2 }, "t": { "item": "trash_cart", "chance": 25, "repeat": 3 } },
+      "place_monster": [ { "group": "GROUP_CENTRAL_LAB", "x": [ 2, 3 ], "y": [ 2, 3 ], "chance": 50 } ]
     }
   },
   {
@@ -763,7 +770,8 @@
       "terrain": { "u": [ "t_metal_floor", "t_metal_floor_olight" ] },
       "furniture": { "b": "f_bench", "L": "f_locker", "S": "f_shower", "Y": "f_eyewash" },
       "items": { "L": [ { "item": "cleaning", "chance": 50, "repeat": 4 }, { "item": "rad_gear", "chance": 50, "repeat": 2 } ] },
-      "place_loot": [ { "item": "eyedrops", "x": 1, "y": 0, "chance": 75, "repeat": 2 } ]
+      "place_loot": [ { "item": "eyedrops", "x": 1, "y": 0, "chance": 75, "repeat": 2 } ],
+      "place_monster": [ { "group": "GROUP_CENTRAL_LAB", "x": [ 2, 3 ], "y": [ 2, 3 ], "chance": 50 } ]
     }
   },
   {
@@ -782,7 +790,8 @@
       "terrain": { "u": [ "t_metal_floor", "t_metal_floor_olight" ] },
       "furniture": { "s": "f_sink", "t": "f_trashcan" },
       "toilets": { "T": {  } },
-      "items": { "s": { "item": "cleaning", "chance": 50, "repeat": 2 }, "t": { "item": "trash_cart", "chance": 25, "repeat": 3 } }
+      "items": { "s": { "item": "cleaning", "chance": 50, "repeat": 2 }, "t": { "item": "trash_cart", "chance": 25, "repeat": 3 } },
+      "place_monster": [ { "group": "GROUP_CENTRAL_LAB", "x": [ 2, 3 ], "y": [ 2, 3 ], "chance": 50 } ]
     }
   },
   {
@@ -873,7 +882,8 @@
           ],
           "failures": [ { "action": "damage" }, { "action": "alarm" }, { "action": "shutdown" } ]
         }
-      }
+      },
+      "place_monster": [ { "group": "GROUP_CENTRAL_LAB", "x": [ 1, 5 ], "y": [ 1, 5 ], "chance": 50 } ]
     }
   },
   {
@@ -897,7 +907,8 @@
       "items": {
         "F": [ { "item": "supplies_reagents_lab", "chance": 50, "repeat": 2 }, { "item": "supplies_samples_lab", "chance": 75 } ],
         "f": [ { "item": "chem_lab", "chance": 25, "repeat": 2 }, { "item": "tools_science", "chance": 25 } ]
-      }
+      },
+      "place_monster": [ { "group": "GROUP_CENTRAL_LAB", "x": [ 1, 5 ], "y": [ 1, 5 ], "chance": 50 } ]
     }
   },
   {
@@ -1021,7 +1032,8 @@
       ],
       "terrain": { "|": "t_strconc_wall", "u": [ "t_metal_floor", "t_metal_floor_olight" ] },
       "furniture": { "f": "f_fume_hood" },
-      "items": { "f": [ { "item": "chem_lab", "chance": 25, "repeat": 2 }, { "item": "tools_science", "chance": 25 } ] }
+      "items": { "f": [ { "item": "chem_lab", "chance": 25, "repeat": 2 }, { "item": "tools_science", "chance": 25 } ] },
+      "place_monster": [ { "group": "GROUP_CENTRAL_LAB", "x": [ 1, 12 ], "y": [ 1, 12 ], "chance": 50 } ]
     }
   },
   {
@@ -1055,7 +1067,8 @@
           { "item": "supplies_reagents_lab", "chance": 50, "repeat": 3 },
           { "item": "supplies_samples_lab", "chance": 50, "repeat": 3 }
         ]
-      }
+      },
+      "place_monster": [ { "group": "GROUP_CENTRAL_LAB", "x": [ 1, 12 ], "y": [ 1, 12 ], "chance": 50 } ]
     }
   },
   {
@@ -1097,7 +1110,8 @@
         "                    "
       ],
       "furniture": { "d": "f_desk", "h": "f_chair" },
-      "items": { "d": { "item": "office", "chance": 50, "repeat": 4 } }
+      "items": { "d": { "item": "office", "chance": 50, "repeat": 4 } },
+      "place_monster": [ { "group": "GROUP_CENTRAL_LAB", "x": [ 1, 18 ], "y": [ 1, 5 ], "chance": 50 } ]
     }
   },
   {
@@ -1116,7 +1130,8 @@
         "       p    pt      "
       ],
       "furniture": { "e": "f_table", "h": "f_chair", "p": [ "f_indoor_plant", "f_indoor_plant_y" ], "t": "f_trashcan" },
-      "items": { "t": { "item": "trash_cart", "chance": 25, "repeat": 3 } }
+      "items": { "t": { "item": "trash_cart", "chance": 25, "repeat": 3 } },
+      "place_monster": [ { "group": "GROUP_CENTRAL_LAB", "x": [ 1, 18 ], "y": [ 1, 5 ], "chance": 50 } ]
     }
   },
   {
@@ -1134,7 +1149,8 @@
         "  SSSSSSS  SSSSSSS  ",
         "                    "
       ],
-      "furniture": { "S": "f_server" }
+      "furniture": { "S": "f_server" },
+      "place_monster": [ { "group": "GROUP_CENTRAL_LAB", "x": [ 1, 18 ], "y": [ 1, 5 ], "chance": 50 } ]
     }
   },
   {
@@ -1202,7 +1218,8 @@
         "       "
       ],
       "furniture": { "d": "f_desk", "h": "f_chair" },
-      "items": { "d": { "item": "office", "chance": 50, "repeat": 4 } }
+      "items": { "d": { "item": "office", "chance": 50, "repeat": 4 } },
+      "place_monster": [ { "group": "GROUP_CENTRAL_LAB", "x": [ 1, 5 ], "y": [ 1, 18 ], "chance": 50 } ]
     }
   },
   {
@@ -1234,7 +1251,8 @@
         "       "
       ],
       "furniture": { "e": "f_table", "h": "f_chair", "p": [ "f_indoor_plant", "f_indoor_plant_y" ], "t": "f_trashcan" },
-      "items": { "t": { "item": "trash_cart", "chance": 25, "repeat": 3 } }
+      "items": { "t": { "item": "trash_cart", "chance": 25, "repeat": 3 } },
+      "place_monster": [ { "group": "GROUP_CENTRAL_LAB", "x": [ 1, 5 ], "y": [ 1, 18 ], "chance": 50 } ]
     }
   },
   {
@@ -1266,7 +1284,8 @@
         "       ",
         "       "
       ],
-      "furniture": { "S": "f_server" }
+      "furniture": { "S": "f_server" },
+      "place_monster": [ { "group": "GROUP_CENTRAL_LAB", "x": [ 1, 5 ], "y": [ 1, 18 ], "chance": 50 } ]
     }
   },
   {
@@ -1299,7 +1318,8 @@
         "                    "
       ],
       "furniture": { "d": "f_desk", "e": "f_table", "F": "f_filing_cabinet", "h": "f_chair" },
-      "items": { "d": { "item": "office", "chance": 50, "repeat": 4 }, "F": { "item": "file_room", "chance": 75, "repeat": 6 } }
+      "items": { "d": { "item": "office", "chance": 50, "repeat": 4 }, "F": { "item": "file_room", "chance": 75, "repeat": 6 } },
+      "place_monster": [ { "group": "GROUP_CENTRAL_LAB", "x": [ 5, 14 ], "y": [ 5, 14 ], "chance": 50 } ]
     }
   },
   {
@@ -1349,7 +1369,8 @@
         "t": { "item": "trash_cart", "chance": 50, "repeat": 6 },
         "V": { "item": "vending_food", "chance": 80 },
         "v": { "item": "vending_drink", "chance": 80 }
-      }
+      },
+      "place_monster": [ { "group": "GROUP_CENTRAL_LAB", "x": [ 4, 15 ], "y": [ 4, 15 ], "repeat": [ 1, 2 ] } ]
     }
   },
   {
@@ -1418,7 +1439,8 @@
         "                    "
       ],
       "terrain": { "G": "t_grate", "I": "t_column", "R": "t_concrete_railing" },
-      "furniture": { "7": "f_control_station", "h": "f_chair" }
+      "furniture": { "7": "f_control_station", "h": "f_chair" },
+      "place_monster": [ { "group": "GROUP_CENTRAL_LAB", "x": [ 5, 14 ], "y": [ 5, 14 ], "chance": 50 } ]
     }
   },
   {
@@ -1455,7 +1477,8 @@
         "u": [ "t_metal_floor", "t_metal_floor_olight" ],
         "W": "t_ballistic_glass"
       },
-      "furniture": { "7": "f_control_station", "S": "f_server" }
+      "furniture": { "7": "f_control_station", "S": "f_server" },
+      "place_monster": [ { "group": "GROUP_CENTRAL_LAB", "x": [ 4, 15 ], "y": [ 4, 15 ], "repeat": [ 1, 2 ] } ]
     }
   },
   {
