@@ -50,11 +50,11 @@
     "book_learn": [ [ "textbook_anarch", 3 ], [ "manual_traps_mil", 2 ] ],
     "//": "Using the contents of military_explosive separately to make RDX the preferred component for premade C4",
     "components": [
-      [ [ "chem_rdx", 20 ], [ "chem_compositionb", 25 ] ],
+      [ [ "chem_rdx", 100 ], [ "chem_compositionb", 135 ] ],
       [ [ "circuit", 1 ] ],
       [ [ "cable", 1 ] ],
       [ [ "delay_fuze", 1 ] ],
-      [ [ "motor_oil", 10, "NO_RECOVER" ], [ "lamp_oil", 10, "NO_RECOVER" ] ]
+      [ [ "motor_oil", 15, "NO_RECOVER" ], [ "lamp_oil", 15, "NO_RECOVER" ] ]
     ],
     "using": [ [ "soldering_standard", 5 ] ]
   },
