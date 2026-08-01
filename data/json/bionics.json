@@ -1485,7 +1485,13 @@
     "description": "Most of the flesh in your arms, legs, and upper torso has been replaced with industrial-strength springs and protective padding.  Clenching your fist allows you to fold and unfold this padding; while active, the hydraulic absorbers will prevent damage to your body from severe impacts, at the cost of impaired movement.",
     "occupied_bodyparts": [ [ "torso", 1 ], [ "arm_l", 1 ], [ "arm_r", 1 ], [ "leg_l", 1 ], [ "leg_r", 1 ] ],
     "points": 2,
-    "flags": [ "BIONIC_TOGGLED" ]
+    "flags": [ "BIONIC_TOGGLED" ],
+    "bio_enchantments": [
+      {
+        "condition": "ACTIVE",
+        "values": [ { "value": "ENCUMBRANCE", "add": 3 }, { "value": "ENCUMBRANCE_EYES", "add": -3 } ]
+      }
+    ]
   },
   {
     "id": "bio_taste_blocker",

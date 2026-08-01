@@ -442,6 +442,46 @@
     "desc": "Affects All Exp Gain"
   },
   {
+    "id": "ENCUMBRANCE",
+    "type": "enchantment_value",
+    "increase_good": false,
+    "suffixes": [
+      [ "TORSO", "Affects Torso Encumbrance" ],
+      [ "HEAD", "Affects Head Encumbrance" ],
+      [ "EYES", "Affects Eyes Encumbrance" ],
+      [ "MOUTH", "Affects Mouth Encumbrance" ],
+      [ "ARM", "Affects Arm Encumbrance" ],
+      [ "HAND", "Affects Hand Encumbrance" ],
+      [ "LEG", "Affects Leg Encumbrance" ],
+      [ "FOOT", "Affects Foot Encumbrance" ]
+    ],
+    "desc": "Affects All Encumbrance Values"
+  },
+  {
+    "id": "ENCUMBRANCE_ARM",
+    "type": "enchantment_value",
+    "copy-from": "ENCUMBRANCE_ARM",
+    "suffixes": [ [ "L", "Affects Left Arm Encumbrance" ], [ "R", "Affects Right Arm Encumbrance" ] ]
+  },
+  {
+    "id": "ENCUMBRANCE_HAND",
+    "type": "enchantment_value",
+    "copy-from": "ENCUMBRANCE_HAND",
+    "suffixes": [ [ "L", "Affects Left Hand Encumbrance" ], [ "R", "Affects Right Hand Encumbrance" ] ]
+  },
+  {
+    "id": "ENCUMBRANCE_LEG",
+    "type": "enchantment_value",
+    "copy-from": "ENCUMBRANCE_LEG",
+    "suffixes": [ [ "L", "Affects Left Leg Encumbrance" ], [ "R", "Affects Right Leg Encumbrance" ] ]
+  },
+  {
+    "id": "ENCUMBRANCE_FOOT",
+    "type": "enchantment_value",
+    "copy-from": "ENCUMBRANCE_FOOT",
+    "suffixes": [ [ "L", "Affects Left Foot Encumbrance" ], [ "R", "Affects Right Foot Encumbrance" ] ]
+  },
+  {
     "id": "ITEM_DAMAGE",
     "type": "enchantment_value",
     "suffixes": [
@@ -460,6 +500,27 @@
       [ "TRUE", "Affects Outgoing True Damage ( This Item Only )" ]
     ],
     "desc": "Affects All Outgoing Damage ( This Item Only )",
+    "unsupported_conditions": [ "character", "item_and_character" ]
+  },
+  {
+    "id": "ITEM_ARMOR_PENETRATION",
+    "type": "enchantment_value",
+    "suffixes": [
+      [ "BASH", "Affects Bash Armor Penetration ( This Item Only )" ],
+      [ "CUT", "Affects Cut Armor Penetration ( This Item Only )" ],
+      [ "DARK", "Affects Dark Armor Penetration ( This Item Only )" ],
+      [ "LIGHT", "Affects Light Armor Penetration ( This Item Only )" ],
+      [ "PSI", "Affects Psi Armor Penetration ( This Item Only )" ],
+      [ "STAB", "Affects Stab Armor Penetration ( This Item Only )" ],
+      [ "BULLET", "Affects Ballistic Armor Penetration ( This Item Only )" ],
+      [ "HEAT", "Affects Heat Armor Penetration ( This Item Only )" ],
+      [ "COLD", "Affects Cold Armor Penetration ( This Item Only )" ],
+      [ "ELECTRIC", "Affects Electric Armor Penetration ( This Item Only )" ],
+      [ "ACID", "Affects Acidic Armor Penetration ( This Item Only )" ],
+      [ "BIOLOGICAL", "Affects Biological Armor Penetration ( This Item Only )" ],
+      [ "TRUE", "Affects True Armor Penetration ( This Item Only )" ]
+    ],
+    "desc": "Affects All Armor Penetration ( This Item Only )",
     "unsupported_conditions": [ "character", "item_and_character" ]
   },
   {

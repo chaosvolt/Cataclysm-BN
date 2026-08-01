@@ -4506,16 +4506,14 @@ char_encumbrance_data Character::calc_encumbrance( const item &new_item ) const
     mut_cbm_encumb( enc );
 
     // Get swimming skill level
-    if( get_option<bool>( "althletics_encumbrance_buff" ) ) {
-        int swim_skill = get_skill_level( skill_swimming );
+    int swim_skill = get_skill_level( skill_swimming );
+    bool althletics_buff = get_option<bool>( "althletics_encumbrance_buff" );
+    for( auto &iter : enc.elems ) {
+        encumbrance_data &edata = iter.second;
 
-        // Reduce encumbrance for each body part based on swimming skill
-        for( auto &iter : enc.elems ) {
-            encumbrance_data &edata = iter.second;
-
-            // Reduce encumbrance by swim_skill, clamped at 0
-            edata.encumbrance = std::max( 0, edata.encumbrance - swim_skill );
-        }
+        // Reduce encumbrance by swim_skill, clamped at 0
+        // Enchantments can bring encumbrance below 0, so account for that here too
+        edata.encumbrance = std::max( 0, edata.encumbrance - ( althletics_buff ? swim_skill : 0 ) );
     }
 
     return enc;
@@ -4900,17 +4898,18 @@ void Character::mut_cbm_encumb( char_encumbrance_data &vals ) const
         }
     }
 
-    if( has_active_bionic( bio_shock_absorber ) ) {
-        for( auto &val : vals.elems ) {
-            val.second.encumbrance += 3; // Slight encumbrance to all parts except eyes
-        }
-        vals.elems[body_part_eyes].encumbrance -= 3;
-    }
-
     // Lower penalty for bps covered only by XL armor
     const auto oversize = exclusive_flag_coverage( flag_OVERSIZE );
     for( const trait_id &mut : get_mutations() ) {
         apply_mut_encumbrance( vals, mut, oversize );
+    }
+
+    for( const auto &id : get_all_body_parts() ) {
+        const auto ench_id = enchantment_value_id( "ENCUMBRANCE_" + to_upper_case( id.id().str() ) );
+        if( ench_id.is_valid() ) {
+            vals.elems[id.id()].encumbrance += bonus_from_enchantments( vals.elems[id.id()].encumbrance,
+                                               ench_id );
+        }
     }
 }
 
@@ -8977,7 +8976,13 @@ void Character::recalculate_enchantment_cache()
     enchantment_sources.clear();
 
     visit_items( [&]( const item * it ) {
-        for( const enchantment &ench : it->get_enchantments() ) {
+        for( const enchantment &ench : it->get_enchantments( true ) ) {
+            if( ench.is_active( *this, *it ) ) {
+                enchantment_cache->force_add( ench );
+                enchantment_sources.emplace_back( &ench, it );
+            }
+        }
+        for( const enchantment &ench : it->get_enchantments( false ) ) {
             if( ench.is_active( *this, *it ) ) {
                 enchantment_cache->force_add( ench );
                 enchantment_sources.emplace_back( &ench, it );
@@ -9040,6 +9045,9 @@ void Character::recalculate_enchantment_cache()
 
     // Enchantments can give HP now, so recalc it
     recalc_hp();
+
+    // Enchantments can also give encumbrance
+    reset_encumbrance();
 }
 
 void Character::rebuild_mutation_cache()

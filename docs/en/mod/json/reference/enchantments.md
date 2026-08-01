@@ -601,6 +601,29 @@ In addition there are the following children of this enchantment
 - `SKILL_EXP_STABBING`
 - `SKILL_EXP_UNARMED`
 
+##### Encumbrance
+
+Character wide encumbrance modifier, children modify certain bodyparts.
+Note: This is the first enchantment with two tiers of parents, left arm inherits arm which inherits overall
+These are the children.
+
+- `ENCUMBRANCE_TORSO`
+- `ENCUMBRANCE_HEAD`
+- `ENCUMBRANCE_EYES`
+- `ENCUMBRANCE_MOUTH`
+- `ENCUMBRANCE_ARM`
+  - `ENCUMBRANCE_ARM_L`
+  - `ENCUMBRANCE_ARM_R`
+- `ENCUMBRANCE_HAND`
+  - `ENCUMBRANCE_HAND_L`
+  - `ENCUMBRANCE_HAND_R`
+- `ENCUMBRANCE_LEG`
+  - `ENCUMBRANCE_LEG_L`
+  - `ENCUMBRANCE_LEG_R`
+- `ENCUMBRANCE_FOOT`
+  - `ENCUMBRANCE_FOOT_L`
+  - `ENCUMBRANCE_FOOT_R`
+
 #### Item values
 
 ##### ITEM_ATTACK_COST
@@ -627,6 +650,26 @@ There is the global damage modifier `ITEM_DAMAGE` in addition to the supported d
 - `ITEM_DAMAGE_LIGHT`
 - `ITEM_DAMAGE_PSI`
 - `ITEM_DAMAGE_TRUE`
+
+##### ITEM_ARMOR_PENETRATION_X
+
+Armor penetration of this item. `base_value` here is base armor penetration of corresponding type.
+Note that the final value cannot go below 0.
+There is the global modifier `ITEM_ARMOR_PENTRATION` in addition to the supported damage types:
+
+- `ITEM_ARMOR_PENETRATION_BASH`
+- `ITEM_ARMOR_PENETRATION_CUT`
+- `ITEM_ARMOR_PENETRATION_STAB`
+- `ITEM_ARMOR_PENETRATION_BULLET`
+- `ITEM_ARMOR_PENETRATION_ACID`
+- `ITEM_ARMOR_PENETRATION_BIOLOGICAL`
+- `ITEM_ARMOR_PENETRATION_COLD`
+- `ITEM_ARMOR_PENETRATION_DARK`
+- `ITEM_ARMOR_PENETRATION_ELECTRIC`
+- `ITEM_ARMOR_PENETRATION_FIRE`
+- `ITEM_ARMOR_PENETRATION_LIGHT`
+- `ITEM_ARMOR_PENETRATION_PSI`
+- `ITEM_ARMOR_PENETRATION_TRUE`
 
 ##### ITEM_ARMOR_X
 

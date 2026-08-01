@@ -841,7 +841,6 @@ auto get_stun_srength( const projectile &proj, creature_size size ) -> int
 void Creature::deal_projectile_attack( Creature *source, item *source_weapon,
                                        dealt_projectile_attack &attack )
 {
-
     const double missed_by = attack.missed_by;
     if( missed_by >= 1.0 ) {
         // Total miss.
@@ -1243,6 +1242,13 @@ void Creature::deal_projectile_attack( Creature *source, item *source_weapon,
     check_dead_state();
     attack.hit_critter = this;
     attack.missed_by = goodhit;
+    if( sourceplayer || sourcenpc ) {
+        cata::run_hooks( "on_creature_attacked_by_character", [ &, this]( auto & params ) {
+            params["char"] = source;
+            params["target"] = this;
+            params["success"] = true;
+        } );
+    }
 }
 
 void Creature::deal_projectile_attack( Creature *source, dealt_projectile_attack &attack )
