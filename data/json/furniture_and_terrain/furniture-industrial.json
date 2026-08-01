@@ -455,6 +455,7 @@
       ],
       "//": "Variable reduction since might hit more or less material.",
       "ranged": { "reduction": [ 10, 20 ], "destroy_threshold": 80, "block_unaimed_chance": "75%" }
+    }
   },
   {
     "type": "furniture",
