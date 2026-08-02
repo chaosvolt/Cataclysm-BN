@@ -436,8 +436,22 @@ static bool mx_helicopter( mapgen_constructor &m, const tripoint_abs_omt &abs_of
     int x1 = clamp( c.x() + x_offset, x_min, x_max );
     int y1 = clamp( c.y() + y_offset, y_min, y_max );
 
+    for( point_omt_ms pnt : point_range( point_omt_ms( x1, y1 ), point_omt_ms( x1 + x_length,
+                                         y1 + y_length ) ) ) {
+        if( m.impassable( pnt ) ) {
+            m.bash( pnt, 9999, true );
+        }
+        if( m.has_flag_ter( TFLAG_DEEP_WATER, pnt ) ) {
+            m.ter_set( pnt, t_dirtmound );
+        }
+    }
+
     vehicle *wreckage = m.add_vehicle(
                             crashed_hull, point_omt_ms( x1, y1 ), dir1, rng( 1, 33 ), 1 );
+
+    if( !wreckage ) {
+        debugmsg( "Map extra helicopter failed to spawn at ( %s, %s ).", x1, y1 );
+    }
 
     // During mapgen, m is the constructor surface while vpart_position::pos() uses get_map().
     const auto local_part_pos = [&m]( const vehicle & wreckage,
@@ -619,8 +633,22 @@ static bool mx_aircraft( mapgen_constructor &m, const tripoint_abs_omt &abs_offs
     int x1 = clamp( c.x() + x_offset, x_min, x_max );
     int y1 = clamp( c.y() + y_offset, y_min, y_max );
 
+    for( point_omt_ms pnt : point_range( point_omt_ms( x1, y1 ), point_omt_ms( x1 + x_length,
+                                         y1 + y_length ) ) ) {
+        if( m.impassable( pnt ) ) {
+            m.bash( pnt, 9999, true );
+        }
+        if( m.has_flag_ter( TFLAG_DEEP_WATER, pnt ) ) {
+            m.ter_set( pnt, t_dirtmound );
+        }
+    }
+
     vehicle *wreckage = m.add_vehicle(
                             crashed_hull, point_omt_ms( x1, y1 ), dir1, rng( 1, 33 ), 1 );
+
+    if( !wreckage ) {
+        debugmsg( "Map extra aircraft failed to spawn at ( %s, %s ).", x1, y1 );
+    }
 
     // During mapgen, m is the constructor surface while vpart_position::pos() uses get_map().
     const auto local_part_pos = [&m]( const vehicle & wreckage,
