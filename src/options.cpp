@@ -2851,7 +2851,7 @@ void options_manager::add_options_debug()
 
     add( "NEW_ARMOR_CALCULATION", debug, translate_marker( "New armor damage calculation" ),
          translate_marker( "If true, armor will be able to take damage from attacks that don't penetrate it, but attacks in general damage armor less frequently.  "
-                           "Bullets will also deal pain through armor, reduced by how effect that armor is." ),
+                           "Bullets will also deal pain through armor, reduced by how effective that armor is." ),
          true );
 
     add_empty_line();
