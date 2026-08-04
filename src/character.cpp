@@ -9304,13 +9304,11 @@ bool Character::armor_absorb( damage_unit &du, item &armor, const bodypart_id &b
         if( du.type == DT_BULLET ) {
             ballistic_damage += raw_dmg;
         }
-        add_msg_if_player( m_info, _( "ballistic_damage is %s" ), ballistic_damage );
         armor.mitigate_damage( du );
         // Track how much ballistic damage we soaked up.
         if( du.type == DT_BULLET && du.amount < ballistic_damage ) {
             absorbed_ballistic_damage += ballistic_damage - du.amount;
         }
-        add_msg_if_player( m_info, _( "absorbed_ballistic_damage is %s" ), absorbed_ballistic_damage );
         // Add a fraction of the pain from soaking up that we would've taken without armor
         // Scale this pain down based on how effective the armor was.
         if( absorbed_ballistic_damage > 0 ) {
