@@ -9299,7 +9299,26 @@ bool Character::armor_absorb( damage_unit &du, item &armor, const bodypart_id &b
         // Don't damage armor as much when bypassed by armor piercing
         // Most armor piercing damage comes from bypassing armor, not forcing through
         const int raw_dmg = du.amount * std::min( 1.0f, du.damage_multiplier );
+        int ballistic_damage = 0;
+        float absorbed_ballistic_damage = 0.0f;
+        if( du.type == DT_BULLET ) {
+            ballistic_damage += raw_dmg;
+        }
+        add_msg_if_player( m_info, _( "ballistic_damage is %s" ), ballistic_damage );
         armor.mitigate_damage( du );
+        // Track how much ballistic damage we soaked up.
+        if( du.type == DT_BULLET && du.amount < ballistic_damage ) {
+            absorbed_ballistic_damage += ballistic_damage - du.amount;
+        }
+        add_msg_if_player( m_info, _( "absorbed_ballistic_damage is %s" ), absorbed_ballistic_damage );
+        // Add a fraction of the pain from soaking up that we would've taken without armor
+        // Scale this pain down based on how effective the armor was.
+        if( absorbed_ballistic_damage > 0 ) {
+            // Bonus idiotproofing against divide-by-zero, this SHOULD never trigger if armor resist was zero since then absorbed_ballistic_damage would be zero but just to be safe
+            float ballistic_mult = armor.damage_resist( du.type,
+                                   true ) > 0 ? absorbed_ballistic_damage / armor.damage_resist( du.type, true ) : 1;
+            mod_pain( absorbed_ballistic_damage * ballistic_mult );
+        }
         // We're indestructible, bail out here.
         if( armor.has_flag( flag_UNBREAKABLE ) ) {
             return false;

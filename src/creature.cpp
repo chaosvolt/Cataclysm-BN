@@ -62,6 +62,8 @@
 #include "overmapbuffer_registry.h"
 #include "profile.h"
 
+static const trait_id trait_NOPAIN( "NOPAIN" );
+
 auto Creature::get_dimension() const -> const dimension_id &
 {
     return g_active_dimension_id;
@@ -1276,6 +1278,13 @@ dealt_damage_instance Creature::deal_damage( Creature *source, bodypart_id bp,
         if( cur_damage > 0 ) {
             dealt_dams.dealt_dams[ it.type ] += cur_damage;
             total_damage += cur_damage;
+        } else if( it.type == DT_BULLET && get_option<bool>( "NEW_ARMOR_CALCULATION" ) ) {
+            // This just serves to warn the player of why they suffered pain if the hit dealt zero damage.
+            // Actual pain increase scales with armor and thus is in Character::armor_absorb
+            if( !has_trait( trait_NOPAIN ) ) {
+                add_msg_if_player( m_bad, _( "Your %s aches from the impact." ),
+                                   body_part_name_accusative( bp ) );
+            }
         }
     }
 
