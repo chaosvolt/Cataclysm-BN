@@ -9314,7 +9314,7 @@ bool Character::armor_absorb( damage_unit &du, item &armor, const bodypart_id &b
         if( absorbed_ballistic_damage > 0 ) {
             // Bonus idiotproofing against divide-by-zero, this SHOULD never trigger if armor resist was zero since then absorbed_ballistic_damage would be zero but just to be safe
             float ballistic_mult = armor.damage_resist( du.type,
-                                   true ) > 0 ? absorbed_ballistic_damage / armor.damage_resist( du.type, true ) / 2 : 1;
+                                   true ) > 0 ? absorbed_ballistic_damage / armor.damage_resist( du.type, true ) : 1;
             mod_pain( absorbed_ballistic_damage * ballistic_mult );
         }
         // We're indestructible, bail out here.
