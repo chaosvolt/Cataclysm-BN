@@ -599,7 +599,7 @@ auto sfx::play_variant_sound( const std::string &id, const std::string &variant,
 
     const auto res_id = eff->resource_id;
     auto *audio = get_sfx_resource( res_id );
-    if( !stacks && !valid_last_time_played( audio, res_id, variant ) ) {
+    if( !stacks && !valid_last_time_played( audio, res_id, id + "_" + variant ) ) {
         return;
     }
 
@@ -641,7 +641,7 @@ auto sfx::play_variant_sound( const std::string &id, const std::string &variant,
 
     const auto res_id = eff->resource_id;
     auto *audio = get_sfx_resource( res_id );
-    if( !valid_last_time_played( audio, res_id, variant ) ) {
+    if( !valid_last_time_played( audio, res_id, id + "_" + variant ) ) {
         return;
     }
 
@@ -693,7 +693,7 @@ auto sfx::play_ambient_variant_sound( const std::string &id, const std::string &
 
     const auto res_id = eff->resource_id;
     auto *audio = get_sfx_resource( res_id );
-    if( !valid_last_time_played( audio, res_id, variant ) ) {
+    if( !valid_last_time_played( audio, res_id, id + "_" + variant ) ) {
         return;
     }
 

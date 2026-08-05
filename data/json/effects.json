@@ -326,7 +326,8 @@
     "desc": [ "You're knocked to the ground.  You have to get up before you can move." ],
     "apply_message": "You're knocked to the floor!",
     "rating": "bad",
-    "show_in_info": true
+    "show_in_info": true,
+    "base_enchantments": [ { "values": [ { "value": "CROWD_CRUSH_RESIST", "add": -4 } ] } ]
   },
   {
     "type": "effect_type",

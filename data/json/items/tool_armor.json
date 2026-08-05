@@ -837,7 +837,8 @@
             { "value": "STRENGTH", "add": 2 },
             { "value": "NOISE", "add": -30 },
             { "value": "CLIMATE_CONTROL", "add": 1250 },
-            { "value": "BLISTER_COUNT", "add": -20 }
+            { "value": "BLISTER_COUNT", "add": -20 },
+            { "value": "FLASH_PROTECTION", "max": 6 }
           ],
           "flags": [ "FIRE_FIELD_IMMUNE" ]
         }

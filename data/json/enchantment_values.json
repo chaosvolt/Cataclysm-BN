@@ -22,7 +22,32 @@
   {
     "id": "HEALTH_POINTS",
     "type": "enchantment_value",
-    "desc": "Affects HP"
+    "suffixes": [
+      [ "TORSO", "Affects Torso HP" ],
+      [ "HEAD", "Affects Head HP" ],
+      [ "ARM", "Affects Arm HP" ],
+      [ "HAND", "Affects Hand HP" ],
+      [ "LEG", "Affects Leg HP" ]
+    ],
+    "desc": "Affects All Maximum HP Values"
+  },
+  {
+    "id": "HEALTH_POINTS_ARM",
+    "type": "enchantment_value",
+    "copy-from": "HEALTH_POINTS_ARM",
+    "suffixes": [ [ "L", "Affects Left Arm Maximum HP" ], [ "R", "Affects Right Arm Maximum HP" ] ]
+  },
+  {
+    "id": "HEALTH_POINTS_HAND",
+    "type": "enchantment_value",
+    "copy-from": "HEALTH_POINTS_HAND",
+    "suffixes": [ [ "L", "Affects Left Hand Maximum HP" ], [ "R", "Affects Right Hand Maximum HP" ] ]
+  },
+  {
+    "id": "HEALTH_POINTS_LEG",
+    "type": "enchantment_value",
+    "copy-from": "HEALTH_POINTS_LEG",
+    "suffixes": [ [ "L", "Affects Left Leg Maximum HP" ], [ "R", "Affects Right Leg Maximum HP" ] ]
   },
   {
     "id": "SPEED",
@@ -245,9 +270,31 @@
     "desc": "Affects Food Taste"
   },
   {
+    "id": "ADDICTION_STRENGTH",
+    "type": "enchantment_value",
+    "desc": "Affects Chance to Increase Addition Intensity",
+    "increase_good": false
+  },
+  {
+    "id": "ADDICTION_TIME_PER_ADDITION",
+    "type": "enchantment_value",
+    "desc": "Affects Addiction Duration Per Application",
+    "increase_good": false
+  },
+  {
+    "id": "ADDICTION_TIME_PER_INTENSITY",
+    "type": "enchantment_value",
+    "desc": "Affects Addiction Duration Per Intensity"
+  },
+  {
     "id": "BONUS_DODGE",
     "type": "enchantment_value",
     "desc": "Affects Dodging Ability"
+  },
+  {
+    "id": "CROWD_CRUSH_RESIST",
+    "type": "enchantment_value",
+    "desc": "Affects Crowd Crush Resistance"
   },
   {
     "id": "BLISTER_COUNT",
@@ -278,6 +325,22 @@
     "can_mult": false,
     "can_max": true,
     "desc": "Grants Clairvoyance"
+  },
+  {
+    "id": "FLASH_PROTECTION",
+    "type": "enchantment_value",
+    "can_add": false,
+    "can_mult": false,
+    "can_max": true,
+    "desc": "Grants Protection From Explosion Flashes"
+  },
+  {
+    "id": "GROUNDED_CREATURE_SIGHT",
+    "type": "enchantment_value",
+    "can_add": false,
+    "can_mult": false,
+    "can_max": true,
+    "desc": "ALlows Sight of Nearby Non-Flying Creatures"
   },
   {
     "id": "ARMOR",
