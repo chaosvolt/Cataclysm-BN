@@ -252,7 +252,6 @@ static const trait_id trait_ANTLERS( "ANTLERS" );
 static const trait_id trait_ASTHMA( "ASTHMA" );
 static const trait_id trait_BADBACK( "BADBACK" );
 static const trait_id trait_CF_HAIR( "CF_HAIR" );
-static const trait_id trait_GLASSJAW( "GLASSJAW" );
 static const trait_id trait_DEBUG_NODMG( "DEBUG_NODMG" );
 static const trait_id trait_DEBUG_STAMINA( "DEBUG_STAMINA" );
 static const trait_id trait_DEFT( "DEFT" );
@@ -389,6 +388,9 @@ static const enchantment_flag_id ench_flag_ALARMCLOCK( "ALARMCLOCK" );
 static const enchantment_flag_id ench_flag_WATCH( "WATCH" );
 static const enchantment_flag_id ench_flag_SLEEP_SIGHT( "SLEEP_SIGHT" );
 static const enchantment_flag_id ench_flag_INFRARED_VISION( "INFRARED_VISION" );
+static const enchantment_flag_id ench_flag_SONAR( "SONAR" );
+
+static const enchantment_value_id ench_val_GROUNDED_CREATURE_SIGHT( "GROUNDED_CREATURE_SIGHT" );
 
 namespace io
 {
@@ -1980,11 +1982,10 @@ void Character::calc_all_parts_hp( float hp_mod, float hp_adjustment, int str_ma
         float hp_ratio = static_cast<float>( bp.get_hp_cur() ) / bp.get_hp_max();
         int new_max = ( part.first->base_hp + str_max * 3 + hp_adjustment ) * hp_mod;
 
-        if( has_trait( trait_GLASSJAW ) && part.first == bodypart_str_id( "head" ) ) {
-            new_max *= 0.8;
+        const auto ench = enchantment_value_id( "HEALTH_POINTS_" + to_upper_case( part.first.str() ) );
+        if( ench.is_valid() ) {
+            new_max += bonus_from_enchantments( new_max, ench, true );
         }
-
-        new_max += bonus_from_enchantments( new_max, enchantment_value_id( "HEALTH_POINTS" ) );
         new_max = std::max( new_max, 1 );
         int new_cur = std::ceil( static_cast<float>( new_max ) * hp_ratio );
 
@@ -7384,7 +7385,7 @@ bool Character::sees_with_specials( const Creature &critter ) const
         return true;
     }
 
-    if( critter.digging() && has_active_bionic( bio_ground_sonar ) ) {
+    if( critter.digging() && has_enchantment_flag( ench_flag_SONAR ) ) {
         // Bypass the check below, the bionic sonar also bypasses the sees(point) check because
         // walls don't block sonar which is transmitted in the ground, not the air.
         // TODO: this might need checks whether the player is in the air, or otherwise not connected
@@ -7398,8 +7399,15 @@ bool Character::sees_with_specials( const Creature &critter ) const
     }
 
     const int dist = rl_dist( bub_pos(), critter.bub_pos() );
-    return ( dist <= 5 && ( has_active_mutation( trait_ANTENNAE ) ||
-                            ( has_active_bionic( bio_ground_sonar ) && !critter.has_flag( MF_FLIES ) ) ) );
+
+    // Distance cannot be 0, so this is always safe
+    if( dist <= bonus_from_enchantments( 0, ench_val_GROUNDED_CREATURE_SIGHT ) &&
+        !critter.has_flag( MF_FLIES ) ) {
+        return true;
+    }
+
+    // TODO: Add more range based enchantments here ( I.E. Limited Electrosense ranges )
+    return false;
 }
 
 detached_ptr<item> Character::pour_into( item &container, detached_ptr<item> &&liquid, int limit )
@@ -11894,9 +11902,9 @@ bool Character::sees( const Creature &critter ) const
 {
     // This handles only the player/npc specific stuff (monsters don't have traits or bionics).
     const int dist = rl_dist( bub_pos(), critter.bub_pos() );
-    if( bub_pos().z() == critter.bub_pos().z() && dist <= 5 &&
-        ( has_active_mutation( trait_ANTENNAE ) ||
-          ( has_active_bionic( bio_ground_sonar ) && !critter.has_flag( MF_FLIES ) ) ) ) {
+    if( bub_pos().z() == critter.bub_pos().z() &&
+        dist <= bonus_from_enchantments( 0, ench_val_GROUNDED_CREATURE_SIGHT ) &&
+        !critter.has_flag( MF_FLIES ) ) {
         return true;
     }
 

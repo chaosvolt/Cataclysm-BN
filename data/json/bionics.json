@@ -592,7 +592,7 @@
     "flags": [ "BIONIC_FAULTY" ],
     "points": -1,
     "starting_bionic": true,
-    "bio_enchantments": [ { "condition": "ALWAYS", "values": [ { "value": "FOOD_FUN", "add": -4 } ] } ]
+    "bio_enchantments": [ { "values": [ { "value": "FOOD_FUN", "add": -4 } ] } ]
   },
   {
     "id": "bio_ground_sonar",
@@ -604,7 +604,8 @@
     "act_cost": "200 J",
     "react_cost": "200 J",
     "time": 1,
-    "points": 2
+    "points": 2,
+    "bio_enchantments": [ { "condition": "ACTIVE", "flags": [ "SONAR" ], "values": [ { "value": "GROUNDED_CREATURE_SIGHT", "max": 5 } ] } ]
   },
   {
     "id": "bio_heat_absorb",
@@ -1206,7 +1207,8 @@
     "flags": [ "BIONIC_NPC_USABLE" ],
     "fake_item": "fake_goggles",
     "starting_bionic": true,
-    "points": 1
+    "points": 1,
+    "bio_enchantments": [ { "flags": [ "ANTIGLARE" ], "values": [ { "value": "FLASH_PROTECTION", "max": 6 } ] } ]
   },
   {
     "id": "bio_targeting",

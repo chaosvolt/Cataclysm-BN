@@ -51,8 +51,6 @@
 
 static const activity_id ACT_WAIT_WEATHER( "ACT_WAIT_WEATHER" );
 
-static const bionic_id bio_sunglasses( "bio_sunglasses" );
-
 static const efftype_id effect_glare( "glare" );
 static const efftype_id effect_sleep( "sleep" );
 static const efftype_id effect_snow_glare( "snow_glare" );
@@ -67,6 +65,8 @@ static const trait_id trait_FEATHERS( "FEATHERS" );
 static const flag_id json_flag_RAIN_PROTECT( "RAIN_PROTECT" );
 static const flag_id json_flag_RAINPROOF( "RAINPROOF" );
 static const flag_id json_flag_SUN_GLASSES( "SUN_GLASSES" );
+
+static const enchantment_flag_id ench_flag_ANTIGLARE( "ANTIGLARE" );
 
 /**
  * \defgroup Weather "Weather and its implications."
@@ -96,7 +96,7 @@ void glare( const weather_type_id &w )
     //General prepequisites for glare
     if( !is_player_outside() || !g->is_in_sunlight( g->u.bub_pos() ) || g->u.in_sleep_state() ||
         g->u.worn_with_flag( json_flag_SUN_GLASSES ) ||
-        g->u.has_bionic( bio_sunglasses ) ||
+        g->u.has_enchantment_flag( ench_flag_ANTIGLARE ) ||
         g->u.is_blind() ) {
         return;
     }
