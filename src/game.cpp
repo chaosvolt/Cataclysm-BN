@@ -8897,7 +8897,8 @@ void game::print_terrain_info( const tripoint_bub_ms &lp, const catacurses::wind
     const auto terrain_desc = terrain.description.translated();
     const std::string tile = m.tername( lp );
     const auto concealment = m.coverage( lp );
-    const auto cover = m.has_furn( lp ) ? m.furn( lp ).obj().bash.ranged->block_unaimed_chance : m.ter( lp ).obj().bash.ranged->block_unaimed_chance;
+    const auto cover = m.has_furn( lp ) ? m.furn( lp ).obj().bash.ranged->block_unaimed_chance : m.ter(
+                           lp ).obj().bash.ranged->block_unaimed_chance;
     const auto move_cost = m.move_cost( lp );
     const auto move_cost_is_zero = move_cost == 0;
     const auto move_cost_str = move_cost_is_zero ? _( "Impassable " ) :
