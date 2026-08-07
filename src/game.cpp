@@ -8937,11 +8937,11 @@ void game::print_terrain_info( const tripoint_bub_ms &lp, const catacurses::wind
 
     if( concealment > 0 ) {
         fold_and_print( w_look, point( column, ++line ), max_width, c_dark_gray,
-                        _( "Concealment: %d%%" ), coverage );
+                        _( "Concealment: %d%%" ), concealment );
     }
     if( cover > 0_pct ) {
         fold_and_print( w_look, point( column, ++line ), max_width, c_dark_gray,
-                        _( "Cover: %d%%" ), block_chance );
+                        _( "Cover: %d%%" ), cover );
     }
 
     std::vector<std::string> feature_lines = foldstring( m.features( lp ), max_width );
