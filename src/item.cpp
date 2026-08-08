@@ -29,6 +29,7 @@
 #include "bionics.h"
 #include "bodypart.h"
 #include "cached_item_options.h"
+#include "calendar.h"
 #include "catalua_icallback_actor.h"
 #include "cata_utility.h"
 #include "catacharset.h"
@@ -6454,6 +6455,10 @@ time_duration item::get_shelf_life() const
 
 double item::get_relative_rot() const
 {
+    // Components are frozen in time, when they are returned they are new items
+    if( has_flag( flag_id( "COMPONENT" ) ) ) {
+        return rot / get_shelf_life();
+    }
     if( goes_bad() ) {
         const_cast<item *>( this )->update_rot_from_location( temperature_flag::TEMP_NORMAL );
         return rot / get_shelf_life();

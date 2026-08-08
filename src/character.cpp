@@ -3375,7 +3375,7 @@ ret_val<bool> Character::can_wear( const item &it, bool with_equip_change ) cons
             return ret_val<bool>::make_failure(
                        _( "You can only wear power armor components with power armor!" ) );
         }
-        if( it.has_flag( flag_POWERARMOR_EXTERNAL ) ) {
+        if( it.has_flag( flag_POWERARMOR_EXTERNAL ) && !it.has_flag( flag_POWERARMOR_PLATING ) ) {
             for( auto &elem : worn ) {
                 if( elem->has_flag( flag_POWERARMOR_EXO ) &&
                     elem->get_covered_body_parts().make_intersection( it.get_covered_body_parts() ).any() ) {
@@ -3383,6 +3383,14 @@ ret_val<bool> Character::can_wear( const item &it, bool with_equip_change ) cons
                 } else if( elem->has_flag( flag_POWERARMOR_EXTERNAL ) &&
                            elem->get_covered_body_parts().make_intersection( it.get_covered_body_parts() ).any() ) {
                     return ret_val<bool>::make_failure( _( "Can't wear externals over one another!" ) );
+                }
+            }
+        }
+        if( it.has_flag( flag_POWERARMOR_PLATING ) ) {
+            for( auto &elem : worn ) {
+                if( elem->has_flag( flag_POWERARMOR_PLATING ) &&
+                    elem->get_covered_body_parts().make_intersection( it.get_covered_body_parts() ).any() ) {
+                    return ret_val<bool>::make_failure( _( "Can't wear overlapping sets of plating!" ) );
                 }
             }
         }
@@ -3403,7 +3411,8 @@ ret_val<bool> Character::can_wear( const item &it, bool with_equip_change ) cons
                 // To check if there's an external/exoskeleton for the mod to attach to.
                 for( std::pair< bodypart_str_id, bool > &attachment : attachments ) {
                     if( elem->get_covered_body_parts().test( attachment.first ) &&
-                        ( elem->has_flag( flag_POWERARMOR_EXO ) || elem->has_flag( flag_POWERARMOR_EXTERNAL ) ) ) {
+                        ( elem->has_flag( flag_POWERARMOR_EXO ) || elem->has_flag( flag_POWERARMOR_EXTERNAL ) ) &&
+                        !elem->has_flag( flag_POWERARMOR_PLATING ) ) {
                         if( elem->is_sided() && elem->get_side() == attachment.first->part_side ) {
                             attachment.second = true;
                         } else {
@@ -3488,7 +3497,7 @@ ret_val<bool> Character::can_wear( const item &it, bool with_equip_change ) cons
           ( it.covers( bodypart_id( "foot_r" ) ) && is_wearing_shoes( side::RIGHT ) ) ) &&
         ( !it.has_flag( flag_OVERSIZE ) || !it.has_flag( flag_OUTER ) ) && !it.has_flag( flag_SKINTIGHT ) &&
         !it.has_flag( flag_BELTED ) && !it.has_flag( flag_PERSONAL ) && !it.has_flag( flag_AURA ) &&
-        !it.has_flag( flag_SEMITANGIBLE ) ) {
+        !it.has_flag( flag_SEMITANGIBLE ) && !it.has_flag( flag_POWERARMOR_PLATING ) ) {
         // Checks to see if the player is wearing shoes
         return ret_val<bool>::make_failure( ( is_player() ? _( "You're already wearing footwear!" )
                                               : string_format( _( "%s is already wearing footwear!" ), name ) ) );

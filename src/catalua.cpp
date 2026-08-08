@@ -357,6 +357,9 @@ void init_global_state_tables( lua_state &state, const std::vector<mod_id> &modl
     // mapgen functions
     gt["mapgen_functions"] = lua.create_table();
 
+    // Itemgroup modification functions
+    gt["itemgroup_postprocessors"] = lua.create_table();
+
     // monster / npc functions
     gt["monster_ai_functions"] = lua.create_table();
     gt["monster_attitude_functions"] = lua.create_table();
