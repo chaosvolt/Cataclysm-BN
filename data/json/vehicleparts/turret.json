@@ -7,7 +7,7 @@
     "damage_modifier": 80,
     "location": "on_roof",
     "folded_volume": "5 L",
-    "requirements": { "install": { "time": "100 s" }, "removal": { "time": "50 s" } },
+    "requirements": { "install": { "time": "100 s" }, "removal": { "time": "50 s" }, "repair": { "time": "5 m" } },
     "flags": [ "TURRET", "FOLDABLE", "SHOCK_RESISTANT" ]
   },
   {
@@ -21,7 +21,20 @@
     "broken_color": "dark_gray",
     "breaks_into": [ { "item": "scrap", "count": 10 }, { "item": "steel_chunk", "count": 6 }, { "item": "steel_lump", "count": 2 } ],
     "//": "doesn't work correctly if using ammo from vehicle tanks at the moment, so uses the usual magazines",
-    "requirements": { "install": { "skills": [ [ "mechanics", 5 ], [ "launcher", 1 ] ] }, "removal": { "skills": [ [ "mechanics", 3 ] ] } }
+    "requirements": { "install": { "skills": [ [ "mechanics", 5 ], [ "launcher", 1 ] ] }, "removal": { "skills": [ [ "mechanics", 3 ] ] }, "repair": { "skills": [ [ "mechanics", 6 ], [ "launcher", 1 ] ], "using": [ [ "gunsmithing_standard", 5 ] ] } }
+  },
+  {
+    "id": "mounted_professional_chemical_thrower",
+    "copy-from": "turret",
+    "type": "vehicle_part",
+    "name": { "str": "mounted chemical thrower" },
+    "item": "professional_chemical_thrower",
+    "folded_volume": "4250 ml",
+    "color": "dark_gray",
+    "broken_color": "dark_gray",
+    "breaks_into": [ { "item": "scrap", "count": 10 }, { "item": "steel_chunk", "count": 6 }, { "item": "steel_lump", "count": 2 } ],
+    "//": "doesn't work correctly if using ammo from vehicle tanks at the moment, so uses the usual magazines",
+    "requirements": { "install": { "skills": [ [ "mechanics", 5 ], [ "launcher", 1 ] ] }, "removal": { "skills": [ [ "mechanics", 3 ] ] }, "repair": { "skills": [ [ "mechanics", 6 ], [ "launcher", 1 ] ], "using": [ [ "gunsmithing_standard", 5 ] ] } }
   },
   {
     "id": "mounted_huge_crossbow",
@@ -37,7 +50,7 @@
       { "item": "splinter", "count": [ 8, 16 ] },
       { "item": "string_36", "count": [ 3, 6 ] }
     ],
-    "requirements": { "install": { "skills": [ [ "mechanics", 2 ] ] }, "removal": { "skills": [ [ "mechanics", 0 ] ] } }
+    "requirements": { "install": { "skills": [ [ "mechanics", 2 ] ] }, "removal": { "skills": [ [ "mechanics", 0 ] ] }, "repair": { "skills": [ [ "mechanics", 3 ] ], "using": [ [ "turret_repair_wood", 5 ], [ "vehicle_repair_small_wood", 1 ] ] } }
   },
   {
     "id": "mounted_rep_crossbow",

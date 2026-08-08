@@ -14,10 +14,16 @@
     "tools": [ [ [ "fire", -1 ], [ "hotplate", 2 ], [ "toolset", 2 ] ] ]
   },
   {
+    "id": "gunsmithing_standard",
+    "type": "requirement",
+    "//": "Use of a firearm or gunsmithing repair kit",
+    "tools": [ [ [ "small_repairkit", 10 ], [ "large_repairkit", 5 ] ] ]
+  },
+  {
     "id": "magazine_standard",
     "type": "requirement",
     "//": "Forging of steel firearm magazines",
-    "tools": [ [ [ "blacksmithing_standard", 2, "LIST" ] ], [ [ "small_repairkit", 10 ], [ "large_repairkit", 5 ] ] ]
+    "tools": [ [ [ "blacksmithing_standard", 2, "LIST" ] ], [ [ "gunsmithing_standard", 1, "LIST" ] ] ]
   },
   {
     "id": "shot_forming",
@@ -335,5 +341,11 @@
       { "id": "GLASSBLOWING", "level": 1 }
     ],
     "tools": [ [ [ "forge", 5 ], [ "oxy_torch", 5 ] ] ]
+  },
+  {
+    "id": "gunsmithing_standard",
+    "type": "requirement",
+    "//": "Use of a misc repair kit, for repairing mounted guns that have the PRIMITIVE_RANGED_WEAPON flag and are made of wood.",
+    "tools": [ [ [ "turret_repair_wood", 5 ], [ "misc_repairkit_makeshift", 1 ] ] ]
   }
 ]
