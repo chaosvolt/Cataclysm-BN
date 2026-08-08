@@ -8941,7 +8941,7 @@ void game::print_terrain_info( const tripoint_bub_ms &lp, const catacurses::wind
     }
     if( cover > 0_pct ) {
         fold_and_print( w_look, point( column, ++line ), max_width, c_dark_gray,
-                        _( "Cover: %d%%" ), cover );
+                        _( "Cover: %d%%" ), cover / 1_pct );
     }
 
     std::vector<std::string> feature_lines = foldstring( m.features( lp ), max_width );
