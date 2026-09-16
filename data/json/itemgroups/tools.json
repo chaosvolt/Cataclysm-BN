@@ -294,7 +294,8 @@
       [ "polisher", 70 ],
       [ "angle_grinder", 5 ],
       [ "welder", 10 ],
-      [ "clamp", 10 ]
+      [ "clamp", 10 ],
+      [ "spray_can", 20 ]
     ]
   },
   {
