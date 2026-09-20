@@ -12059,7 +12059,7 @@ Attitude Character::attitude_to( const Creature &other ) const
     return Attitude::A_NEUTRAL;
 }
 
-bool Character::sees( const tripoint_bub_ms &t, bool, int ) const
+bool Character::sees( const tripoint_bub_ms &t, bool, int, double ) const
 {
     if( t == bub_pos() ) {
         return true;
