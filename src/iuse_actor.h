@@ -1659,7 +1659,7 @@ class iuse_paint_stuff_config : public iuse_actor
         auto can_use( const Character &, const item &, bool,
                       const tripoint_bub_ms & ) const -> ret_val<bool> override;
         auto clone() const -> std::unique_ptr<iuse_actor> override;
-        void on_placed( item &, const map &, const tripoint_bub_ms & ) const override;
+        void on_placed( item &, const tripoint_abs_ms & ) const override;
         static paint_layer get_paint_layer( item &, bool change = false );
         static void set_color( item & );
 };
@@ -1682,7 +1682,7 @@ class iuse_paint_stuff : public iuse_actor
                       const tripoint_bub_ms & ) const -> ret_val<bool> override;
         auto clone() const -> std::unique_ptr<iuse_actor> override;
         void info( const item &, std::vector<iteminfo> & ) const override;
-        void on_placed( item &, const map &, const tripoint_bub_ms & ) const override;
+        void on_placed( item &, const tripoint_abs_ms & ) const override;
 
         static std::optional<RGBColor> try_get_paint_color( const item &it );
         static RGBColor get_paint_color( item &it );
