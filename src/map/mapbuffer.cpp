@@ -1828,8 +1828,6 @@ auto mapbuffer::valid_move(
     const auto& up_ter = up_tile->get_ter_t();
     if (up_ter.id.is_null()) { return false; }
     const auto& up_furn = up_tile->get_furn_t();
-    const auto up_trap_id = up_tile->get_trap();
-    const auto up_is_ledge = up_ter.trap == tr_ledge || up_trap_id == tr_ledge;
 
     if (up_ter.movecost == 0) { return false; }
 
@@ -1838,9 +1836,9 @@ auto mapbuffer::valid_move(
     const auto& down_ter = down_tile->get_ter_t();
     if (down_ter.id.is_null()) { return false; }
 
-    if (!up_is_ledge && down_ter.movecost == 0) { return false; }
+    if (down_ter.movecost == 0) { return false; }
 
-    if (!up_ter.has_flag(TFLAG_NO_FLOOR) && !up_ter.has_flag(TFLAG_GOES_DOWN) && !up_is_ledge
+    if (!up_ter.has_flag(TFLAG_NO_FLOOR) && !up_ter.has_flag(TFLAG_GOES_DOWN)
         && !options.via_ramp) {
         if (std::abs(from.x() - to.x()) == 1 || std::abs(from.y() - to.y()) == 1) {
             const auto midpoint = tripoint_abs_ms(down_p.xy(), up_p.z());
@@ -1850,7 +1848,7 @@ auto mapbuffer::valid_move(
     }
 
     if (!options.flying && !down_ter.has_flag(TFLAG_GOES_UP) && !down_ter.has_flag(TFLAG_RAMP)
-        && !up_is_ledge && !options.via_ramp) {
+        && !down_ter.has_flag(TFLAG_CLIMBABLE) && !options.via_ramp) {
         return false;
     }
 
