@@ -73,6 +73,7 @@ void submap::swap(submap& first, submap& second) {
     std::swap(first.field_cache, second.field_cache);
     std::swap(first.emitter_cache, second.emitter_cache);
     std::swap(first.last_touched, second.last_touched);
+    std::swap(first.last_actualized, second.last_actualized);
     std::swap(first.spawns, second.spawns);
     std::swap(first.vehicles, second.vehicles);
     std::swap(first.partial_constructions, second.partial_constructions);

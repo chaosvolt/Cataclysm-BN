@@ -4346,6 +4346,7 @@ void stats_tracker::deserialize( JsonIn &jsin )
 void submap::store( JsonOut &jsout ) const
 {
     jsout.member( "turn_last_touched", last_touched );
+    jsout.member( "turn_last_actualized", last_actualized );
     jsout.member( "temperature", temperature );
 
     // Terrain is saved using a simple RLE scheme.  Legacy saves don't have
@@ -4613,6 +4614,10 @@ void submap::load( JsonIn &jsin, const std::string &member_name, int version,
         last_touched = calendar::turn_zero + time_duration::from_turns( jsin.get_int() );
         // Guard against corrupted saves: last_touched must not be in the future.
         last_touched = std::min( last_touched, calendar::turn );
+    } else if( member_name == "turn_last_actualized" ) {
+        last_actualized = calendar::turn_zero + time_duration::from_turns( jsin.get_int() );
+        // Guard against corrupted saves: last_touched must not be in the future.
+        last_actualized = std::min( last_actualized, calendar::turn );
     } else if( member_name == "temperature" ) {
         temperature = jsin.get_int();
     } else if( member_name == "terrain" ) {

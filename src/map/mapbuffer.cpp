@@ -3514,7 +3514,7 @@ auto mapbuffer::actualize_submap(const tripoint_abs_sm& pos) -> void {
 
     for (const auto p : submap_tiles()) {
         const auto abs_pos = project_combine(pos, p);
-        const auto options = actualize_tile_options{
+        auto options = actualize_tile_options{
             .buffer = *this,
             .sm = *tmpsub,
             .local = p,
@@ -3524,6 +3524,9 @@ auto mapbuffer::actualize_submap(const tripoint_abs_sm& pos) -> void {
             .elapsed = elapsed,
             .lookup = lookup_options,
         };
+        // Elapsed has two modes depending on when it is done
+        // It starts with anything that occurs while actively simulated
+
         auto& items = tmpsub->get_items(p);
         if (!items.empty()) {
             const auto& furn = tmpsub->get_furn(p).obj();
@@ -3531,15 +3534,18 @@ auto mapbuffer::actualize_submap(const tripoint_abs_sm& pos) -> void {
         }
 
         if (do_funnels) { fill_funnels(options); }
+        decay_cosmetic_fields(options);
 
+        // These dont happen while simulated
+        options.elapsed = calendar::turn - tmpsub->last_actualized;
         grow_plant(options);
         restock_fruits(options);
         produce_sap(options);
         rad_scorch(options);
-        decay_cosmetic_fields(options);
     }
 
     tmpsub->last_touched = calendar::turn;
+    tmpsub->last_actualized = calendar::turn;
 }
 
 auto mapbuffer::drain_pending_submap_destroy() -> void {
