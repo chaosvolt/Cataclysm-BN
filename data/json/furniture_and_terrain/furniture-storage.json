@@ -307,7 +307,7 @@
     "id": "f_gunsafe_o",
     "name": "open gun safe",
     "description": "A large and heavy container with thick metal walls and a rotary combination lock, this is designed to securely store firearms, weapon mods, and ammunition.",
-    "symbol": "X",
+    "symbol": "O",
     "color": "light_gray",
     "looks_like": "f_gunsafe_ml",
     "move_cost_mod": -1,
