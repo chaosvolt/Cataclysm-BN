@@ -123,6 +123,8 @@
 #include <type_traits>
 #include <vector>
 
+using character_funcs::base_comfort_value;
+
 struct dealt_projectile_attack;
 
 static const activity_id ACT_MOVE_ITEMS( "ACT_MOVE_ITEMS" );
@@ -7593,8 +7595,7 @@ float Character::rest_quality() const
     // Only add rest quality from and give feedback for comfort if the player is actually resting
     if( rest_rate > 0.0f ) {
 
-        const character_funcs::comfort_level comfort =
-            character_funcs::base_comfort_value( *this, bub_pos() ).level;
+        const character_funcs::comfort_level comfort = base_comfort_value( *this, bub_pos() ).level;
 
         if( comfort >= character_funcs::comfort_level::very_comfortable ) {
             rest_rate += 0.15f;
@@ -7605,15 +7606,15 @@ float Character::rest_quality() const
         }
 
         // rest_quality() theoretically gets called every 5 minutes, so these messages should display once every 90 minutes on average
-        if( one_in( 18 ) ) {
+        if( !activity->get_suppress_comfort() && !has_effect( effect_sleep ) && one_in( 18 ) ) {
             if( comfort >= character_funcs::comfort_level::very_comfortable ) {
-                add_msg_if_player( "You feel very comfortable." );
+                add_msg_if_player( _( "Resting here is very comfortable." ) );
             } else if( comfort >= character_funcs::comfort_level::comfortable ) {
-                add_msg_if_player( "You feel comfortable." );
+                add_msg_if_player( _( "Resting here is comfortable." ) );
             } else if( comfort >= character_funcs::comfort_level::slightly_comfortable ) {
-                add_msg_if_player( "You feel slightly comfortable." );
+                add_msg_if_player( _( "Resting here is slightly comfortable." ) );
             } else {
-                add_msg_if_player( "You don't feel especially comfortable." );
+                add_msg_if_player( _( "Resting here isn't comfortable." ) );
             }
         }
     }

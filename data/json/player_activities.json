@@ -25,7 +25,8 @@
     "morale_blocked": true,
     "complex_moves": { "light": true, "speed": true, "stats": [ [ "INT" ] ], "morale": true },
     "verbose_tooltip": false,
-    "bubble_size_effect": "idle"
+    "bubble_size_effect": "idle",
+    "rest_amount": 0.1
   },
   {
     "id": "ACT_MULTIPLE_CONSTRUCTION",
@@ -159,7 +160,8 @@
     "auto_needs": true,
     "verbose_tooltip": false,
     "bubble_size_effect": "idle",
-    "rest_amount": 0.1
+    "rest_amount": 0.1,
+    "suppress_comfort_lines": true
   },
   {
     "id": "ACT_WASH_SELF",
@@ -375,7 +377,8 @@
     "auto_needs": true,
     "verbose_tooltip": false,
     "bubble_size_effect": "idle",
-    "rest_amount": 0.1
+    "rest_amount": 0.1,
+    "suppress_comfort_lines": true
   },
   {
     "id": "ACT_FIRSTAID",
@@ -714,7 +717,8 @@
     "no_resume": true,
     "verbose_tooltip": false,
     "bubble_size_effect": "idle",
-    "rest_amount": 0.1
+    "rest_amount": 0.1,
+    "suppress_comfort_lines": true
   },
   {
     "id": "ACT_WAIT_STAMINA",
@@ -724,7 +728,8 @@
     "no_resume": true,
     "verbose_tooltip": false,
     "bubble_size_effect": "idle",
-    "rest_amount": 0.1
+    "rest_amount": 0.1,
+    "suppress_comfort_lines": true
   },
   {
     "id": "ACT_CLEAR_RUBBLE",

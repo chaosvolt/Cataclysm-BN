@@ -167,8 +167,12 @@ class player_activity
             return type->verb();
         }
 
-        const float &get_rest_amount() const {
+        const float get_rest_amount() const {
             return type->rest_amount();
+        }
+
+        const bool get_suppress_comfort() const {
+            return type->suppress_comfort();
         }
 
         int get_value( size_t index, int def = 0 ) const;
