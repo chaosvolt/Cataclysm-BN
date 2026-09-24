@@ -824,7 +824,7 @@ void spell::use_components(Character& who) const {
 
 auto spell::get_difficulty() const -> int { return type->difficulty; }
 
-int spell::terrain_damage(const int base_damage) const {
+auto spell::terrain_damage(const int base_damage) const -> int {
     switch (dmg_type()) {
         case DT_BASH:
         case DT_BULLET:

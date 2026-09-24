@@ -18,7 +18,7 @@ const auto ammo_plutonium = ammotype("plutonium");
 
 item_reload_option::item_reload_option(const item_reload_option&) = default;
 
-item_reload_option& item_reload_option::operator=(const item_reload_option&) = default;
+auto item_reload_option::operator=(const item_reload_option&) -> item_reload_option& = default;
 
 item_reload_option::item_reload_option(
     const player* who, item* target, const item* parent, item& ammo)
@@ -33,7 +33,7 @@ item_reload_option::item_reload_option(
     qty(max_qty);
 }
 
-int item_reload_option::moves() const {
+auto item_reload_option::moves() const -> int {
     auto mv = ammo->obtain_cost(*who, qty()) + who->item_reload_cost(*target, *ammo, qty());
     if (parent != target) {
         if (parent->is_gun()) {

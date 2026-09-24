@@ -16,7 +16,7 @@ public:
     item_reload_option() = default;
 
     item_reload_option(const item_reload_option&);
-    item_reload_option& operator=(const item_reload_option&);
+    auto operator=(const item_reload_option&) -> item_reload_option&;
 
     /**
      * Build an option that transfers as much ammunition as the source and target allow.
@@ -35,7 +35,7 @@ public:
     item* ammo;
 
     /** Amount of ammunition this option transfers. */
-    int qty() const { return qty_; }
+    auto qty() const -> int { return qty_; }
 
     /**
      * Set the amount of ammunition to transfer.
@@ -55,7 +55,7 @@ public:
      * Reloading a separate target adds the parent's reload time for a gun, or 100 moves
      * for a tool.
      */
-    int moves() const;
+    auto moves() const -> int;
 
     /**
      * True when the option names a character, target, and source, with a positive quantity.
