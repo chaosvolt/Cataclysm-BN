@@ -5024,19 +5024,23 @@ int Character::get_int() const
 
 int Character::get_str_base() const
 {
-    return str_max + bonus_from_enchantments( str_max, ench_val_STRENGTH_PERMANENT, true );
+    return std::max( 0, str_max + int( bonus_from_enchantments( str_max, ench_val_STRENGTH_PERMANENT,
+                                       true ) ) );
 }
 int Character::get_dex_base() const
 {
-    return dex_max + bonus_from_enchantments( dex_max, ench_val_DEXTERITY_PERMANENT, true );
+    return std::max( 0, dex_max + int( bonus_from_enchantments( dex_max, ench_val_DEXTERITY_PERMANENT,
+                                       true ) ) );
 }
 int Character::get_per_base() const
 {
-    return per_max + bonus_from_enchantments( per_max, ench_val_PERCEPTION_PERMANENT, true );
+    return std::max( 0, per_max + int( bonus_from_enchantments( per_max, ench_val_PERCEPTION_PERMANENT,
+                                       true ) ) );
 }
 int Character::get_int_base() const
 {
-    return int_max + bonus_from_enchantments( int_max, ench_val_INTELLIGENCE_PERMANENT, true );
+    return std::max( 0, int_max + int( bonus_from_enchantments( int_max,
+                                       ench_val_INTELLIGENCE_PERMANENT, true ) ) );
 }
 
 int Character::get_str_bonus() const
