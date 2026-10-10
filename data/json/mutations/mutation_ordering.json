@@ -21,18 +21,6 @@
       },
       {
         "id": [
-          "bio_armor_arms",
-          "bio_armor_legs",
-          "bio_armor_torso",
-          "bio_armor_head",
-          "bio_armor_eyes",
-          "bio_sunglasses",
-          "bio_blindfold"
-        ],
-        "order": 500
-      },
-      {
-        "id": [
           "BEAUTIFUL",
           "BEAUTIFUL2",
           "BEAUTIFUL3",
@@ -62,6 +50,18 @@
           "SKIN_OLIVE"
         ],
         "order": 1100
+      },
+      {
+        "id": [
+          "bio_armor_arms",
+          "bio_armor_legs",
+          "bio_armor_torso",
+          "bio_armor_head",
+          "bio_armor_eyes",
+          "bio_sunglasses",
+          "bio_blindfold"
+        ],
+        "order": 1150
       },
       {
         "id": [ "eye_red", "eye_violet", "eye_hazel", "eye_blue", "eye_brown", "eye_gray", "eye_green", "eye_amber" ],
