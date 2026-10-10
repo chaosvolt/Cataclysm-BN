@@ -51,6 +51,7 @@
         ],
         "order": 1100
       },
+      { "id": [ "bio_carbon" ], "order": 1125 },
       {
         "id": [
           "bio_armor_arms",
