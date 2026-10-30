@@ -8176,12 +8176,21 @@ int iuse::remoteveh( player *p, item *it, bool t, const tripoint_bub_ms &pos )
     }
 
     bool controlling = it->is_active() && remote != nullptr;
-    int choice = uilist( _( "What to do with remote vehicle control:" ), {
-        controlling ? _( "Stop controlling the vehicle." ) : _( "Take control of a vehicle." ),
-        _( "Execute one vehicle action" )
-    } );
 
-    if( choice < 0 || choice > 1 ) {
+    int choice = -1;
+    if( controlling ) {
+        choice = uilist( _( "What to do with remote vehicle control:" ), {
+            _( "Stop controlling the vehicle." ),
+            _( "Execute one vehicle action" ), _( "Examine vehicle" )
+        } );
+    } else {
+        choice = uilist( _( "What to do with remote vehicle control:" ), {
+            _( "Take control of a vehicle." ),
+            _( "Execute one vehicle action" )
+        } );
+    }
+
+    if( choice < 0 || choice > 2 || ( choice > 1 && !controlling ) ) {
         return 0;
     }
 
@@ -8201,14 +8210,17 @@ int iuse::remoteveh( player *p, item *it, bool t, const tripoint_bub_ms &pos )
 
     const auto p2 = g->u.view_offset.xy();
 
-    vehicle *veh = pickveh( pos );
+    vehicle *veh = remote;
 
-    if( veh == nullptr ) {
-        return 0;
-    }
+    if( !controlling ) {
+        veh = pickveh( pos );
+        if( veh == nullptr ) {
+            return 0;
+        }
 
-    if( !hackveh( *p, *it, *veh ) ) {
-        return 0;
+        if( !hackveh( *p, *it, *veh ) ) {
+            return 0;
+        }
     }
     const auto rctrl_parts = veh->get_avail_parts( "REMOTE_CONTROLS" );
 
@@ -8231,12 +8243,25 @@ int iuse::remoteveh( player *p, item *it, bool t, const tripoint_bub_ms &pos )
             }
         }
     } else if( choice == 1 ) {
+        if( !controlling ) {
+            it->activate();
+            g->setremoteveh( veh );
+        }
         // Revert to original behavior if we can't find remote controls.
         if( rctrl_parts.empty() ) {
             veh->use_controls( tripoint_bub_ms( pos ) );
         } else {
             veh->use_controls( tripoint_bub_ms( rctrl_parts.begin()->pos() ) );
         }
+        if( !controlling ) {
+            it->deactivate();
+            g->setremoteveh( nullptr );
+            g->u.view_offset = tripoint_rel_ms::zero();
+            return it->type->charges_to_use();
+        }
+    } else if( choice == 2 ) {
+        // Revert to original behavior if we can't find remote controls.
+        g->exam_vehicle( *remote );
     }
 
     g->u.view_offset.x() = p2.x();
