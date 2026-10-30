@@ -8110,10 +8110,9 @@ static bool hackveh( player &p, item &it, vehicle &veh )
     return success;
 }
 
-static vehicle *pickveh( const tripoint_bub_ms &center, bool advanced )
+static vehicle *pickveh( const tripoint_bub_ms &center )
 {
-    static const std::string ctrl = "CTRL_ELECTRONIC";
-    static const std::string advctrl = "REMOTE_CONTROLS";
+    static const std::string ctrl = "REMOTE_CONTROLS";
     uilist pmenu;
     pmenu.title = _( "Select vehicle to access" );
     std::vector< vehicle * > vehs;
@@ -8122,8 +8121,7 @@ static vehicle *pickveh( const tripoint_bub_ms &center, bool advanced )
         auto &v = veh.v;
         if( g->m.inbounds( v->bub_ms_location() ) &&
             v->fuel_left( itype_battery, true ) > 0 &&
-            ( !v->get_avail_parts( advctrl ).empty() ||
-              ( !advanced && !v->get_avail_parts( ctrl ).empty() ) ) ) {
+            !v->get_avail_parts( ctrl ).empty() ) {
             vehs.push_back( v );
         }
     }
@@ -8193,6 +8191,7 @@ int iuse::remoteveh( player *p, item *it, bool t, const tripoint_bub_ms &pos )
         if( remote->has_part( "CAMERA" ) && remote->has_part( "CAMERA_CONTROL" ) ) {
             remote->camera_on = false;
         }
+        remote->enable_refresh();
         g->setremoteveh( nullptr );
         g->u.view_offset = tripoint_rel_ms::zero();
         return 0;
@@ -8200,7 +8199,7 @@ int iuse::remoteveh( player *p, item *it, bool t, const tripoint_bub_ms &pos )
 
     const auto p2 = g->u.view_offset.xy();
 
-    vehicle *veh = pickveh( pos, choice == 0 );
+    vehicle *veh = pickveh( pos );
 
     if( veh == nullptr ) {
         return 0;
