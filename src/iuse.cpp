@@ -8057,10 +8057,11 @@ int iuse::radiocontrol( player *p, item *it, bool t, const tripoint_bub_ms & )
 static bool hackveh( player &p, item &it, vehicle &veh )
 {
     if( !veh.is_locked || !veh.has_security_working() ) {
+        // In the event something causes a vehicle to have non-working security but still count as locked.
+        veh.is_locked = false;
         return true;
     }
-    const auto advanced = !veh.get_avail_parts( "REMOTE_CONTROLS" ).empty();
-    if( advanced && veh.is_alarm_on ) {
+    if( veh.is_alarm_on ) {
         p.add_msg_if_player( m_bad, _( "This vehicle's security system has locked you out!" ) );
         return false;
     }
@@ -8068,7 +8069,7 @@ static bool hackveh( player &p, item &it, vehicle &veh )
     /** @EFFECT_INT increases chance of bypassing vehicle security system */
 
     /** @EFFECT_COMPUTER increases chance of bypassing vehicle security system */
-    int roll = dice( p.get_skill_level( skill_computer ) + 2, p.int_cur ) - ( advanced ? 50 : 25 );
+    int roll = dice( p.get_skill_level( skill_computer ) + 2, p.int_cur ) - ( 50 );
     int effort = 0;
     bool success = false;
     if( roll < -20 ) { // Really bad rolls will trigger the alarm before you know it exists
@@ -8088,7 +8089,7 @@ static bool hackveh( player &p, item &it, vehicle &veh )
         return false;
     }
 
-    p.practice( skill_computer, advanced ? 10 : 3 );
+    p.practice( skill_computer, 10 );
     if( roll < -10 ) {
         effort = rng( 4, 8 );
         p.add_msg_if_player( m_bad, _( "You waste some time, but fail to affect the security system." ) );
@@ -8104,7 +8105,7 @@ static bool hackveh( player &p, item &it, vehicle &veh )
 
     p.moves -= to_moves<int>( time_duration::from_seconds( effort ) );
     it.charges -= effort;
-    if( success && advanced ) { // Unlock controls, but only if they're drive-by-wire
+    if( success ) { // Unlock controls
         veh.is_locked = false;
     }
     return success;
