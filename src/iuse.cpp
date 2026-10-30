@@ -8155,8 +8155,10 @@ int iuse::remoteveh( player *p, item *it, bool t, const tripoint_bub_ms &pos )
     if( t ) {
         bool stop = false;
         if( !it->units_sufficient( *p ) ) {
+            // We don't want it to deactivate because revert already handles that.
             p->add_msg_if_player( m_bad, _( "The remote control's battery goes dead." ) );
-            stop = true;
+            g->setremoteveh( nullptr );
+            g->u.view_offset = tripoint_rel_ms::zero();
         } else if( remote == nullptr ) {
             p->add_msg_if_player( _( "Lost contact with the vehicle." ) );
             stop = true;
